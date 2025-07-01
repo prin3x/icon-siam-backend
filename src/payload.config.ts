@@ -33,6 +33,21 @@ export const isDev = process.env.NODE_ENV === 'development'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
+// Debug environment variables
+console.log('Environment Variables Debug:')
+console.log('CLOUDFRONT_DOMAIN:', process.env.CLOUDFRONT_DOMAIN)
+console.log('NODE_ENV:', process.env.NODE_ENV)
+console.log(
+  'All env vars:',
+  Object.keys(process.env).filter((key) => key.includes('CLOUD') || key.includes('S3')),
+)
+
+// Set default CloudFront domain if not provided
+if (!process.env.CLOUDFRONT_DOMAIN) {
+  console.warn('⚠️  CLOUDFRONT_DOMAIN not set, using default')
+  process.env.CLOUDFRONT_DOMAIN = 'https://your-cloudfront-domain.cloudfront.net'
+}
+
 export default buildConfig({
   // Admin configuration
   admin: {
@@ -71,17 +86,25 @@ export default buildConfig({
 
   // CORS configuration for frontend access
   cors: [
-    process.env.FRONTEND_URL || 'http://localhost:3000',
-    process.env.FRONTEND_DOMAIN || 'onesiam.com',
-    process.env.ADMIN_DOMAIN || 'admin.onesiam.com',
-  ],
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'http://127.0.0.1:3000',
+    'http://127.0.0.1:3001',
+    process.env.FRONTEND_URL,
+    process.env.FRONTEND_DOMAIN,
+    process.env.ADMIN_DOMAIN,
+  ].filter((url): url is string => Boolean(url)),
 
   // CSRF protection
   csrf: [
-    process.env.FRONTEND_URL || 'http://localhost:3000',
-    process.env.FRONTEND_DOMAIN || 'onesiam.com',
-    process.env.ADMIN_DOMAIN || 'admin.onesiam.com',
-  ],
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'http://127.0.0.1:3000',
+    'http://127.0.0.1:3001',
+    process.env.FRONTEND_URL,
+    process.env.FRONTEND_DOMAIN,
+    process.env.ADMIN_DOMAIN,
+  ].filter((url): url is string => Boolean(url)),
 
   editor: lexicalEditor({
     features: ({ defaultFeatures }) => [...defaultFeatures, FixedToolbarFeature()],
@@ -113,6 +136,12 @@ export default buildConfig({
       collections: {
         media: {
           prefix: 'media',
+          generateFileURL: ({ filename }) => {
+            const cloudFrontDomain =
+              process.env.CLOUDFRONT_DOMAIN || 'https://your-cloudfront-domain.cloudfront.net'
+            console.log('Using CloudFront domain:', cloudFrontDomain)
+            return `${cloudFrontDomain}/media/${filename}`
+          },
         },
       },
       bucket: process.env.S3_BUCKET || '',

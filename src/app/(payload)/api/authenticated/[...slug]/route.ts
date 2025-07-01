@@ -7,6 +7,18 @@ import {
 } from '@/middleware/apiKeyAuth'
 import { REST_GET, REST_OPTIONS } from '@payloadcms/next/routes'
 
+// Add CORS headers
+function addCorsHeaders(response: NextResponse): NextResponse {
+  response.headers.set(
+    'Access-Control-Allow-Origin',
+    process.env.FRONTEND_URL || 'http://localhost:3000',
+  )
+  response.headers.set('Access-Control-Allow-Methods', 'GET, OPTIONS')
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-API-Key')
+  response.headers.set('Access-Control-Allow-Credentials', 'true')
+  return response
+}
+
 async function handleAuthenticatedRequest(
   request: Request,
   args: { params: Promise<{ slug: string[] }> },
@@ -17,7 +29,11 @@ async function handleAuthenticatedRequest(
     const apiKeyUser = await validateApiKey(request)
 
     if (!apiKeyUser) {
-      return NextResponse.json({ error: 'Invalid or missing API key' }, { status: 401 })
+      const errorResponse = NextResponse.json(
+        { error: 'Invalid or missing API key' },
+        { status: 401 },
+      )
+      return addCorsHeaders(errorResponse)
     }
 
     // Extract collection from URL path
@@ -27,7 +43,11 @@ async function handleAuthenticatedRequest(
 
     // Check collection access
     if (!hasCollectionAccess(apiKeyUser, collectionSlug)) {
-      return NextResponse.json({ error: 'Access denied to this collection' }, { status: 403 })
+      const errorResponse = NextResponse.json(
+        { error: 'Access denied to this collection' },
+        { status: 403 },
+      )
+      return addCorsHeaders(errorResponse)
     }
 
     // Extend request with API key user info
@@ -35,10 +55,20 @@ async function handleAuthenticatedRequest(
     extendRequestWithApiKey(extendedReq, apiKeyUser)
 
     // Call the original handler
-    return await handler(extendedReq, args)
+    const response = await handler(extendedReq, args)
+
+    // Add CORS headers to the response
+    if (response instanceof NextResponse) {
+      return addCorsHeaders(response)
+    }
+
+    // If it's a regular Response, convert it to NextResponse and add CORS headers
+    const nextResponse = NextResponse.json(await response.json(), { status: response.status })
+    return addCorsHeaders(nextResponse)
   } catch (error) {
     console.error('Authentication error:', error)
-    return NextResponse.json({ error: 'Authentication failed' }, { status: 500 })
+    const errorResponse = NextResponse.json({ error: 'Authentication failed' }, { status: 500 })
+    return addCorsHeaders(errorResponse)
   }
 }
 
@@ -48,5 +78,7 @@ export const GET = async (request: Request, args: { params: Promise<{ slug: stri
 }
 
 export const OPTIONS = async (request: Request, args: { params: Promise<{ slug: string[] }> }) => {
-  return handleAuthenticatedRequest(request, args, REST_OPTIONS(config))
+  // Handle preflight requests
+  const response = new NextResponse(null, { status: 200 })
+  return addCorsHeaders(response)
 }

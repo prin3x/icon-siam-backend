@@ -15,7 +15,7 @@ Add these environment variables to your PayloadCMS backend:
 ```bash
 # .env.local or .env
 API_KEY=your-secret-api-key-here
-API_ALLOWED_COLLECTIONS=events,shops,attractions,promotions
+API_ALLOWED_COLLECTIONS=events,shops,attractions,promotions,homepage,media
 ```
 
 **Environment Variables:**
@@ -57,6 +57,7 @@ All read-only endpoints are available under `/api/authenticated/`:
 - **GET** `/api/authenticated/shops/[id]` - Get specific shop
 - **GET** `/api/authenticated/attractions` - Get all attractions
 - **GET** `/api/authenticated/promotions` - Get all promotions
+- **GET** `/api/authenticated/media/[id]` - Get media file data
 
 ### Available Collections
 
@@ -142,6 +143,7 @@ Store your API key securely in environment variables:
 // .env.local
 NEXT_PUBLIC_API_KEY=your-secret-api-key-here
 NEXT_PUBLIC_API_URL=https://your-domain.com
+NEXT_PUBLIC_CLOUDFRONT_DOMAIN=https://your-cloudfront-domain.cloudfront.net
 
 // Usage in your app
 const API_KEY = process.env.NEXT_PUBLIC_API_KEY
@@ -158,6 +160,30 @@ const fetchData = async (collection) => {
 }
 ```
 
+### Media Handling
+
+For images and media files, use the media utilities:
+
+```javascript
+import { getImageUrl, getImageAlt, MediaImage } from '@/utilities/media'
+
+// Get image URL (backend already returns CloudFront URLs)
+const imageUrl = getImageUrl(mediaObject, 'en')
+
+// Get alt text
+const altText = getImageAlt(mediaObject, 'en')
+
+// Use the MediaImage component (automatically handles CORS)
+<MediaImage
+  media={mediaObject}
+  locale="en"
+  className="w-full h-64 object-cover"
+  alt="Event image"
+/>
+```
+
+**Note:** The backend automatically returns CloudFront URLs when `CLOUDFRONT_DOMAIN` is configured, so no manual conversion is needed.
+
 ### cURL
 
 ```bash
@@ -168,6 +194,10 @@ curl -H "Authorization: Bearer your-secret-api-key-here" \
 # Get specific event
 curl -H "Authorization: Bearer your-secret-api-key-here" \
      https://your-domain.com/api/authenticated/events/event-id-here
+
+# Get media file data
+curl -H "Authorization: Bearer your-secret-api-key-here" \
+     https://your-domain.com/api/authenticated/media/media-id-here
 ```
 
 ## Error Responses
@@ -287,6 +317,7 @@ export default async function handler(req, res) {
 1. **401 Unauthorized**: Check that your API key matches the environment variable
 2. **403 Forbidden**: Verify that the collection is included in `API_ALLOWED_COLLECTIONS`
 3. **404 Not Found**: Ensure you're using the correct collection name in the URL
+4. **CORS Errors**: Make sure your frontend domain is allowed in the CORS configuration
 
 ### Debugging
 
