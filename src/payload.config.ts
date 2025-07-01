@@ -46,7 +46,7 @@ export default buildConfig({
   },
 
   // Server URL for both admin and API
-  serverURL: process.env.CMS_API_SERVER_URL || 'http://localhost:3001',
+  serverURL: process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3001',
 
   collections: [
     Homepage,
