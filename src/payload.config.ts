@@ -33,21 +33,6 @@ export const isDev = process.env.NODE_ENV === 'development'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
-// Debug environment variables
-console.log('Environment Variables Debug:')
-console.log('CLOUDFRONT_DOMAIN:', process.env.CLOUDFRONT_DOMAIN)
-console.log('NODE_ENV:', process.env.NODE_ENV)
-console.log(
-  'All env vars:',
-  Object.keys(process.env).filter((key) => key.includes('CLOUD') || key.includes('S3')),
-)
-
-// Set default CloudFront domain if not provided
-if (!process.env.CLOUDFRONT_DOMAIN) {
-  console.warn('⚠️  CLOUDFRONT_DOMAIN not set, using default')
-  process.env.CLOUDFRONT_DOMAIN = 'https://your-cloudfront-domain.cloudfront.net'
-}
-
 export default buildConfig({
   // Admin configuration
   admin: {
