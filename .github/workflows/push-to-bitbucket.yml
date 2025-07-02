@@ -1,0 +1,99 @@
+name: Push to Bitbucket
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  push-to-bitbucket:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout GitHub repo
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Fetch all history for all branches and tags
+
+      - name: Set up Git config
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Push to Bitbucket Branch main
+        env:
+          BITBUCKET_USERNAME: ${{ secrets.BITBUCKET_USERNAME }}
+          BITBUCKET_PASSWORD: ${{ secrets.BITBUCKET_APP_PASSWORD }}
+        run: |
+          if [ -z "$BITBUCKET_PASSWORD" ]; then
+            echo "Error: BITBUCKET_APP_PASSWORD secret is not set"
+            exit 1
+          fi
+
+          if [ -z "$BITBUCKET_USERNAME" ]; then
+            echo "Error: BITBUCKET_USERNAME secret is not set"
+            exit 1
+          fi
+
+          echo "Setting up Bitbucket remote..."
+          git remote add bitbucket "https://${BITBUCKET_USERNAME}:${BITBUCKET_PASSWORD}@bitbucket.org/winteregency/icon-siam-api.git"
+
+          echo "Fetching from Bitbucket..."
+          if ! git fetch bitbucket; then
+            echo "Error: Failed to fetch from Bitbucket. Please check your repository URL and credentials."
+            exit 1
+          fi
+
+          echo "Pushing to Bitbucket..."
+          if ! git push bitbucket main --force; then
+            echo "Error: Failed to push to Bitbucket. Please check your app password permissions."
+            exit 1
+          fi
+
+          echo "Successfully pushed to Bitbucket branch 'main'!"
+
+      - name: Clone Bitbucket repo
+        env:
+          BITBUCKET_USERNAME: ${{ secrets.BITBUCKET_USERNAME }}
+          BITBUCKET_PASSWORD: ${{ secrets.BITBUCKET_APP_PASSWORD }}
+          BRANCH_NAME: 'develop' # Target branch to push
+        run: |
+          if [ -z "$BITBUCKET_PASSWORD" ]; then
+            echo "Error: BITBUCKET_APP_PASSWORD secret is not set"
+            exit 1
+          fi
+
+          if [ -z "$BITBUCKET_USERNAME" ]; then
+            echo "Error: BITBUCKET_USERNAME secret is not set"
+            exit 1
+          fi
+
+          echo "Cloning Bitbucket repo..."
+          git clone https://${BITBUCKET_USERNAME}:${BITBUCKET_PASSWORD}@bitbucket.org/winteregency/icon-siam-api.git bitbucket-repo
+          cd bitbucket-repo
+          git checkout $BRANCH_NAME
+          cd ../
+
+      - name: Replace src/ content
+        run: |
+          echo "Replacing src/ folder in Bitbucket repo..."
+          rm -rf bitbucket-repo/src/*
+          mkdir -p bitbucket-repo/src
+
+          echo "Copy GitHub repo into src/"
+          shopt -s dotglob
+          rsync -av --exclude=bitbucket-repo ./ bitbucket-repo/src/
+          shopt -u dotglob
+
+      - name: Push to Bitbucket
+        run: |
+          cd bitbucket-repo
+
+          if git diff --quiet && git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git add src
+            git commit -m "Update src folder from GitHub 📦"
+            git push origin HEAD  # or main if your Bitbucket default branch is main
+            echo "✅ Pushed updated src/ to Bitbucket."
+          fi
