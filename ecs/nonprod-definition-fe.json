@@ -1,0 +1,65 @@
+{
+  "family": "iconsiam-website-fe-taskdefinitaion",
+  "containerDefinitions": [
+    {
+      "name": "iconwebsite-fe",
+      "image": "$FULLIMAGENAME",
+      "cpu": 1024,
+      "memory": 2048,
+      "memoryReservation": 512,
+      "portMappings": [
+        {
+          "name": "3000",
+          "containerPort": 3000,
+          "hostPort": 3000,
+          "protocol": "tcp",
+          "appProtocol": "http"
+        }
+      ],
+      "essential": true,
+      "environment": [
+        {
+          "name": "NEXT_PUBLIC_VERSION",
+          "value": "1.0.0"
+        },
+        {
+          "name": "NEXT_PUBLIC_API_URL",
+          "value": "apiurl"
+        }
+      ],
+      "mountPoints": [],
+      "volumesFrom": [],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-create-group": "true",
+          "awslogs-group": "/ecs/iconwebsite-fe",
+          "awslogs-region": "ap-southeast-1",
+          "awslogs-stream-prefix": "ecs"
+        },
+        "secretOptions": []
+      },
+      "healthCheck": {
+        "command": [
+          "CMD-SHELL",
+          "wget --no-verbose --tries=1 --spider http://$(hostname -i):3000/api/health"
+        ],
+        "interval": 60,
+        "timeout": 10,
+        "retries": 5,
+        "startPeriod": 60
+      },
+      "systemControls": []
+    }
+  ],
+  "taskRoleArn": "arn:aws:iam::002274633774:role/ecsTaskExecutionRole",
+  "executionRoleArn": "arn:aws:iam::002274633774:role/ecsTaskExecutionRole",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["EC2", "FARGATE"],
+  "cpu": "1024",
+  "memory": "2048",
+  "runtimePlatform": {
+    "cpuArchitecture": "X86_64",
+    "operatingSystemFamily": "LINUX"
+  }
+}
