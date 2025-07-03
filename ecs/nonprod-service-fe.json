@@ -1,0 +1,21 @@
+{
+   "cluster": "ecs-icon-nonprod",
+   "service": "iconwebsite-fe",
+   "taskDefinition": "iconsiam-website-fe-taskdefinitaion",
+   "networkConfiguration": {
+      "awsvpcConfiguration": {
+         "assignPublicIp": "DISABLED",
+         "securityGroups": [ "sg-081df0afcf6336826" ],
+         "subnets": [ "subnet-0071b422e8e4f9393", "subnet-037cb5c93589c00c2" ]
+      }
+   },
+   "loadBalancers": [
+      {
+            "targetGroupArn": "arn:aws:elasticloadbalancing:ap-southeast-1:002274633774:targetgroup/tg-iconsiam-fe-dev/3c20513825185719",
+            "containerName": "iconwebsite-fe",
+            "containerPort": 3000
+      }
+   ],
+   "desiredCount": 1,
+   "forceNewDeployment": true
+}
