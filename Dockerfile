@@ -1,4 +1,4 @@
-ARG NODE_VERSION="22.12.0"
+ARG NODE_VERSION="20.11.0"
 ARG NODE_ENV=development
 
 # ============================== Base ============================== #
