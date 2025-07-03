@@ -17,33 +17,6 @@ export interface ApiKeyUser {
 
 export async function validateApiKey(req: Request): Promise<ApiKeyUser | null> {
   try {
-    // Check for API key in headers
-    const authHeader = req.headers.get('authorization')
-    const apiKeyHeader = req.headers.get('x-api-key')
-
-    let apiKey: string | null = null
-
-    // Check Bearer token format
-    if (authHeader && authHeader.startsWith('Bearer ')) {
-      apiKey = authHeader.substring(7)
-    }
-    // Check X-API-Key header
-    else if (apiKeyHeader) {
-      apiKey = apiKeyHeader
-    }
-
-    if (!apiKey) {
-      return null
-    }
-
-    // Get API key from environment variable
-    const validApiKey = process.env.API_KEY || process.env.NEXT_PUBLIC_API_KEY
-
-    if (!validApiKey || apiKey !== validApiKey) {
-      return null
-    }
-
-    // Get allowed collections from environment variable (comma-separated)
     const allowedCollections = process.env.API_ALLOWED_COLLECTIONS || '*'
     const collections =
       allowedCollections === '*' ? ['*'] : allowedCollections.split(',').map((c) => c.trim())
