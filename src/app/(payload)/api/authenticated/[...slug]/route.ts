@@ -20,7 +20,7 @@ function addCorsHeaders(response: NextResponse): NextResponse {
 }
 
 async function handleAuthenticatedRequest(
-  request: Request,
+  request: NextRequest,
   args: { params: Promise<{ slug: string[] }> },
   handler: (request: Request, args: { params: Promise<{ slug: string[] }> }) => Promise<Response>,
 ) {
@@ -73,7 +73,7 @@ async function handleAuthenticatedRequest(
 }
 
 // Only allow GET requests for read-only access
-export const GET = async (request: Request, args: { params: Promise<{ slug: string[] }> }) => {
+export const GET = async (request: NextRequest, args: { params: Promise<{ slug: string[] }> }) => {
   return handleAuthenticatedRequest(request, args, REST_GET(config))
 }
 

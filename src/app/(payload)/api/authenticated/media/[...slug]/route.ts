@@ -25,7 +25,10 @@ async function getPayloadInstance() {
   return payload
 }
 
-export async function GET(request: Request, { params }: { params: Promise<{ slug: string[] }> }) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ slug: string[] }> },
+) {
   try {
     // Validate API key
     const apiKeyUser = await validateApiKey(request)
