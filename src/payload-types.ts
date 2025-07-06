@@ -1051,6 +1051,7 @@ export interface Stickbar {
   icon?: (number | null) | Media;
   link?: string | null;
   status?: ('active' | 'inactive') | null;
+  background_color?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1885,6 +1886,7 @@ export interface StickbarSelect<T extends boolean = true> {
   icon?: T;
   link?: T;
   status?: T;
+  background_color?: T;
   updatedAt?: T;
   createdAt?: T;
 }

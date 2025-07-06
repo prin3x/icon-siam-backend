@@ -37,6 +37,18 @@ export const Stickbar: CollectionConfig = {
       defaultValue: 'active',
       localized: true,
     },
+    {
+      name: 'background_color',
+      type: 'text',
+      label: 'Background Color',
+      defaultValue: '#987b2c',
+      admin: {
+        components: {
+          Field: '@/components/ColorPicker',
+        },
+      },
+      localized: true,
+    },
   ],
   //   hooks: {
   //     beforeChange: [
