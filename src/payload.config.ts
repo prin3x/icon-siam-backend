@@ -124,7 +124,6 @@ export default buildConfig({
           generateFileURL: ({ filename }) => {
             const cloudFrontDomain =
               process.env.CLOUDFRONT_DOMAIN || 'https://your-cloudfront-domain.cloudfront.net'
-            console.log('Using CloudFront domain:', cloudFrontDomain)
             return `${cloudFrontDomain}/media/${filename}`
           },
         },

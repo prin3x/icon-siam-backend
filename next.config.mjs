@@ -33,10 +33,8 @@ const nextConfig = {
       {
         source: '/api/media/:path*',
         headers: [
-          {
-            key: 'Accept-Ranges',
-            value: 'bytes',
-          },
+          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+          { key: 'Accept-Ranges', value: 'bytes' },
           {
             key: 'Access-Control-Allow-Origin',
             value: '*',
@@ -50,6 +48,14 @@ const nextConfig = {
             value: 'Range',
           },
         ],
+      },
+      {
+        source: '/api/(.*)',
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=60, s-maxage=300' }],
+      },
+      {
+        source: '/(.*)',
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=3600, s-maxage=86400' }],
       },
     ]
   },
