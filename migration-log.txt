@@ -1,0 +1,718 @@
+Migration Log - Records Not Created
+Generated: 2025-07-06T10:06:31.288Z
+Total records not created: 55
+
+ID: 33
+Title (EN): PunThai Coffee
+Title (TH): PunThai Coffee (กาแฟพันธุ์ไทย)
+Title (CN): PunThai Coffee
+Slug: punthai-coffee
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: 8
+SCID: 25
+Zone: 
+Room: K413
+---
+
+ID: 8
+Title (EN): Garmin Pop-up Store
+Title (TH): Garmin Pop-up Store
+Title (CN): Garmin Pop-up Store
+Slug: garmin-pop-up-store
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: 7
+SCID: 0
+Zone: 
+Room: KM01
+---
+
+ID: 5
+Title (EN): Double Slash
+Title (TH): Double Slash
+Title (CN): Double Slash
+Slug: double-slash
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: 8
+SCID: 46
+Zone: 
+Room: G01
+---
+
+ID: 10
+Title (EN): Lotus&#039;s Prive
+Title (TH): Lotus&#039;s Prive
+Title (CN): Lotus&#039;s Prive
+Slug: lotuss-prive
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: 70
+SCID: 0
+Zone: 
+Room: 
+---
+
+ID: 16
+Title (EN): SKECHERS
+Title (TH): SKECHERS
+Title (CN): SKECHERS
+Slug: skechers
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: 7
+SCID: 0
+Zone: 
+Room: KM04-KM05
+---
+
+ID: 11
+Title (EN): NESWELL
+Title (TH): NESWELL
+Title (CN): NESWELL
+Slug: neswell
+Collection: dinings
+Reason: Error: The following field is invalid: Categories
+CID: 8
+SCID: 0
+Zone: 
+Room: KG02
+---
+
+ID: 12
+Title (EN): Oriental Princess
+Title (TH): Oriental Princess
+Title (CN): Oriental Princess
+Slug: oriental-princess
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: 7
+SCID: 56
+Zone: 
+Room: M01
+---
+
+ID: 13
+Title (EN): Santa Fe&#039;
+Title (TH): Santa Fe&#039;
+Title (CN): Santa Fe&#039;
+Slug: santa-fe
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: 8
+SCID: 47
+Zone: 
+Room: 
+---
+
+ID: 14
+Title (EN): Pierre Cardin
+Title (TH): Pierre Cardin
+Title (CN): Pierre Cardin
+Slug: pierre-cardin
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: 7
+SCID: 0
+Zone: 
+Room: M03
+---
+
+ID: 15
+Title (EN): SEVEN DAYS OPTIC
+Title (TH): SEVEN DAYS OPTIC
+Title (CN): SEVEN DAYS OPTIC
+Slug: seven-days-optic
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: 7
+SCID: 0
+Zone: 
+Room: 103
+---
+
+ID: 17
+Title (EN): SOAPFORSOUL
+Title (TH): SOAPFORSOUL
+Title (CN): SOAPFORSOUL
+Slug: soapforsoul
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: 7
+SCID: 0
+Zone: 
+Room: M04/2
+---
+
+ID: 18
+Title (EN): Timedeco
+Title (TH): Timedeco
+Title (CN): Timedeco
+Slug: timedeco
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: 7
+SCID: 0
+Zone: 
+Room: KM02
+---
+
+ID: 20
+Title (EN): U.S. Polo Assn.
+Title (TH): U.S. Polo Assn.
+Title (CN): U.S. Polo Assn.
+Slug: us-polo-assn
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: 7
+SCID: 0
+Zone: 
+Room: M02
+---
+
+ID: 77
+Title (EN): HIA LEK CHINESE SOUP MOO SAM YANG
+Title (TH): เฮียเล็กเกาเหลาหมูสามอย่าง (HIA LEK CHINESE SOUP MOO SAM YANG)
+Title (CN): HIA LEK CHINESE SOUP MOO SAM YANG
+Slug: hia-lek-chinese-soup-moo-sam-yang
+Collection: dinings
+Reason: Error: The following field is invalid: Categories
+CID: 8
+SCID: 0
+Zone: 
+Room: K410
+---
+
+ID: 22
+Title (EN): ChaTraMue
+Title (TH): ChaTraMue (ชาตรามือ)
+Title (CN): ChaTraMue
+Slug: chatramue
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: 8
+SCID: 25
+Zone: 
+Room: KG04
+---
+
+ID: 23
+Title (EN): DURIAN MAHANAKORN
+Title (TH): DURIAN MAHANAKORN (ทุเรียนมหานคร)
+Title (CN): DURIAN MAHANAKORN
+Slug: durian-mahanakorn
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: 8
+SCID: 46
+Zone: 
+Room: 
+---
+
+ID: 24
+Title (EN): Pang Siam
+Title (TH): Pang Siam (ปังสยาม)
+Title (CN): Pang Siam
+Slug: pang-siam
+Collection: dinings
+Reason: Error: The following field is invalid: Categories
+CID: 8
+SCID: 0
+Zone: 
+Room: KG10
+---
+
+ID: 25
+Title (EN): GOGO GYOZA &amp; RAMEN
+Title (TH): GOGO GYOZA &amp; RAMEN
+Title (CN): GOGO GYOZA &amp; RAMEN
+Slug: gogo-gyoza-and-ramen
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: 8
+SCID: 47
+Zone: 
+Room: K405
+---
+
+ID: 26
+Title (EN): Joyliday
+Title (TH): Joyliday
+Title (CN): Joyliday
+Slug: joyliday
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: 10
+SCID: 0
+Zone: 
+Room: 404
+---
+
+ID: 27
+Title (EN): KATEI SHABU
+Title (TH): KATEI SHABU
+Title (CN): KATEI SHABU
+Slug: katei-shabu
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: 8
+SCID: 47
+Zone: 
+Room: 403
+---
+
+ID: 28
+Title (EN): mamemi
+Title (TH): mamemi
+Title (CN): mamemi
+Slug: mamemi
+Collection: dinings
+Reason: Error: The following field is invalid: Categories
+CID: 8
+SCID: 0
+Zone: 
+Room: K403
+---
+
+ID: 29
+Title (EN): Muscle Inc.
+Title (TH): Muscle Inc.
+Title (CN): Muscle Inc.
+Slug: muscle-inc
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: 7
+SCID: 0
+Zone: 
+Room: K406
+---
+
+ID: 31
+Title (EN): YOU&amp;I Premium Suki Buffet
+Title (TH): YOU&amp;I Premium Suki Buffet
+Title (CN): YOU&amp;I Premium Suki Buffet
+Slug: you-and-i-premium-suki-buffet
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: 8
+SCID: 47
+Zone: 
+Room: 406
+---
+
+ID: 32
+Title (EN): Earw thai Chinese cuisine
+Title (TH): Earw thai (เอี่ยวไถ่)
+Title (CN): Earw thai Chinese cuisine
+Slug: earw-thai-chinese-cuisine
+Collection: dinings
+Reason: Error: The following field is invalid: Categories
+CID: 8
+SCID: 0
+Zone: 
+Room: 408
+---
+
+ID: 79
+Title (EN): STAR ELEPHANT
+Title (TH): STAR ELEPHANT
+Title (CN): STAR ELEPHANT
+Slug: star-elephant
+Collection: dinings
+Reason: Error: The following field is invalid: Categories
+CID: 8
+SCID: 0
+Zone: 
+Room: K101/1
+---
+
+ID: 78
+Title (EN): Daynighto
+Title (TH): Daynighto
+Title (CN): Daynighto
+Slug: daynighto
+Collection: dinings
+Reason: Error: The following field is invalid: Categories
+CID: 8
+SCID: 0
+Zone: 
+Room: 307
+---
+
+ID: 36
+Title (EN): HQ LUGGAGE
+Title (TH): HQ LUGGAGE
+Title (CN): HQ LUGGAGE
+Slug: hq-luggage
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: 7
+SCID: 0
+Zone: 
+Room: K301
+---
+
+ID: 37
+Title (EN): INNER STUDIO
+Title (TH): INNER STUDIO
+Title (CN): INNER STUDIO
+Slug: inner-studio
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: 13
+SCID: 37
+Zone: 
+Room: 311-312
+---
+
+ID: 38
+Title (EN): Mr.D.I.Y
+Title (TH): Mr.D.I.Y
+Title (CN): Mr.D.I.Y
+Slug: mr-diy
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: 7
+SCID: 0
+Zone: 
+Room: 305
+---
+
+ID: 39
+Title (EN): Muse Music Academy
+Title (TH): Muse Music Academy
+Title (CN): Muse Music Academy
+Slug: muse-music-academy
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: 13
+SCID: 37
+Zone: 
+Room: 302-304
+---
+
+ID: 40
+Title (EN): REP COFFEE
+Title (TH): REP COFFEE
+Title (CN): REP COFFEE
+Slug: rep-coffee
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: 8
+SCID: 46
+Zone: 
+Room: K314
+---
+
+ID: 42
+Title (EN): Se-ed
+Title (TH): Se-ed (ซี-เอ็ด)
+Title (CN): Se-ed
+Slug: se-ed
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: 7
+SCID: 0
+Zone: 
+Room: 301
+---
+
+ID: 43
+Title (EN): ANUSAWARI  BOAT NOODLE
+Title (TH): ANUSAWARI  BOAT NOODLE (เตี๋ยวเรือเสาวรีย์)
+Title (CN): ANUSAWARI  BOAT NOODLE
+Slug: anusawari--boat-noodle
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: 8
+SCID: 47
+Zone: 
+Room: K313
+---
+
+ID: 44
+Title (EN): DAISO
+Title (TH): DAISO
+Title (CN): DAISO
+Slug: daiso
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: 7
+SCID: 0
+Zone: 
+Room: 206
+---
+
+ID: 46
+Title (EN): Gadget House
+Title (TH): Gadget House
+Title (CN): Gadget House
+Slug: gadget-house
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: 7
+SCID: 0
+Zone: 
+Room: K208
+---
+
+ID: 48
+Title (EN): Jaymart
+Title (TH): Jaymart
+Title (CN): Jaymart
+Slug: jaymart
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: 7
+SCID: 0
+Zone: 
+Room: 207
+---
+
+ID: 49
+Title (EN): Kang Yong Air Care Center
+Title (TH): Kang Yong Air Care Center (กันยง แอร์ แคร์ เซ็นเตอร์)
+Title (CN): Kang Yong Air Care Center
+Slug: kang-yong-air-care-center
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: 7
+SCID: 0
+Zone: 
+Room: 208
+---
+
+ID: 50
+Title (EN): Premium Gold Yaowarat
+Title (TH): Premium Gold Yaowarat (ห้างทองพรีเมี่ยมโกลด์ เยาวราช)
+Title (CN): Premium Gold Yaowarat
+Slug: premium-gold-yaowarat
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: 7
+SCID: 0
+Zone: 
+Room: 203
+---
+
+ID: 51
+Title (EN): Ventry
+Title (TH): Ventry
+Title (CN): Ventry
+Slug: ventry
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: 7
+SCID: 0
+Zone: 
+Room: 
+---
+
+ID: 53
+Title (EN): Flash Nail
+Title (TH): Flash Nail
+Title (CN): Flash Nail
+Slug: flash-nail
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: 7
+SCID: 0
+Zone: 
+Room: K106
+---
+
+ID: 54
+Title (EN): The Ritz Clinic
+Title (TH): The Ritz Clinic
+Title (CN): The Ritz Clinic
+Slug: the-ritz-clinic
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: 7
+SCID: 56
+Zone: 
+Room: 101
+---
+
+ID: 55
+Title (EN): SIRIRAJ H SOLUTIONS
+Title (TH): SIRIRAJ H SOLUTIONS
+Title (CN): SIRIRAJ H SOLUTIONS
+Slug: siriraj-h-solutions
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: 71
+SCID: 0
+Zone: 
+Room: 501
+---
+
+ID: 56
+Title (EN): Inthanin
+Title (TH): Inthanin (อินทนิล)
+Title (CN): Inthanin
+Slug: inthanin
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: 8
+SCID: 46
+Zone: 
+Room: K101/1
+---
+
+ID: 76
+Title (EN): Yoguruto
+Title (TH): Yoguruto
+Title (CN): Yoguruto
+Slug: yoguruto
+Collection: dinings
+Reason: Error: The following field is invalid: Categories
+CID: 8
+SCID: 0
+Zone: 
+Room: KG09
+---
+
+ID: 58
+Title (EN): IMMORTAL
+Title (TH): IMMORTAL
+Title (CN): IMMORTAL
+Slug: immortal
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: 7
+SCID: 0
+Zone: 
+Room: 
+---
+
+ID: 60
+Title (EN): Starbucks
+Title (TH): Starbucks
+Title (CN): Starbucks
+Slug: starbucks
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: 8
+SCID: 46
+Zone: 
+Room: M09
+---
+
+ID: 63
+Title (EN): MOM&#039;S TOUCH
+Title (TH): MOM&#039;S TOUCH
+Title (CN): MOM&#039;S TOUCH
+Slug: moms-touch
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: 8
+SCID: 47
+Zone: 
+Room: G09
+---
+
+ID: 67
+Title (EN): MOS BURGER
+Title (TH): MOS BURGER
+Title (CN): MOS BURGER
+Slug: mos-burger
+Collection: dinings
+Reason: Error: The following field is invalid: Categories
+CID: 8
+SCID: 0
+Zone: 
+Room: G07
+---
+
+ID: 68
+Title (EN): OMU
+Title (TH): OMU
+Title (CN): OMU
+Slug: omu
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: 8
+SCID: 47
+Zone: 
+Room: G02
+---
+
+ID: 70
+Title (EN): For U Pharma
+Title (TH): For U Pharma
+Title (CN): For U Pharma
+Slug: for-u-pharma
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: 72
+SCID: 0
+Zone: 
+Room: G03
+---
+
+ID: 71
+Title (EN): Get Fresh
+Title (TH): Get Fresh
+Title (CN): Get Fresh
+Slug: get-fresh
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: 8
+SCID: 47
+Zone: 
+Room: G08
+---
+
+ID: 72
+Title (EN): White Story
+Title (TH): White Story
+Title (CN): White Story
+Slug: white-story
+Collection: dinings
+Reason: Error: The following field is invalid: Categories
+CID: 8
+SCID: 0
+Zone: 
+Room: KG01
+---
+
+ID: 73
+Title (EN): Olino Crepe &amp; Tea
+Title (TH): Olino Crepe &amp; Tea
+Title (CN): Olino Crepe &amp; Tea
+Slug: olino-crepe-and-tea
+Collection: dinings
+Reason: Error: The following field is invalid: Categories
+CID: 8
+SCID: 0
+Zone: 
+Room: KG05/4
+---
+
+ID: 74
+Title (EN): 7-ELEVEN
+Title (TH): 7-ELEVEN
+Title (CN): 7-ELEVEN
+Slug: 7-eleven
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: 73
+SCID: 0
+Zone: 
+Room: G10
+---
+
+ID: 75
+Title (EN): FUKU MATCHA
+Title (TH): FUKU MATCHA
+Title (CN): FUKU MATCHA
+Slug: fuku-matcha
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: 8
+SCID: 25
+Zone: 
+Room: KG08
+---
