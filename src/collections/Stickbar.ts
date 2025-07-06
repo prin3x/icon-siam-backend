@@ -47,7 +47,6 @@ export const Stickbar: CollectionConfig = {
           Field: '@/components/ColorPicker',
         },
       },
-      localized: true,
     },
   ],
   //   hooks: {
