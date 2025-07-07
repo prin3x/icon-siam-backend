@@ -16,6 +16,18 @@ export const Footers: CollectionConfig = {
       label: 'Name',
     },
     {
+      name: 'button_text',
+      type: 'text',
+      label: 'Button Text',
+      localized: true,
+    },
+    {
+      name: 'button_link',
+      type: 'text',
+      label: 'Button Link',
+      localized: true,
+    },
+    {
       name: 'connect_with_us',
       type: 'array',
       label: 'Connect With Us',
