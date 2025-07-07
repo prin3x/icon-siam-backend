@@ -1026,6 +1026,8 @@ export interface GalleryCollection {
 export interface Footer {
   id: number;
   name?: string | null;
+  button_text?: string | null;
+  button_link?: string | null;
   connect_with_us?:
     | {
         name?: string | null;
@@ -1864,6 +1866,8 @@ export interface PromotionsSelect<T extends boolean = true> {
  */
 export interface FootersSelect<T extends boolean = true> {
   name?: T;
+  button_text?: T;
+  button_link?: T;
   connect_with_us?:
     | T
     | {
