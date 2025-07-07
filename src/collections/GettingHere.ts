@@ -42,6 +42,17 @@ export const GettingHere: CollectionConfig = {
       localized: true,
     },
     {
+      name: 'google_map_title',
+      type: 'text',
+      label: 'Google Map Title',
+      localized: true,
+    },
+    {
+      name: 'google_map_url',
+      type: 'text',
+      label: 'Google Map URL',
+    },
+    {
       name: 'opening_hours',
       type: 'group',
       label: 'Opening Hours',

@@ -877,6 +877,8 @@ export interface GettingHere {
   location?: string | null;
   contact?: string | null;
   contact_info?: string | null;
+  google_map_title?: string | null;
+  google_map_url?: string | null;
   opening_hours?: {
     same_hours_every_day?: boolean | null;
     open?: string | null;
@@ -1657,6 +1659,8 @@ export interface GettingHereSelect<T extends boolean = true> {
   location?: T;
   contact?: T;
   contact_info?: T;
+  google_map_title?: T;
+  google_map_url?: T;
   opening_hours?:
     | T
     | {
