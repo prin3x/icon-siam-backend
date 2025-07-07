@@ -6,3 +6,16 @@
 ⚠️  Unmapped/Missing floors: 5
    Fl. GA, Fl. 1, Fl. G,GA, Fl. 3,4, Fl. BF
 ---
+[2025-07-07T12:38:11.680Z] Sync Summary
+✅ Successfully synced: 472 records
+❌ Errors: 0 records
+📊 Total records processed: 472
+📈 Success rate: 100.00%
+⚠️  Unmapped/Missing floors: 5
+   Fl. GA, Fl. G,GA, Fl. 1, Fl. 3,4, Fl. BF
+⚠️  Unmapped/Missing categories: 4
+   Mobile, Gadget, Electronics (shops) - EN: "Mobile, Gadget, Electronics" TH: "อุปกรณ์ IT,มือถือ และเครื่องใช้ไฟฟ้า"
+   Health & Beauty (shops) - EN: "Health & Beauty" TH: "สุขภาพ และความงาม"
+   International Luxury (shops) - EN: "International Luxury" TH: "International Luxury"
+   Automobile (shops) - EN: "Automobile" TH: "ยานยนต์และอะไหล่"
+---
