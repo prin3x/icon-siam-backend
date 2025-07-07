@@ -16,7 +16,7 @@
     "test": "pnpm run test:int && pnpm run test:e2e",
     "test:e2e": "cross-env NODE_OPTIONS=\"--no-deprecation --no-experimental-strip-types\" pnpm exec playwright test",
     "test:int": "cross-env NODE_OPTIONS=--no-deprecation vitest run --config ./vitest.config.mts",
-    "sync:external": "ts-node src/commands/sync-external-api.ts"
+    "sync:external": "cross-env NODE_OPTIONS=--no-deprecation payload run src/commands/sync-external-api.ts"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "3.44.0",

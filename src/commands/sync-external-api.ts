@@ -1,6 +1,8 @@
 import { getPayload } from 'payload'
 import config from '../payload.config'
-import { findOrCreateFloor } from './find-or-create-floor'
+import { findFloor } from '../utilities/find-floor'
+import * as fs from 'fs'
+import * as path from 'path'
 
 interface ExternalApiRecord {
   uniqueId: string
@@ -177,8 +179,116 @@ async function fetchExternalData(apiUrl: string, apiKey?: string): Promise<Exter
 // Track unmapped floor names
 const unmappedFloors = new Set<string>()
 
-// Find or create category
-async function findOrCreateCategory(
+// Track unmapped category names
+const unmappedCategories = new Set<string>()
+
+// Function to log errors to file
+function logErrorToFile(error: any, record: ExternalApiRecord | null, context: string = '') {
+  const timestamp = new Date().toISOString()
+  const logDir = path.join(process.cwd(), 'logs')
+
+  // Create logs directory if it doesn't exist
+  if (!fs.existsSync(logDir)) {
+    fs.mkdirSync(logDir, { recursive: true })
+  }
+
+  const logFile = path.join(logDir, `sync-errors-${new Date().toISOString().split('T')[0]}.log`)
+
+  const recordInfo = record
+    ? {
+        recordId: record.uniqueId,
+        tenantId: record.tenantId,
+        brandNameEn: record.brandNameEn,
+        brandNameTh: record.brandNameTh,
+        shopNameEnglish: record.shopNameEnglish,
+        shopNameThai: record.shopNameThai,
+        categoryNameEn: record.categoryNameEn,
+        categoryNameTh: record.categoryNameTh,
+        recordData: JSON.stringify(record, null, 2),
+      }
+    : {
+        recordId: 'N/A',
+        tenantId: 'N/A',
+        brandNameEn: 'N/A',
+        brandNameTh: 'N/A',
+        shopNameEnglish: 'N/A',
+        shopNameThai: 'N/A',
+        categoryNameEn: 'N/A',
+        categoryNameTh: 'N/A',
+        recordData: 'N/A',
+      }
+
+  const logEntry =
+    `[${timestamp}] ${context} - Record: ${recordInfo.recordId} (${recordInfo.brandNameEn || recordInfo.shopNameEnglish})\n` +
+    `Error: ${error.message || error.toString()}\n` +
+    `Stack: ${error.stack}\n` +
+    `Category Info: ${recordInfo.categoryNameEn || 'N/A'} / ${recordInfo.categoryNameTh || 'N/A'}\n` +
+    `Record Data: ${recordInfo.recordData}\n` +
+    `---\n`
+
+  try {
+    fs.appendFileSync(logFile, logEntry)
+    console.log(`📝 Error logged to: ${logFile}`)
+  } catch (writeError) {
+    console.error('Failed to write error log:', writeError)
+  }
+}
+
+// Function to log sync summary to file
+function logSyncSummary(
+  successCount: number,
+  errorCount: number,
+  totalRecords: number,
+  unmappedFloors: Set<string>,
+  unmappedCategories: Set<string>,
+) {
+  const timestamp = new Date().toISOString()
+  const logDir = path.join(process.cwd(), 'logs')
+
+  // Create logs directory if it doesn't exist
+  if (!fs.existsSync(logDir)) {
+    fs.mkdirSync(logDir, { recursive: true })
+  }
+
+  const logFile = path.join(logDir, `sync-summary-${new Date().toISOString().split('T')[0]}.log`)
+
+  const summary = {
+    timestamp,
+    successCount,
+    errorCount,
+    totalRecords,
+    unmappedFloors: Array.from(unmappedFloors),
+    unmappedCategories: Array.from(unmappedCategories).map((cat) => JSON.parse(cat)),
+    successRate: totalRecords > 0 ? ((successCount / totalRecords) * 100).toFixed(2) + '%' : '0%',
+  }
+
+  const logEntry =
+    `[${timestamp}] Sync Summary\n` +
+    `✅ Successfully synced: ${successCount} records\n` +
+    `❌ Errors: ${errorCount} records\n` +
+    `📊 Total records processed: ${totalRecords}\n` +
+    `📈 Success rate: ${summary.successRate}\n` +
+    `⚠️  Unmapped/Missing floors: ${unmappedFloors.size}\n` +
+    `   ${Array.from(unmappedFloors).join(', ')}\n` +
+    `⚠️  Unmapped/Missing categories: ${unmappedCategories.size}\n` +
+    `   ${Array.from(unmappedCategories)
+      .map((cat) => {
+        const categoryInfo = JSON.parse(cat)
+        return `${categoryInfo.name} (${categoryInfo.type}) - EN: "${categoryInfo.englishName}" TH: "${categoryInfo.thaiName}"`
+      })
+      .join('\n   ')}\n` +
+    `---\n`
+
+  try {
+    fs.appendFileSync(logFile, logEntry)
+    console.log(`📝 Summary logged to: ${logFile}`)
+  } catch (writeError) {
+    console.error('Failed to write summary log:', writeError)
+  }
+}
+
+// Find existing category only - do not create new categories
+async function findCategory(
   payload: any,
   categoryNameEn: string,
   categoryNameTh: string,
@@ -189,14 +299,14 @@ async function findOrCreateCategory(
   const searchName = categoryNameEn || categoryNameTh
 
   try {
-    // Find existing category
+    // Find existing category only
     const existingCategory = await payload.find({
       collection: 'categories',
       where: {
         and: [
           {
             name: {
-              equals: searchName,
+              ilike: `%${searchName}%`,
             },
           },
           {
@@ -210,24 +320,24 @@ async function findOrCreateCategory(
     })
 
     if (existingCategory.docs.length > 0) {
+      console.log(`✅ Found existing category: ${searchName} (${type})`)
       return existingCategory.docs[0].id.toString()
-    }
-
-    // Create new category
-    const newCategory = await payload.create({
-      collection: 'categories',
-      data: {
-        name: categoryNameEn || categoryNameTh,
-        slug: `${type}-${searchName.toLowerCase().replace(/\s+/g, '-')}`,
+    } else {
+      // Track unmapped category names
+      const categoryInfo = {
+        name: searchName,
         type: type,
-        status: 'ACTIVE',
-      },
-    })
-
-    console.log(`✅ Created category: ${searchName} (${type})`)
-    return newCategory.id.toString()
+        englishName: categoryNameEn,
+        thaiName: categoryNameTh,
+      }
+      unmappedCategories.add(JSON.stringify(categoryInfo))
+      console.log(
+        `⚠️  Category "${searchName}" (${type}) does not exist - skipping category assignment`,
+      )
+      return null
+    }
   } catch (error) {
-    console.error(`❌ Error finding or creating category ${searchName}:`, error)
+    console.error(`❌ Error finding category ${searchName}:`, error)
     return null
   }
 }
@@ -315,13 +425,68 @@ function parseStatus(status: boolean, statusRevised: string): 'ACTIVE' | 'INACTI
   return status ? 'ACTIVE' : 'INACTIVE'
 }
 
+// Utility to generate safe slug
+function generateSafeSlug(brandName: string, tenantId: string): string {
+  if (!brandName || !tenantId) return ''
+
+  return (
+    brandName
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
+      .replace(/\s+/g, '-') // Replace spaces with hyphens
+      .replace(/-+/g, '-') // Replace multiple hyphens with single
+      .replace(/^-|-$/g, '') + // Remove leading/trailing hyphens
+    `-${tenantId}`
+  )
+}
+
 // Utility to merge data while preserving existing non-empty values
 function mergeDataPreservingExisting(existingData: any, newData: any): any {
   const merged = { ...existingData }
 
   for (const [key, newValue] of Object.entries(newData)) {
+    // Skip null, undefined, empty strings, and empty objects
     if (newValue === null || newValue === undefined || newValue === '') {
-      // Skip null/undefined/empty values from new data
+      continue
+    }
+
+    // Skip empty objects
+    if (typeof newValue === 'object' && newValue !== null && !Array.isArray(newValue)) {
+      if (Object.keys(newValue).length === 0) {
+        continue
+      }
+    }
+
+    // Skip empty arrays
+    if (Array.isArray(newValue) && newValue.length === 0) {
+      continue
+    }
+
+    // Special handling for media fields - preserve existing media
+    if (key === 'images' && existingData.images) {
+      // Only update media fields if new data has actual values
+      const updatedImages = { ...existingData.images }
+      for (const [mediaKey, mediaValue] of Object.entries(newValue)) {
+        if (mediaValue !== null && mediaValue !== undefined && mediaValue !== '') {
+          updatedImages[mediaKey] = mediaValue
+        }
+      }
+      merged[key] = updatedImages
+      continue
+    }
+
+    // Special handling for status - preserve existing status unless explicitly updating
+    if (key === 'status' && existingData.status) {
+      // Only update status if new status is explicitly provided and different
+      if (newValue && newValue !== existingData.status) {
+        merged[key] = newValue
+      }
+      continue
+    }
+
+    // Special handling for slug - preserve existing slug
+    if (key === 'slug' && existingData.slug) {
+      // Never update existing slug to preserve URLs and SEO
       continue
     }
 
@@ -353,17 +518,13 @@ async function syncRecord(payload: any, record: ExternalApiRecord) {
 
     console.log(`Processing ${recordType}: ${record.brandNameEn || record.shopNameEnglish}`)
 
-    // Find or create floor - try floorRevised first, then fall back to floor
-    const floor = await findOrCreateFloor(
-      payload,
-      record.floorRevised || record.floor,
-      unmappedFloors,
-    )
+    // Find existing floor - try floorRevised first, then fall back to floor
+    const floor = await findFloor(payload, record.floorRevised || record.floor, unmappedFloors)
 
     const floorId = floor?.id?.toString()
 
-    // Find or create category
-    const categoryId = await findOrCreateCategory(
+    // Find existing category only - do not create new categories
+    const categoryId = await findCategory(
       payload,
       record.categoryNameEn,
       record.categoryNameTh,
@@ -377,10 +538,10 @@ async function syncRecord(payload: any, record: ExternalApiRecord) {
       return isNaN(date.getTime()) ? null : date.toISOString().split('T')[0]
     }
 
-    // Create base data with only non-empty values
+    // Create base data with only non-empty values (not null, undefined, or empty strings)
     const baseData: any = {}
 
-    // Only add fields that have actual values
+    // Only add fields that have actual values (not null, undefined, or empty strings)
     if (record.brandNameEn || record.shopNameEnglish) {
       baseData.title = decodeText(record.brandNameEn || record.shopNameEnglish)
     }
@@ -418,9 +579,6 @@ async function syncRecord(payload: any, record: ExternalApiRecord) {
       baseData.contact_info = contactInfo
     }
 
-    // Handle status
-    baseData.status = parseStatus(record.status, record.statusRevised)
-
     // Handle date_range - only add if dates exist
     const startDate = parseDate(record.startDate)
     const endDate = parseDate(record.endDate)
@@ -439,24 +597,39 @@ async function syncRecord(payload: any, record: ExternalApiRecord) {
       baseData.meta = meta
     }
 
-    // Generate slug
-    baseData.slug = `${record.brandNameEn?.toLowerCase().replace(/\s+/g, '-')}-${record.tenantId}`
+    // Only add category if found - don't set to null
+    if (categoryId) {
+      baseData.categories = [parseInt(categoryId)]
+    }
 
-    // Check if record already exists
-    const existingRecord = await payload.find({
-      collection,
-      where: {
-        title: {
-          ilike: `%${decodeText(record.brandNameEn || record.shopNameEnglish).toLowerCase()}%`,
-        },
-      },
-      locale: 'en',
-      limit: 1,
-    })
+    // Note: Slug will be generated only for new records, existing records keep their current slug
 
-    // If not found by English name, try searching by Thai name
+    // Check if record already exists - try multiple search strategies
     let existingRecordData = null
-    if (existingRecord.docs.length === 0 && (record.brandNameTh || record.shopNameThai)) {
+
+    // Strategy 1: Search by English title
+    if (record.brandNameEn || record.shopNameEnglish) {
+      const englishSearch = await payload.find({
+        collection,
+        where: {
+          title: {
+            ilike: `%${decodeText(record.brandNameEn || record.shopNameEnglish).toLowerCase()}%`,
+          },
+        },
+        locale: 'en',
+        limit: 1,
+      })
+
+      if (englishSearch.docs.length > 0) {
+        existingRecordData = englishSearch.docs[0]
+        console.log(
+          `Found existing record by English name: ${record.brandNameEn || record.shopNameEnglish}`,
+        )
+      }
+    }
+
+    // Strategy 2: Search by Thai title if English search failed
+    if (!existingRecordData && (record.brandNameTh || record.shopNameThai)) {
       const thaiSearch = await payload.find({
         collection,
         where: {
@@ -474,17 +647,40 @@ async function syncRecord(payload: any, record: ExternalApiRecord) {
           `Found existing record by Thai name: ${record.brandNameTh || record.shopNameThai}`,
         )
       }
-    } else if (existingRecord.docs.length > 0) {
-      existingRecordData = existingRecord.docs[0]
-      console.log(
-        `Found existing record by English name: ${record.brandNameEn || record.shopNameEnglish}`,
+    }
+
+    // Strategy 3: Search by potential slug if we have a title
+    if (!existingRecordData && (record.brandNameEn || record.shopNameEnglish)) {
+      const potentialSlug = generateSafeSlug(
+        record.brandNameEn || record.shopNameEnglish,
+        record.tenantId,
       )
+      const slugSearch = await payload.find({
+        collection,
+        where: {
+          slug: {
+            equals: potentialSlug,
+          },
+        },
+        limit: 1,
+      })
+
+      if (slugSearch.docs.length > 0) {
+        existingRecordData = slugSearch.docs[0]
+        console.log(`Found existing record by slug: ${potentialSlug}`)
+      }
     }
 
     if (existingRecordData) {
       // Update existing record - merge with existing data
       const existingId = existingRecordData.id
       const existingData = existingRecordData
+
+      console.log(
+        `🔄 Updating existing ${recordType}: ${record.brandNameEn || record.shopNameEnglish}`,
+      )
+      console.log(`   Fields to update: ${Object.keys(baseData).join(', ')}`)
+      console.log(`   Preserving existing slug: ${existingData.slug}`)
 
       // Merge new data with existing data, preserving existing non-empty values
       const mergedData = mergeDataPreservingExisting(existingData, baseData)
@@ -539,8 +735,17 @@ async function syncRecord(payload: any, record: ExternalApiRecord) {
       console.log(`✅ Updated ${recordType}: ${record.brandNameEn || record.shopNameEnglish}`)
     } else {
       // Create new record with default values for required fields
+
+      // Generate slug for new record
+      const newSlug =
+        record.brandNameEn || record.shopNameEnglish
+          ? generateSafeSlug(record.brandNameEn || record.shopNameEnglish, record.tenantId)
+          : `shop-${record.tenantId}`
+
       const createData = {
         ...baseData,
+        slug: newSlug, // Add slug for new record
+        status: 'INACTIVE', // New records are always created as INACTIVE
         // Add default values for required fields that might be missing
         location_coordinates: {
           poi_x: 0,
@@ -560,7 +765,7 @@ async function syncRecord(payload: any, record: ExternalApiRecord) {
         short_alphabet: '',
         is_featured: false,
         sort_order: 0,
-        categories: categoryId ? [parseInt(categoryId)] : [],
+        // Categories are handled in baseData - only added if found
       }
 
       const newRecord = await payload.create({
@@ -592,7 +797,7 @@ async function syncRecord(payload: any, record: ExternalApiRecord) {
       if (Object.keys(thaiData).length > 0) {
         await payload.update({
           collection,
-          where: { slug: { equals: baseData.slug } },
+          where: { slug: { equals: newSlug } },
           data: thaiData,
           locale: 'th',
         })
@@ -621,16 +826,19 @@ async function syncRecord(payload: any, record: ExternalApiRecord) {
       if (Object.keys(zhData).length > 0) {
         await payload.update({
           collection,
-          where: { slug: { equals: baseData.slug } },
+          where: { slug: { equals: newSlug } },
           data: zhData,
           locale: 'zh',
         })
       }
 
       console.log(`✅ Created ${recordType}: ${record.brandNameEn || record.shopNameEnglish}`)
+      console.log(`   Created new slug: ${newSlug}`)
+      console.log(`   Status set to: INACTIVE`)
     }
   } catch (error) {
     console.error(`❌ Error syncing record ${record.uniqueId}:`, error)
+    logErrorToFile(error, record, 'syncRecord')
   }
 }
 
@@ -658,18 +866,53 @@ async function syncExternalApi() {
       return
     }
 
+    console.log(`📊 Processing ${records.length} records in batches...`)
+
     let successCount = 0
     let errorCount = 0
 
-    // Process each record
-    for (const record of records) {
-      try {
-        await syncRecord(payload, record)
-        successCount++
-      } catch (error) {
-        console.error(`Error processing record ${record.uniqueId}:`, error)
-        errorCount++
-      }
+    // Process records in batches for better performance
+    const batchSize = parseInt(process.env.SYNC_BATCH_SIZE || '10')
+    const batches = []
+
+    for (let i = 0; i < records.length; i += batchSize) {
+      batches.push(records.slice(i, i + batchSize))
+    }
+
+    console.log(`🔄 Processing ${batches.length} batches of ${batchSize} records each`)
+
+    for (let batchIndex = 0; batchIndex < batches.length; batchIndex++) {
+      const batch = batches[batchIndex]
+      console.log(
+        `\n📦 Processing batch ${batchIndex + 1}/${batches.length} (${batch.length} records)`,
+      )
+
+      // Process batch in parallel for better performance
+      const batchPromises = batch.map(async (record) => {
+        try {
+          await syncRecord(payload, record)
+          return { success: true, record }
+        } catch (error) {
+          logErrorToFile(error, record, 'syncRecord')
+          return { success: false, record, error }
+        }
+      })
+
+      const batchResults = await Promise.all(batchPromises)
+
+      // Count successes and errors
+      batchResults.forEach((result) => {
+        if (result.success) {
+          successCount++
+        } else {
+          errorCount++
+          console.error(`Error processing record ${result.record.uniqueId}:`, result.error)
+        }
+      })
+
+      console.log(
+        `✅ Batch ${batchIndex + 1} completed: ${batchResults.filter((r) => r.success).length}/${batch.length} successful`,
+      )
     }
 
     console.log('\n=== Sync Summary ===')
@@ -679,21 +922,50 @@ async function syncExternalApi() {
 
     // Display unmapped floor names
     if (unmappedFloors.size > 0) {
-      console.log('\n=== Unmapped Floor Names ===')
-      console.log('⚠️  The following floor names could not be mapped:')
+      console.log('\n=== Unmapped/Missing Floor Names ===')
+      console.log('⚠️  The following floor names could not be mapped or do not exist:')
       const sortedUnmappedFloors = Array.from(unmappedFloors).sort((a, b) => a.localeCompare(b))
       sortedUnmappedFloors.forEach((floorName) => {
         console.log(`   - "${floorName}"`)
       })
-      console.log('\n💡 Add these to the floorMapping object in the findOrCreateFloor function:')
+      console.log('\n💡 To fix this:')
+      console.log(
+        '   1. Add missing floor names to the floorMapping object in the findFloor function',
+      )
+      console.log('   2. Create the missing floors manually in the admin panel')
       sortedUnmappedFloors.forEach((floorName) => {
         console.log(`   '${floorName}': 'TARGET_FLOOR',`)
       })
     } else {
       console.log('\n✅ All floor names were successfully mapped!')
     }
+
+    // Display unmapped category names
+    if (unmappedCategories.size > 0) {
+      console.log('\n=== Unmapped/Missing Category Names ===')
+      console.log('⚠️  The following category names could not be found:')
+      const sortedUnmappedCategories = Array.from(unmappedCategories)
+        .map((cat) => JSON.parse(cat))
+        .sort((a, b) => a.name.localeCompare(b.name))
+
+      sortedUnmappedCategories.forEach((categoryInfo) => {
+        console.log(`   - "${categoryInfo.name}" (${categoryInfo.type})`)
+        console.log(`     English: "${categoryInfo.englishName}"`)
+        console.log(`     Thai: "${categoryInfo.thaiName}"`)
+      })
+      console.log('\n💡 To fix this:')
+      console.log('   1. Create the missing categories manually in the admin panel')
+      console.log('   2. Ensure category names match exactly (case-sensitive)')
+      console.log('   3. Check if categories exist with different names')
+    } else {
+      console.log('\n✅ All category names were successfully found!')
+    }
+
+    // Log sync summary to file
+    logSyncSummary(successCount, errorCount, records.length, unmappedFloors, unmappedCategories)
   } catch (error) {
     console.error('Sync failed:', error)
+    logErrorToFile(error, null, 'syncExternalApi')
   } finally {
     process.exit(0)
   }

@@ -103,16 +103,14 @@ export default buildConfig({
 
   db: postgresAdapter({
     pool: {
-      connectionString: process.env.DATABASE_URI || '',
-      ssl:
-        process.env.DATABASE_SSL_MODE === 'true'
-          ? {
-              rejectUnauthorized: false,
-            }
-          : false,
+      host: process.env.DATABASE_URL,
+      port: Number(process.env.DATABASE_PORT),
+      database: process.env.DATABASE_NAME,
+      user: process.env.DATABASE_USER,
+      password: process.env.DB_PASS,
+      ssl: process.env.DATABASE_SSL_MODE === 'true' ? { rejectUnauthorized: false } : false,
     },
   }),
-
   sharp,
 
   plugins: [
