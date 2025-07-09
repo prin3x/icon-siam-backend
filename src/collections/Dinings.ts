@@ -19,6 +19,14 @@ export const Dinings: CollectionConfig = {
       required: true,
     },
     {
+      name: 'unique_id',
+      type: 'text',
+      label: 'Unique ID',
+      admin: {
+        disabled: true,
+      },
+    },
+    {
       name: 'subtitle',
       type: 'textarea',
       localized: true,

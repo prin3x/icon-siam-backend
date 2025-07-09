@@ -1,0 +1,5957 @@
+Migration Log - Records Not Created
+Generated: 2025-07-06T10:46:58.322Z
+Total records not created: 458
+
+ID: 1
+Title (EN): EXPERT Watch 
+Title (TH): EXPERT Watch 
+Title (CN): 
+Slug: content-id-1a859420-e9be-11e8-9a0b-df9af03d5710
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: facility
+SCID: 
+Zone: 
+Room: K-B1-09
+---
+
+ID: 2
+Title (EN): MISTER SKY SHOES &amp; KEYS SERVICE
+Title (TH): MISTER SKY SHOES &amp; KEYS SERVICE
+Title (CN): MISTER SKY SHOES &amp; KEYS SERVICE
+Slug: content-id-e333bf40-e98d-11e8-b384-5bb9e84a35d3
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: facility
+SCID: 
+Zone: 
+Room: K-B2-03
+---
+
+ID: 3
+Title (EN): Wooderful Life – Glory Chime
+Title (TH): Wooderful Life – Glory Chime
+Title (CN): 
+Slug: content-id-bd606340-e7f3-11e8-abba-d7a4565d154a
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: kids
+Zone: 
+Room: K509
+---
+
+ID: 4
+Title (EN): Victoria&#039;s Secret Pink
+Title (TH): Victoria&#039;s Secret Pink
+Title (CN): 
+Slug: content-id-ec7e5630-e7f0-11e8-b012-552b8c7a95c6
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 
+Room: M18
+---
+
+ID: 5
+Title (EN): KOI thé
+Title (TH): โคอิ เตะ
+Title (CN): KOI thé
+Slug: content-id-f807d830-e243-11e8-85c4-1fb21403b502
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: beverage
+Zone: 
+Room: K402
+---
+
+ID: 6
+Title (EN): Yenly Yours 
+Title (TH): Yenly Yours
+Title (CN): Yenly Yours
+Slug: content-id-11be98f0-e243-11e8-990c-75d7230f0d71
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: dessert
+Zone: 
+Room: K401
+---
+
+ID: 7
+Title (EN): Toys R Us
+Title (TH): Toys R Us
+Title (CN): Toys R Us
+Slug: content-id-c1ed5bf0-e241-11e8-b386-b34b8683b625
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: 
+Room: 501
+---
+
+ID: 8
+Title (EN): Watsons
+Title (TH): Watsons
+Title (CN): Watsons
+Slug: content-id-43a4b720-e241-11e8-85c4-1fb21403b502
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: 
+Room: 502
+---
+
+ID: 9
+Title (EN): Government Savings Bank (GSB)
+Title (TH): Government Savings Bank (ธนาคารออมสิน)
+Title (CN): Government Savings Bank (GSB)
+Slug: content-id-f268f830-e240-11e8-b386-b34b8683b625
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: bank
+SCID: 
+Zone: 
+Room: 503-4
+---
+
+ID: 10
+Title (EN): TMBThanachart Bank
+Title (TH): TMBThanachart Bank (ทีเอ็มบีธนชาต)
+Title (CN): TMBThanachart Bank
+Slug: content-id-ae7975a0-e240-11e8-85c4-1fb21403b502
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: bank
+SCID: 
+Zone: 
+Room: 505
+---
+
+ID: 11
+Title (EN): Bank of Ayudhya (BAY)
+Title (TH): Bank of Ayudhya (ธนาคารกรุงศรีอยุธยา)
+Title (CN): Bank of Ayudhya (BAY)
+Slug: content-id-42cf8240-e240-11e8-990c-75d7230f0d71
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: bank
+SCID: 
+Zone: 
+Room: 506-507
+---
+
+ID: 12
+Title (EN): Krungthai Bank (KTB)
+Title (TH): Krungthai Bank (ธนาคารกรุงไทย)
+Title (CN): ธนาคารกรุงไทย
+Slug: content-id-deb5e600-e23f-11e8-990c-75d7230f0d71
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: bank
+SCID: 
+Zone: 
+Room: 508
+---
+
+ID: 13
+Title (EN): United Overseas Bank (UOB)
+Title (TH): United Overseas Bank (ธนาคารยูโอบี)
+Title (CN): United Overseas Bank (UOB)
+Slug: content-id-a37215a0-e23f-11e8-9b04-83a1ea5e32ab
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: bank
+SCID: 
+Zone: 
+Room: 509-510
+---
+
+ID: 14
+Title (EN): TISCO Bank
+Title (TH): TISCO Bank (ธนาคารทิสโก้)
+Title (CN): TISCO Bank
+Slug: content-id-64f169c0-e23f-11e8-b386-b34b8683b625
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: bank
+SCID: null
+Zone: 
+Room: 511
+---
+
+ID: 15
+Title (EN): Hong Bao
+Title (TH): Hong Bao
+Title (CN): 红包
+Slug: content-id-e9f6de80-e23e-11e8-9b04-83a1ea5e32ab
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: restaurant
+Zone: dining-on-5th
+Room: 512/1
+---
+
+ID: 16
+Title (EN): Kub Kao&#039; Kub Pla
+Title (TH): Kub Kao&#039; Kub Pla (กับข้าว’กับปลา)
+Title (CN): Kub Kao&#039; Kub Pla
+Slug: content-id-c1f12950-e23d-11e8-9b04-83a1ea5e32ab
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: restaurant
+Zone: dining-on-5th
+Room: 513
+---
+
+ID: 17
+Title (EN): Baan Ice
+Title (TH): Baan Ice (บ้านไอซ์)
+Title (CN): Baan Ice
+Slug: content-id-157483c0-e23d-11e8-85c4-1fb21403b502
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: restaurant
+Zone: dining-on-5th
+Room: 514/1
+---
+
+ID: 18
+Title (EN): LAEM CHAROEN SEAFOOD
+Title (TH): LAEM CHAROEN SEAFOOD (แหลมเจริญ ซีฟู้ด)
+Title (CN): LAEM CHAROEN SEAFOOD
+Slug: content-id-86c172a0-e23c-11e8-9b04-83a1ea5e32ab
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: restaurant
+Zone: dining-on-5th
+Room: 514/2
+---
+
+ID: 20
+Title (EN): MUJOSH
+Title (TH): MUJOSH
+Title (CN): MUJOSH
+Slug: content-id-f4dafbe0-e23b-11e8-9b04-83a1ea5e32ab
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 
+Room: 421
+---
+
+ID: 21
+Title (EN): MK LIVE
+Title (TH): MK LIVE
+Title (CN): MK LIVE
+Slug: content-id-ae4d75e0-e23b-11e8-990c-75d7230f0d71
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: restaurant
+Zone: dining-on-5th
+Room: 515/2
+---
+
+ID: 22
+Title (EN): OWNDAYS
+Title (TH): OWNDAYS
+Title (CN): OWNDAYS
+Slug: content-id-a4dd1420-e23b-11e8-990c-75d7230f0d71
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 
+Room: 420
+---
+
+ID: 23
+Title (EN): SLC Siam Laser Clinic
+Title (TH): SLC Siam Laser Clinic
+Title (CN): SLC Siam Laser Clinic
+Slug: content-id-32cb1d00-e23b-11e8-b386-b34b8683b625
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: beauty
+Zone: 
+Room: 517
+---
+
+ID: 24
+Title (EN): CHABA Nails &amp; Eyelashes Pro
+Title (TH): CHABA Nails &amp; Eyelashes Pro
+Title (CN): Chaba Nails &amp; Spa
+Slug: content-id-f18ab4e0-e23a-11e8-85c4-1fb21403b502
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: beauty
+Zone: 
+Room: 518
+---
+
+ID: 25
+Title (EN): LUXOPTIC
+Title (TH): LUXOPTIC
+Title (CN): Luxoptiq
+Slug: content-id-b00be430-e23a-11e8-990c-75d7230f0d71
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 
+Room: 419
+---
+
+ID: 26
+Title (EN): CHALACHOL
+Title (TH): CHALACHOL
+Title (CN): CHALACHOL
+Slug: content-id-ae47c600-e23a-11e8-85c4-1fb21403b502
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: beauty
+Zone: 
+Room: 519
+---
+
+ID: 27
+Title (EN): Pruksa Prime Clinic
+Title (TH): Pruksa Prime Clinic
+Title (CN): Pruksa Prime Clinic
+Slug: content-id-6b4318a0-e23a-11e8-9b04-83a1ea5e32ab
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: beauty
+Zone: 
+Room: 520
+---
+
+ID: 28
+Title (EN): Blanc Eyelash &amp; Eyebrow Salon TOKYO
+Title (TH): Blanc Eyelash &amp; Eyebrow Salon TOKYO
+Title (CN): Blanc Eyelash &amp; Eyebrow Salon TOKYO
+Slug: content-id-fbc20590-e239-11e8-b64a-f924933a44bb
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: beauty
+Zone: 
+Room: 521/2
+---
+
+ID: 29
+Title (EN): The Heritage Nail Spa
+Title (TH): The Heritage Nail Spa
+Title (CN): The Heritage Nail Spa
+Slug: content-id-a13d1bf0-e239-11e8-b386-b34b8683b625
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: beauty
+Zone: plaza
+Room: 521/1
+---
+
+ID: 30
+Title (EN): Opticana
+Title (TH): ออฟติคาน่า
+Title (CN): Opticana
+Slug: content-id-7d9721f0-e239-11e8-990c-75d7230f0d71
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 
+Room: 418/2
+---
+
+ID: 31
+Title (EN): THANN
+Title (TH): THANN
+Title (CN): THANN
+Slug: content-id-3db7a960-e239-11e8-b386-b34b8683b625
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: 
+Room: 417
+---
+
+ID: 32
+Title (EN): HARNN
+Title (TH): HARNN
+Title (CN): HARNN
+Slug: content-id-ea224300-e238-11e8-b386-b34b8683b625
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: 
+Room: 416
+---
+
+ID: 33
+Title (EN): MOGA
+Title (TH): MOGA
+Title (CN): MOGA
+Slug: content-id-d6a76260-e238-11e8-b386-b34b8683b625
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: beauty
+Zone: 
+Room: 522
+---
+
+ID: 35
+Title (EN): Baan Khanitha The Heritage
+Title (TH): Baan Khanitha The Heritage (บ้านขนิษฐา เดอะ เฮอริเทจ)
+Title (CN): Baan Khanitha The Heritage
+Slug: content-id-2bc225b0-e238-11e8-85c4-1fb21403b502
+Collection: dinings
+Reason: Found existing by title - Updated instead of created
+CID: dining
+SCID: restaurant
+Zone: 
+Room: 414
+---
+
+ID: 36
+Title (EN): KPN MUSIC ACADEMY
+Title (TH): KPN MUSIC ACADEMY
+Title (CN): KPN
+Slug: content-id-a9d16070-e237-11e8-b64a-f924933a44bb
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: edutainment
+SCID: music
+Zone: icon-education
+Room: 525-526
+---
+
+ID: 37
+Title (EN): Kasikornbank (KBANK)
+Title (TH): KBANK (ธนาคารกสิกรไทย)
+Title (CN): K Bank Lounge
+Slug: content-id-2b9edbb0-e237-11e8-9b04-83a1ea5e32ab
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: bank
+SCID: club-&amp;-lounge
+Zone: 
+Room: 413/2
+---
+
+ID: 38
+Title (EN): SCB
+Title (TH): SCB
+Title (CN): SCB
+Slug: content-id-5163b380-e236-11e8-9b04-83a1ea5e32ab
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: bank
+SCID: null
+Zone: 
+Room: 413/1
+---
+
+ID: 39
+Title (EN): True Sphere
+Title (TH): True Sphere
+Title (CN): True Sphere
+Slug: content-id-8f7bf610-e235-11e8-9b04-83a1ea5e32ab
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: club-&amp;-lounge
+Zone: 
+Room: 411-412
+---
+
+ID: 40
+Title (EN): CC DOUBLE O
+Title (TH): CC DOUBLE O
+Title (CN): CC:OO
+Slug: cc-double-o
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 
+Room: 205/1, 205/2
+---
+
+ID: 41
+Title (EN): H&amp;M
+Title (TH): H&amp;M
+Title (CN): H&amp;M
+Slug: content-id-c6a8fb20-e234-11e8-85c4-1fb21403b502
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 
+Room: 225
+---
+
+ID: 42
+Title (EN): Wonder Photo Shop
+Title (TH): Wonder Photo Shop
+Title (CN): Wonder Photo Shop
+Slug: content-id-332f6140-e234-11e8-b386-b34b8683b625
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: gadget
+Zone: 
+Room: 410/2
+---
+
+ID: 43
+Title (EN): Briggs &amp; Riley
+Title (TH): Briggs &amp; Riley
+Title (CN): Briggs &amp; Riley
+Slug: content-id-b2ebfde0-e233-11e8-9b04-83a1ea5e32ab
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 
+Room: 410/1
+---
+
+ID: 44
+Title (EN): Banana
+Title (TH): Banana
+Title (CN): Banana
+Slug: content-id-5cd6f180-e233-11e8-990c-75d7230f0d71
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: gadget
+Zone: 
+Room: 409
+---
+
+ID: 45
+Title (EN): AIS
+Title (TH): AIS
+Title (CN): AIS
+Slug: content-id-6ffcf0d0-e232-11e8-b386-b34b8683b625
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: 
+Zone: 
+Room: 406
+---
+
+ID: 46
+Title (EN): Charles &amp; Keith
+Title (TH): Charles &amp; Keith
+Title (CN): Charles &amp; Keith
+Slug: content-id-32386900-e232-11e8-9b04-83a1ea5e32ab
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 
+Room: 222
+---
+
+ID: 47
+Title (EN): ALDO
+Title (TH): ALDO
+Title (CN): ALDO
+Slug: content-id-a15187f0-e231-11e8-990c-75d7230f0d71
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 
+Room: 221/2
+---
+
+ID: 48
+Title (EN): LUSH
+Title (TH): LUSH
+Title (CN): LUSH
+Slug: content-id-298224f0-e231-11e8-b64a-f924933a44bb
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: beauty
+Zone: 
+Room: 220
+---
+
+ID: 49
+Title (EN): Yamaha Music School
+Title (TH): Yamaha Music School
+Title (CN): Yamaha Music School
+Slug: content-id-802850c0-e210-11e8-90a6-838a67cee640
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: edutainment
+SCID: music
+Zone: icon-education
+Room: 530
+---
+
+ID: 50
+Title (EN): Global Art
+Title (TH): Global Art
+Title (CN): Global Art
+Slug: content-id-2a1d7d90-e210-11e8-9e3a-f3c8a196b06e
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: edutainment
+SCID: kids
+Zone: icon-education
+Room: 531
+---
+
+ID: 51
+Title (EN): Phonics 1st
+Title (TH): Phonics 1st
+Title (CN): Phonics 1st
+Slug: content-id-d468b9a0-e20f-11e8-8dc9-01929563048f
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: edutainment
+SCID: kids
+Zone: icon-education
+Room: 532
+---
+
+ID: 52
+Title (EN): BIG Camera Galleria 
+Title (TH): BIG Camera Galleria 
+Title (CN): Big Camera
+Slug: content-id-81b63930-e20f-11e8-9e3a-f3c8a196b06e
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: gadget
+Zone: 
+Room: 405/2
+---
+
+ID: 53
+Title (EN): Heavy
+Title (TH): Heavy
+Title (CN): Heavy Selection
+Slug: content-id-38857fa0-e20f-11e8-bd29-b70db637d381
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 
+Room: 218/2
+---
+
+ID: 54
+Title (EN): Babies Genius
+Title (TH): Babies Genius
+Title (CN): Babies Genius
+Slug: content-id-2b08e470-e20f-11e8-bd29-b70db637d381
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: edutainment
+SCID: kids
+Zone: icon-education
+Room: 533
+---
+
+ID: 55
+Title (EN): Osim
+Title (TH): Osim
+Title (CN): Osim
+Slug: content-id-23f6e510-e20f-11e8-8dc9-01929563048f
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: health
+Zone: 
+Room: 405/1
+---
+
+ID: 57
+Title (EN): Nike ICON
+Title (TH): Nike ICON
+Title (CN): Nike ICON
+Slug: content-id-6af60e10-e20e-11e8-9e3a-f3c8a196b06e
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: sports
+Zone: 
+Room: 215-216
+---
+
+ID: 58
+Title (EN): Modulo
+Title (TH): Modulo
+Title (CN): Modulo
+Slug: content-id-4e59af00-e20e-11e8-bd29-b70db637d381
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: edutainment
+SCID: 
+Zone: icon-education
+Room: 534
+---
+
+ID: 59
+Title (EN): Apple
+Title (TH): Apple
+Title (CN): Apple
+Slug: content-id-2a275380-e20e-11e8-90a6-838a67cee640
+Collection: shops
+Reason: Found existing by title - Updated instead of created
+CID: shop
+SCID: gadget
+Zone: 
+Room: 214/2
+---
+
+ID: 60
+Title (EN): The Selected
+Title (TH): The Selected
+Title (CN): The Selected
+Slug: content-id-e8d81e50-e20d-11e8-90a6-838a67cee640
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 
+Room: 212-213
+---
+
+ID: 61
+Title (EN): Scientia
+Title (TH): Scientia
+Title (CN): Scientia
+Slug: content-id-b66c6750-e20d-11e8-bd29-b70db637d381
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: edutainment
+SCID: kids
+Zone: icon-education
+Room: 535
+---
+
+ID: 62
+Title (EN): Greyhound Café
+Title (TH): Greyhound Café
+Title (CN): Greyhound Café
+Slug: content-id-a2d91cb0-e20d-11e8-9e3a-f3c8a196b06e
+Collection: dinings
+Reason: Found existing by title - Updated instead of created
+CID: dining
+SCID: cafes
+Zone: 
+Room: 211
+---
+
+ID: 64
+Title (EN): ZEISS Vision Center
+Title (TH): ZEISS Vision Center
+Title (CN): ZEISS
+Slug: content-id-298c8f90-e20d-11e8-8b68-cb3393ff028a
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: gadget
+Zone: 
+Room: 404/1
+---
+
+ID: 65
+Title (EN): Havaianas
+Title (TH): Havaianas
+Title (CN): Havaianas
+Slug: content-id-fb09d290-e20c-11e8-90a6-838a67cee640
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 
+Room: 210/1
+---
+
+ID: 66
+Title (EN): Waltz
+Title (TH): Waltz
+Title (CN): Waltz
+Slug: content-id-b8c540e0-e20c-11e8-90a6-838a67cee640
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 
+Room: 403
+---
+
+ID: 67
+Title (EN): I-GENIUS KIDS
+Title (TH): I-GENIUS KIDS
+Title (CN): I-Genius
+Slug: content-id-ae4a4cf0-e20c-11e8-8b68-cb3393ff028a
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: edutainment
+SCID: kids
+Zone: icon-education
+Room: 536
+---
+
+ID: 68
+Title (EN): JD Sports
+Title (TH): JD Sports
+Title (CN): JD Sports
+Slug: content-id-a8753a60-e20c-11e8-9e3a-f3c8a196b06e
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: sports
+Zone: 
+Room: 208-209
+---
+
+ID: 69
+Title (EN): Jelly Bunny
+Title (TH): Jelly Bunny
+Title (CN): Jelly Bunny
+Slug: content-id-628ca6f0-e20c-11e8-8b68-cb3393ff028a
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 
+Room: 
+---
+
+ID: 70
+Title (EN): LYN
+Title (TH): LYN
+Title (CN): LYN
+Slug: content-id-1c6053c0-e20c-11e8-90a6-838a67cee640
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 
+Room: 207
+---
+
+ID: 72
+Title (EN): Bar B Q Plaza
+Title (TH): Bar B Q Plaza
+Title (CN): Bar B Q Plaza
+Slug: content-id-cc911d20-e20b-11e8-90a6-838a67cee640
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: restaurant
+Zone: dining-on-4th
+Room: 402/3
+---
+
+ID: 73
+Title (EN): Lyn Around
+Title (TH): Lyn Around
+Title (CN): Lyn Around
+Slug: content-id-bffb1160-e20b-11e8-8b68-cb3393ff028a
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 
+Room: 206
+---
+
+ID: 76
+Title (EN): S&amp;P
+Title (TH): S&amp;P
+Title (CN): S&amp;P
+Slug: content-id-5dc35480-e20b-11e8-8dc9-01929563048f
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: restaurant
+Zone: dining-on-4th
+Room: 401/3
+---
+
+ID: 77
+Title (EN): Evaime Shabu Shabu
+Title (TH): Evaime Shabu Shabu
+Title (CN): Evaime Shabu
+Slug: content-id-aac11110-e20a-11e8-bd29-b70db637d381
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: restaurant
+Zone: dining-on-4th
+Room: 401/2
+---
+
+ID: 78
+Title (EN): Uniqlo
+Title (TH): Uniqlo
+Title (CN): Uniqlo
+Slug: content-id-440a82d0-e20a-11e8-90a6-838a67cee640
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 
+Room: 201-202
+---
+
+ID: 79
+Title (EN): Siam Takashimaya – Ladies Accessories &amp; Watches
+Title (TH): Siam Takashimaya – Ladies Accessories &amp; Watches
+Title (CN): Siam Takashimaya – Ladies Accessories &amp; Watches
+Slug: content-id-cf252060-e209-11e8-9e3a-f3c8a196b06e
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: department-store
+SCID: 
+Zone: 
+Room: 
+---
+
+ID: 80
+Title (EN): Siam Takashimaya – Kids, Living &amp; Rose Dining
+Title (TH): Siam Takashimaya – Kids, Living &amp; Rose Dining
+Title (CN): Siam Takashimaya – Kids, Living &amp; Rose Dining
+Slug: content-id-c4658250-e209-11e8-8b68-cb3393ff028a
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: department-store
+SCID: null
+Zone: 
+Room: 
+---
+
+ID: 83
+Title (EN): H&amp;M
+Title (TH): H&amp;M
+Title (CN): H&amp;M
+Slug: content-id-d4a8d410-e208-11e8-8dc9-01929563048f
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 
+Room: 122
+---
+
+ID: 84
+Title (EN): Good Job
+Title (TH): Good Job
+Title (CN): Good Job
+Slug: content-id-cedce940-e208-11e8-90a6-838a67cee640
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 
+Room: K304
+---
+
+ID: 85
+Title (EN): Onitsuka Tiger
+Title (TH): Onitsuka Tiger
+Title (CN): Onitsuka Tiger
+Slug: onitsuka-tiger
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 
+Room: 217-218
+---
+
+ID: 86
+Title (EN): Adidas Original
+Title (TH): Adidas Original
+Title (CN): Adidas Original
+Slug: content-id-54db3cf0-e208-11e8-90a6-838a67cee640
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 
+Room: 228
+---
+
+ID: 87
+Title (EN): Fuku Matcha
+Title (TH): Fuku Matcha
+Title (CN): Fuku Matcha
+Slug: content-id-f2ce3990-e207-11e8-8dc9-01929563048f
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: cafes
+Zone: 
+Room: K504
+---
+
+ID: 88
+Title (EN): Labrador
+Title (TH): Labrador
+Title (CN): Labrador
+Slug: content-id-b7900e80-e207-11e8-9e3a-f3c8a196b06e
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 
+Room: K303
+---
+
+ID: 89
+Title (EN): Fred Perry
+Title (TH): Fred Perry
+Title (CN): Fred Perry
+Slug: content-id-86019820-e207-11e8-8dc9-01929563048f
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 
+Room: 117
+---
+
+ID: 90
+Title (EN): Champion
+Title (TH): Champion
+Title (CN): Champion
+Slug: content-id-44e18940-e207-11e8-bd29-b70db637d381
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 
+Room: 116/2
+---
+
+ID: 91
+Title (EN): Buddhi Belly
+Title (TH): Buddhi Belly
+Title (CN): Buddhi Belly
+Slug: content-id-00bfd320-e207-11e8-9e3a-f3c8a196b06e
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: dessert
+Zone: 
+Room: K302
+---
+
+ID: 92
+Title (EN): Samsonite
+Title (TH): Samsonite
+Title (CN): Samsonite
+Slug: content-id-c416f480-e206-11e8-bd29-b70db637d381
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 
+Room: 115/2
+---
+
+ID: 93
+Title (EN): Nespresso
+Title (TH): Nespresso (เนสเพรสโซ)
+Title (CN): Nespresso
+Slug: content-id-6b7c27a0-e206-11e8-9e3a-f3c8a196b06e
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: 
+Room: 115/1
+---
+
+ID: 94
+Title (EN): Clarins
+Title (TH): Clarins
+Title (CN): Clarins
+Slug: content-id-0c509950-e206-11e8-9e3a-f3c8a196b06e
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: beauty
+Zone: 
+Room: 110
+---
+
+ID: 95
+Title (EN): THREE
+Title (TH): THREE
+Title (CN): THREE
+Slug: content-id-a86734d0-e205-11e8-8dc9-01929563048f
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: beauty
+Zone: 
+Room: 109
+---
+
+ID: 481
+Title (EN): Blendies Thailand
+Title (TH): Blendies Thailand
+Title (CN): Blendies Thailand
+Slug: blendies-thailand
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: 
+Zone: 
+Room: GZB02
+---
+
+ID: 97
+Title (EN): Shaka
+Title (TH): Shaka
+Title (CN): Shaka
+Slug: content-id-60b04a00-e205-11e8-8dc9-01929563048f
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 
+Room: 108/2
+---
+
+ID: 99
+Title (EN): Lacoste
+Title (TH): Lacoste
+Title (CN): Lacoste
+Slug: content-id-de85fe30-e204-11e8-8dc9-01929563048f
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 
+Room: 106
+---
+
+ID: 100
+Title (EN): QUINN
+Title (TH): QUINN
+Title (CN): QUINN
+Slug: content-id-95ed65f0-e204-11e8-8dc9-01929563048f
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 
+Room: 105/2
+---
+
+ID: 101
+Title (EN): Jelly Dreams
+Title (TH): Jelly Dreams
+Title (CN): Jelly Dreams
+Slug: content-id-578dfdb0-e204-11e8-90a6-838a67cee640
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 
+Room: 105/1
+---
+
+ID: 102
+Title (EN): CPS CHAPS
+Title (TH): CPS CHAPS
+Title (CN): CPS CHAPS
+Slug: content-id-e4642df0-e203-11e8-90a6-838a67cee640
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 
+Room: 103-104
+---
+
+ID: 103
+Title (EN): Zara
+Title (TH): Zara
+Title (CN): Zara
+Slug: content-id-9c1d1110-e203-11e8-9e3a-f3c8a196b06e
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 
+Room: 102
+---
+
+ID: 104
+Title (EN): BMW Motorrad Millennium Auto
+Title (TH): BMW Motorrad Millennium Auto
+Title (CN): BMW
+Slug: content-id-76460640-e203-11e8-8dc9-01929563048f
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: auto
+Zone: 
+Room: 319
+---
+
+ID: 105
+Title (EN): Starbucks
+Title (TH): สตาร์บัคส์ คอฟฟี่ 
+Title (CN): Starbucks
+Slug: content-id-25383520-e203-11e8-8dc9-01929563048f
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: cafes
+Zone: 
+Room: 101/1
+---
+
+ID: 106
+Title (EN): .life
+Title (TH): .life
+Title (CN): .life
+Slug: content-id-13377160-e203-11e8-9e3a-f3c8a196b06e
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: gadget
+Zone: 
+Room: 318
+---
+
+ID: 107
+Title (EN): Sistema
+Title (TH): Sistema
+Title (CN): Sistema
+Slug: content-id-ef50c4e0-e202-11e8-8b68-cb3393ff028a
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: 
+SCID: 
+Zone: iconcraft
+Room: KC511
+---
+
+ID: 108
+Title (EN): Dyson
+Title (TH): Dyson
+Title (CN): Dyson
+Slug: content-id-c3bd3890-e202-11e8-90a6-838a67cee640
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: 
+Room: L117/3
+---
+
+ID: 110
+Title (EN): JUBILEE of SIAM
+Title (TH): JUBILEE of SIAM
+Title (CN): JUBILEE of SIAM
+Slug: content-id-5ff6bad0-e201-11e8-8b68-cb3393ff028a
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 
+Room: L113/2
+---
+
+ID: 111
+Title (EN): True Branding Shop
+Title (TH): True Branding Shop
+Title (CN): True Branding Shop
+Slug: content-id-7975f0d0-e200-11e8-90a6-838a67cee640
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: null
+Zone: 
+Room: 312
+---
+
+ID: 113
+Title (EN): INDIGO HOUSE
+Title (TH): INDIGO HOUSE
+Title (CN): Indigo House
+Slug: content-id-f62e4e20-e1ff-11e8-bd29-b70db637d381
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: 
+Zone: iconcraft
+Room: KC522
+---
+
+ID: 115
+Title (EN): JD Sports
+Title (TH): JD Sport
+Title (CN): JD Sport
+Slug: content-id-9b340d70-e1ff-11e8-90a6-838a67cee640
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: sports
+Zone: 
+Room: 307/2,308-309
+---
+
+ID: 116
+Title (EN): Under Armour
+Title (TH): Under Armour
+Title (CN): Under Armour
+Slug: content-id-82ffdff0-e1fe-11e8-8b68-cb3393ff028a
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: sports
+Zone: 
+Room: 305
+---
+
+ID: 117
+Title (EN): Yugen
+Title (TH): Yugen
+Title (CN): Yugen
+Slug: content-id-a52bd990-e1fd-11e8-8b68-cb3393ff028a
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: 
+Zone: iconcraft
+Room: KC528
+---
+
+ID: 118
+Title (EN): Loft
+Title (TH): Loft
+Title (CN): Loft
+Slug: content-id-94c42c60-e1fd-11e8-8b68-cb3393ff028a
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: gadget
+Zone: 
+Room: 301
+---
+
+ID: 119
+Title (EN): Siam Takashimaya – Ladies wear &amp; Lingerie
+Title (TH): Siam Takashimaya – Ladies wear &amp; Lingerie
+Title (CN): Siam Takashimaya – Ladies wear &amp; Lingerie
+Slug: content-id-8af0ea20-e1fd-11e8-8b68-cb3393ff028a
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: department-store
+SCID: 
+Zone: 
+Room: 
+---
+
+ID: 120
+Title (EN): COS
+Title (TH): COS
+Title (CN): COS
+Slug: content-id-3d08ea10-e1fd-11e8-9e3a-f3c8a196b06e
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 
+Room: M23
+---
+
+ID: 510
+Title (EN): Kanori
+Title (TH): Kanori
+Title (CN): Kanori
+Slug: kanori
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: 
+Zone: the-veranda
+Room: VG10
+---
+
+ID: 122
+Title (EN): Jo Malone
+Title (TH): Jo Malone
+Title (CN): Jo Malone
+Slug: content-id-64646770-e1fc-11e8-bd29-b70db637d381
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: beauty
+Zone: 
+Room: 
+---
+
+ID: 123
+Title (EN): M.A.C
+Title (TH): M.A.C
+Title (CN): M.A.C
+Slug: content-id-e4d31600-e1fb-11e8-bd29-b70db637d381
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: beauty
+Zone: 
+Room: 
+---
+
+ID: 124
+Title (EN): Urban Revivo
+Title (TH): Urban Revivo
+Title (CN): Urban Revivo
+Slug: content-id-9b3283a0-e1fb-11e8-8dc9-01929563048f
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 
+Room: 224,227,331-333
+---
+
+ID: 125
+Title (EN): H&amp;M
+Title (TH): H&amp;M
+Title (CN): H&amp;M
+Slug: content-id-14f1c530-e1fb-11e8-bd29-b70db637d381
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 
+Room: M20
+---
+
+ID: 126
+Title (EN): Bath &amp; Body Works
+Title (TH): Bath &amp; Body Works
+Title (CN): Bath &amp; Body Works
+Slug: content-id-6140cb30-e1fa-11e8-8dc9-01929563048f
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: beauty
+Zone: 
+Room: M19
+---
+
+ID: 127
+Title (EN): Victoria&#039;s Secret
+Title (TH): Victoria&#039;s Secret
+Title (CN): Victoria&#039;s Secret
+Slug: content-id-ea2e4f90-e1f9-11e8-8dc9-01929563048f
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 
+Room: M17
+---
+
+ID: 128
+Title (EN): Swatch
+Title (TH): Swatch
+Title (CN): Swatch
+Slug: content-id-8847e700-e1f9-11e8-90a6-838a67cee640
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 
+Room: M16
+---
+
+ID: 129
+Title (EN): SWAROVSKI
+Title (TH): SWAROVSKI (สวารอฟสกี้)
+Title (CN): 施华洛世奇
+Slug: content-id-ac99f4f0-e1f8-11e8-9e3a-f3c8a196b06e
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 
+Room: M15/2
+---
+
+ID: 131
+Title (EN): Pawis
+Title (TH): Pawis
+Title (CN): Pawis
+Slug: content-id-8b6de680-e1f6-11e8-8dc9-01929563048f
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: 
+Zone: iconcraft
+Room: KC534
+---
+
+ID: 477
+Title (EN): BABYBOTTE
+Title (TH): BABYBOTTE
+Title (CN): BABYBOTTE
+Slug: babybotte
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: 
+Zone: 1690428833
+Room: 
+---
+
+ID: 134
+Title (EN): Mt. Sapola
+Title (TH): Mt. Sapola
+Title (CN): Mt. Sapola
+Slug: content-id-5777a9d0-e1f4-11e8-9e3a-f3c8a196b06e
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: 
+Zone: iconcraft
+Room: KC535
+---
+
+ID: 135
+Title (EN): Sephora
+Title (TH): Sephora
+Title (CN): Sephora
+Slug: content-id-91f01b40-e1f1-11e8-8b68-cb3393ff028a
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: beauty
+Zone: 
+Room: M05-06
+---
+
+ID: 136
+Title (EN): Jaspal
+Title (TH): Jaspal (ยัสปาล)
+Title (CN): Jaspal
+Slug: content-id-450985a0-e1f1-11e8-8b68-cb3393ff028a
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 
+Room: M04
+---
+
+ID: 137
+Title (EN): ZARA
+Title (TH): Zara
+Title (CN): Zara
+Slug: content-id-ec098e50-e1f0-11e8-8b68-cb3393ff028a
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 
+Room: M02-03
+---
+
+ID: 138
+Title (EN): Christian Dior Boutique
+Title (TH): Christian Dior Boutique
+Title (CN): Christian Dior Boutique
+Slug: content-id-71abdf50-e1f0-11e8-90a6-838a67cee640
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: beauty
+Zone: 
+Room: M01/2
+---
+
+ID: 139
+Title (EN): Chanel
+Title (TH): Chanel 
+Title (CN): Chanel Beaute
+Slug: content-id-32eca3d0-e1f0-11e8-8dc9-01929563048f
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: beauty
+Zone: 
+Room: M01/1
+---
+
+ID: 140
+Title (EN): Boss
+Title (TH): Boss
+Title (CN): Boss
+Slug: content-id-e1df6ef0-e1ef-11e8-8b68-cb3393ff028a
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: iconluxe
+Room: LM18
+---
+
+ID: 141
+Title (EN): Versace
+Title (TH): Versace
+Title (CN): Versace
+Slug: content-id-a408beb0-e1ef-11e8-8b68-cb3393ff028a
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: iconluxe
+Room: LM17
+---
+
+ID: 142
+Title (EN): Christian Louboutin
+Title (TH): Christian Louboutin
+Title (CN): Christian Louboutin
+Slug: content-id-6578f7a0-e1ef-11e8-90a6-838a67cee640
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: iconluxe
+Room: LM16/2
+---
+
+ID: 508
+Title (EN): TISSOT
+Title (TH): TISSOT
+Title (CN): TISSOT
+Slug: tissot
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: 
+Zone: 
+Room: 210/2
+---
+
+ID: 144
+Title (EN): Coach
+Title (TH): Coach
+Title (CN): Coach
+Slug: coach
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 
+Room: 109
+---
+
+ID: 145
+Title (EN): CELINE
+Title (TH): CELINE
+Title (CN): CELINE
+Slug: content-id-70e9b2b0-e1ee-11e8-9e3a-f3c8a196b06e
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: iconluxe
+Room: LM14
+---
+
+ID: 146
+Title (EN): Dior
+Title (TH): Dior
+Title (CN): Dior
+Slug: content-id-2d26be60-e1ee-11e8-90a6-838a67cee640
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: iconluxe
+Room: LM12-13
+---
+
+ID: 147
+Title (EN): Fendi
+Title (TH): Fendi
+Title (CN): Fendi
+Slug: fendi
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: iconluxe
+Room: LM17
+---
+
+ID: 148
+Title (EN): Saint Laurent
+Title (TH): Saint Laurent
+Title (CN): Saint Laurent
+Slug: content-id-abd609b0-e1ed-11e8-a78a-b55cf4487289
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: iconluxe
+Room: LM10
+---
+
+ID: 149
+Title (EN): Prada
+Title (TH): Prada
+Title (CN): Prada
+Slug: content-id-6488b620-e1ed-11e8-9af1-5be98d55eda3
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: iconluxe
+Room: LM09
+---
+
+ID: 150
+Title (EN): Bvlgari
+Title (TH): Bvlgari
+Title (CN): Bvlgari
+Slug: content-id-161ce010-e1ed-11e8-9af1-5be98d55eda3
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: iconluxe
+Room: LM08
+---
+
+ID: 151
+Title (EN): Dolce &amp; Gabbana
+Title (TH): Dolce &amp; Gabbana
+Title (CN): Dolce &amp; Gabbana
+Slug: content-id-9998f5b0-e1ec-11e8-9743-399734f64999
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: iconluxe
+Room: LM07
+---
+
+ID: 152
+Title (EN): Tiffany &amp; Co.
+Title (TH): Tiffany &amp; Co.
+Title (CN): Tiffany &amp; Co.
+Slug: content-id-4946d370-e1ec-11e8-9af1-5be98d55eda3
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: iconluxe
+Room: LM06
+---
+
+ID: 153
+Title (EN): Hermes
+Title (TH): Hermes
+Title (CN): Hermes
+Slug: content-id-f0396ea0-e1eb-11e8-994a-3fd4779bfb90
+Collection: shops
+Reason: Found existing by title - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: iconluxe
+Room: LM05
+---
+
+ID: 154
+Title (EN): Cartier
+Title (TH): Cartier
+Title (CN): Cartier
+Slug: content-id-ad05c200-e1eb-11e8-9af1-5be98d55eda3
+Collection: shops
+Reason: Found existing by title - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: iconluxe
+Room: LM04
+---
+
+ID: 155
+Title (EN): Louis Vuitton
+Title (TH): Louis Vuitton
+Title (CN): Louis Vuitton
+Slug: content-id-76640270-e1eb-11e8-b005-1f64b961cabe
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: iconluxe
+Room: LM03
+---
+
+ID: 156
+Title (EN): Bottega Veneta
+Title (TH): Bottega Veneta
+Title (CN): Bottega Veneta
+Slug: content-id-ffdc1390-e1ea-11e8-9743-399734f64999
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: iconluxe
+Room: LM02
+---
+
+ID: 157
+Title (EN): Gucci
+Title (TH): Gucci
+Title (CN): Gucci
+Slug: content-id-5fe3c680-e1ea-11e8-9af1-5be98d55eda3
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: iconluxe
+Room: LM01
+---
+
+ID: 158
+Title (EN): Siam Takashimaya –Beauty &amp; Cosmetics
+Title (TH): Siam Takashimaya –Beauty &amp; Cosmetics
+Title (CN): Siam Takashimaya –Beauty &amp; Cosmetics
+Slug: content-id-0bd9cc60-e1ea-11e8-b005-1f64b961cabe
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: department-store
+SCID: 
+Zone: 
+Room: 
+---
+
+ID: 160
+Title (EN): Coffee Beans by Dao
+Title (TH): Coffee Beans by Dao
+Title (CN): Coffee Bean by Dao
+Slug: content-id-b79e6960-e1e6-11e8-994a-3fd4779bfb90
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: restaurant
+Zone: the-veranda
+Room: UG07
+---
+
+ID: 161
+Title (EN): True Coffee
+Title (TH): ทรูคอฟฟี่ 
+Title (CN): True Coffee
+Slug: content-id-63a0cb50-e1e6-11e8-9af1-5be98d55eda3
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: cafes
+Zone: the-veranda
+Room: UG02
+---
+
+ID: 162
+Title (EN): Siam Takashimaya – Menswear &amp; Accessories
+Title (TH): Siam Takashimaya – Menswear &amp; Accessories
+Title (CN): Siam Takashimaya – Menswear &amp; Accessories
+Slug: content-id-42151b40-e1e5-11e8-9af1-5be98d55eda3
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: department-store
+SCID: 
+Zone: 
+Room: 
+---
+
+ID: 163
+Title (EN): Pang Cha by Lukkaithong
+Title (TH): Pang Cha by Lukkaithong
+Title (CN): Pang Cha by Lukkaithong
+Slug: content-id-a5279d30-e1e4-11e8-a78a-b55cf4487289
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: dessert
+Zone: the-veranda
+Room: KV06
+---
+
+ID: 164
+Title (EN): TWG Tea
+Title (TH): TWG Tea
+Title (CN): TWG Tea
+Slug: content-id-3f09cc80-e1e4-11e8-b005-1f64b961cabe
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: dessert
+Zone: the-veranda
+Room: GZB05
+---
+
+ID: 165
+Title (EN): BRIX dessert bar
+Title (TH): BRIX dessert bar
+Title (CN): BRIX dessert bar
+Slug: content-id-2b096500-e1e0-11e8-9af1-5be98d55eda3
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: dessert
+Zone: the-veranda
+Room: KV02
+---
+
+ID: 166
+Title (EN): TAPAS by NAN Charcoal Grill
+Title (TH): TAPAS by NAN Charcoal Grill
+Title (CN): TAPAS by NAN Charcoal Grill
+Slug: content-id-4a6f24a0-e1dd-11e8-b005-1f64b961cabe
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: restaurant
+Zone: the-veranda
+Room: VG12
+---
+
+ID: 168
+Title (EN): Coffee Beans by Dao
+Title (TH): Coffee Beans by Dao
+Title (CN): Coffee Beans by Dao
+Slug: content-id-aed1fbb0-e1d9-11e8-9af1-5be98d55eda3
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: restaurant
+Zone: the-veranda
+Room: VG07
+---
+
+ID: 169
+Title (EN): Jumbo Seafood
+Title (TH): Jumbo Seafood
+Title (CN): Jumbo Seafood
+Slug: content-id-dbac8e50-e1d6-11e8-9af1-5be98d55eda3
+Collection: dinings
+Reason: Found existing by title - Updated instead of created
+CID: dining
+SCID: restaurant
+Zone: 
+Room: 
+---
+
+ID: 170
+Title (EN): 7-Eleven
+Title (TH): 7-Eleven
+Title (CN): 7-Eleven
+Slug: content-id-949f29f0-e1d6-11e8-a78a-b55cf4487289
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: 
+Room: G01
+---
+
+ID: 171
+Title (EN): Pet Safari
+Title (TH): Pet Safari
+Title (CN): Pet Safari
+Slug: content-id-35fa7450-e1d5-11e8-9af1-5be98d55eda3
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: 
+Room: B106
+---
+
+ID: 172
+Title (EN): Siam Takashimaya – Food &amp; Confectionary
+Title (TH): Siam Takashimaya – Food &amp; Confectionary
+Title (CN): Siam Takashimaya – Food &amp; Confectionary
+Slug: content-id-014b8b70-e1d2-11e8-b005-1f64b961cabe
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: department-store
+SCID: null
+Zone: 
+Room: 
+---
+
+ID: 173
+Title (EN): SookSiam
+Title (TH): SookSiam
+Title (CN): SookSiam
+Slug: content-id-f2b6b230-e1c0-11e8-994a-3fd4779bfb90
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: null
+Zone: sooksiam
+Room: SookSiam
+---
+
+ID: 174
+Title (EN): Salvatore Ferragamo
+Title (TH): Salvatore Ferragamo
+Title (CN): Salvatore Ferragamo
+Slug: content-id-9ad9f770-e1bb-11e8-994a-3fd4779bfb90
+Collection: shops
+Reason: Found existing by title - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 
+Room: LG04
+---
+
+ID: 175
+Title (EN): PATEK PHILIPPE BOUTIQUE
+Title (TH): PATEK PHILIPPE BOUTIQUE
+Title (CN): PATEK PHILIPPE BOUTIQUE
+Slug: content-id-63e520c0-e1b9-11e8-8ebc-bb7e7f573eec
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 
+Room: LG02
+---
+
+ID: 176
+Title (EN): Hermes
+Title (TH): Hermes
+Title (CN): Hermes
+Slug: content-id-6eb3fde0-e1b5-11e8-9af1-5be98d55eda3
+Collection: shops
+Reason: Found existing by title - Updated instead of created
+CID: shop
+SCID: null
+Zone: 
+Room: LG01
+---
+
+ID: 177
+Title (EN): NaRaYa
+Title (TH): นารายา
+Title (CN): NaRaYa
+Slug: content-id-5254f2c0-e1b1-11e8-8ebc-bb7e7f573eec
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 
+Room: G03-04
+---
+
+ID: 178
+Title (EN): Siam Takashimaya – Rose Food Avenue &amp; Taka Marche
+Title (TH): Siam Takashimaya – Rose Food Avenue &amp; Taka Marche
+Title (CN): Siam Takashimaya – Rose Food Avenue &amp; Taka Marche
+Slug: content-id-c19c4da0-e1b0-11e8-a74a-0f70af88c09f
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: department-store
+SCID: null
+Zone: 
+Room: 
+---
+
+ID: 179
+Title (EN): Sin Chai Hua
+Title (TH): Sin Chai Hua (ซินไฉฮั้ว)
+Title (CN): Sin Chai Hua
+Slug: content-id-c387e670-e1af-11e8-a74a-0f70af88c09f
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: facility
+SCID: laundry
+Zone: 
+Room: K-B1-10
+---
+
+ID: 180
+Title (EN): ICONIC Your Design by Insider
+Title (TH): ICONIC Your Design by Insider
+Title (CN): ICONIC Your Design by Insider
+Slug: content-id-0d5a7030-e1ae-11e8-a74a-0f70af88c09f
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 
+Room: K-B1-07
+---
+
+ID: 181
+Title (EN): Thailand Post
+Title (TH): Thailand Post (ไปรษณีย์ไทย)
+Title (CN): Thailand Post
+Slug: content-id-3a916cf0-e1a6-11e8-994a-3fd4779bfb90
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: facility
+SCID: post-office
+Zone: 
+Room: B104
+---
+
+ID: 182
+Title (EN): Kerry Express
+Title (TH): Kerry Express
+Title (CN): Kerry Express
+Slug: content-id-d9942be0-e1a5-11e8-994a-3fd4779bfb90
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: facility
+SCID: post-office
+Zone: 
+Room: B103
+---
+
+ID: 183
+Title (EN): Bhu Mhai Lifestyle Spa
+Title (TH): Bhu Mhai Lifestyle Spa
+Title (CN): Bhu Mhai Lifestyle Spa
+Slug: content-id-d2b48e80-e1a2-11e8-9af1-5be98d55eda3
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: health
+Zone: 
+Room: B105
+---
+
+ID: 184
+Title (EN): ICON CINECONIC
+Title (TH): ICON CINECONIC
+Title (CN): ICON CINECONIC 电影院
+Slug: content-id-4945a950-f795-11e8-8252-036b515645d3
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: entertaining
+SCID: movie-theatre
+Zone: plaza
+Room: 
+---
+
+ID: 185
+Title (EN): KAMU
+Title (TH): KAMU
+Title (CN): 
+Slug: content-id-3e8dc8e0-f794-11e8-8252-036b515645d3
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: cafes
+Zone: 
+Room: RK613-614
+---
+
+ID: 186
+Title (EN): Bang Bao
+Title (TH): Bang Bao (ปังเปา)
+Title (CN): 
+Slug: content-id-f54277e0-f792-11e8-8432-5f6d521ccbfd
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: restaurant
+Zone: 
+Room: RK606
+---
+
+ID: 188
+Title (EN): The Bibimbab
+Title (TH): The Bibimbab
+Title (CN): 
+Slug: content-id-211c46e0-f791-11e8-a070-69451809de2d
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: restaurant
+Zone: alangkarn
+Room: R611
+---
+
+ID: 189
+Title (EN): SUSHI DEN
+Title (TH): SUSHI DEN
+Title (CN): SUSHI DEN
+Slug: content-id-d52fa1a0-f790-11e8-a070-69451809de2d
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: restaurant
+Zone: alangkarn
+Room: R610
+---
+
+ID: 190
+Title (EN): THIPSAMAI
+Title (TH): THIPSAMAI (ทิพย์สมัย)
+Title (CN): THIPSAMAI
+Slug: content-id-0a374b20-f78f-11e8-a070-69451809de2d
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: restaurant
+Zone: alangkarn
+Room: R602-603
+---
+
+ID: 191
+Title (EN): Mae Sri Ruen 
+Title (TH): แม่ศรีเรือน
+Title (CN): 
+Slug: content-id-a72310f0-f78e-11e8-8432-5f6d521ccbfd
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: restaurant
+Zone: 
+Room: R601
+---
+
+ID: 192
+Title (EN): ChaTraMue
+Title (TH): ชาตรามือ
+Title (CN): 
+Slug: content-id-93c104f0-f78d-11e8-8252-036b515645d3
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: dessert
+Zone: 
+Room: K602
+---
+
+ID: 193
+Title (EN): Tonkatsu Wako
+Title (TH): Tonkatsu Wako
+Title (CN): Tonkatsu Wako
+Slug: content-id-e19a5470-f78c-11e8-8252-036b515645d3
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: restaurant
+Zone: 
+Room: 611
+---
+
+ID: 194
+Title (EN): Masala Art
+Title (TH): Masala Art
+Title (CN): 
+Slug: content-id-3bb1f2c0-f78c-11e8-8432-5f6d521ccbfd
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: restaurant
+Zone: 
+Room: 607
+---
+
+ID: 195
+Title (EN): Bonchon Chicken
+Title (TH): Bonchon Chicken
+Title (CN): Bonchon Chicken
+Slug: content-id-613f66e0-f78b-11e8-9558-3fa78c36ad07
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: restaurant
+Zone: 
+Room: 604
+---
+
+ID: 196
+Title (EN): Mo-Mo-Paradise
+Title (TH): Mo-Mo-Paradise
+Title (CN): 
+Slug: content-id-17264920-f78b-11e8-a070-69451809de2d
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: restaurant
+Zone: 
+Room: 603
+---
+
+ID: 197
+Title (EN): Yuzu Ramen
+Title (TH): Yuzu Ramen
+Title (CN): 
+Slug: content-id-5bc54690-f780-11e8-a070-69451809de2d
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: restaurant
+Zone: 
+Room: 601
+---
+
+ID: 198
+Title (EN): Harmenstone
+Title (TH): Harmenstone
+Title (CN): Harmenstone
+Slug: harmenstone
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: beauty
+Zone: plaza
+Room: 
+---
+
+ID: 199
+Title (EN): ICON WASH
+Title (TH): ICON WASH
+Title (CN): ICON WASH
+Slug: icon-wash
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: facility
+SCID: 
+Zone: 
+Room: B201
+---
+
+ID: 200
+Title (EN): After You Dessert Cafe
+Title (TH): After You Dessert Cafe
+Title (CN): After You Dessert Cafe
+Slug: after-you-dessert-cafe
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: cafes
+Zone: 
+Room: 613
+---
+
+ID: 201
+Title (EN): D
+Title (TH): D
+Title (CN): D
+Slug: dark
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: restaurant
+Zone: the-veranda
+Room: VG01, VG03
+---
+
+ID: 202
+Title (EN): LukKaiThong
+Title (TH): LukKaiThong (ลูกไก่ทอง)
+Title (CN): LukKaiThong
+Slug: luk-kai-thong
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: restaurant
+Zone: alangkarn
+Room: R601, R604-605
+---
+
+ID: 203
+Title (EN): THONGLOR DENTAL HOSPITAL
+Title (TH): THONGLOR DENTAL HOSPITAL
+Title (CN): THONGLOR DENTAL HOSPITAL
+Slug: precious-smile-by-thonglor-dental-hospital
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: health
+Zone: 
+Room: 523
+---
+
+ID: 204
+Title (EN): True Coffee
+Title (TH): ทรูคอฟฟี่ 
+Title (CN): True Coffee
+Slug: content-id-63a0cb50-e1e6-11e8-9af1-5be98d55eda3-6eddad60-38d2-11e9-afc8-9b2bd5ad9790
+Collection: dinings
+Reason: Found existing by title - Updated instead of created
+CID: dining
+SCID: cafes
+Zone: the-veranda
+Room: UG02
+---
+
+ID: 205
+Title (EN): YAYOI
+Title (TH): YAYOI
+Title (CN): YAYOI
+Slug: yayoi
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: restaurant
+Zone: 
+Room: 605
+---
+
+ID: 206
+Title (EN): Fallabella River Front
+Title (TH): Fallabella River Front
+Title (CN): Fallabella River Front
+Slug: fallabella-river-front
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: restaurant
+Zone: 
+Room: 
+---
+
+ID: 207
+Title (EN): Viemus Music School
+Title (TH): โรงเรียนดนตรีวีมุส
+Title (CN): VIEMUS
+Slug: viemus
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: edutainment
+SCID: 
+Zone: icon-education
+Room: 527
+---
+
+ID: 208
+Title (EN): Vans
+Title (TH): Vans
+Title (CN): Vans
+Slug: vans
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: sports
+Zone: iconactive
+Room: 322/1
+---
+
+ID: 209
+Title (EN): Reebok
+Title (TH): Reebok
+Title (CN): 
+Slug: reebok
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: sports
+Zone: iconactive
+Room: 322/2
+---
+
+ID: 210
+Title (EN): Diadora
+Title (TH): Diadora
+Title (CN): Diadora
+Slug: diadora
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: 
+Zone: iconactive
+Room: 
+---
+
+ID: 211
+Title (EN): Skechers
+Title (TH): Skechers
+Title (CN): Skechers
+Slug: skechers
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: 
+Zone: iconactive
+Room: M320-321
+---
+
+ID: 212
+Title (EN): New Balance
+Title (TH): New Balance
+Title (CN): New Balance
+Slug: new-balance
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: 
+Zone: iconactive
+Room: 323/2
+---
+
+ID: 213
+Title (EN): Crocs
+Title (TH): Crocs
+Title (CN): Crocs
+Slug: crocs
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: 
+Zone: iconactive
+Room: 323/2
+---
+
+ID: 214
+Title (EN): FILA
+Title (TH): FILA
+Title (CN): FILA
+Slug: fila
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: 
+Zone: iconactive
+Room: 323/3
+---
+
+ID: 215
+Title (EN): K-SWISS
+Title (TH): K-SWISS
+Title (CN): K-SWISS
+Slug: k-swiss
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: sports
+Zone: iconactive
+Room: 323/3
+---
+
+ID: 216
+Title (EN): Converse
+Title (TH): Converse
+Title (CN): Converse
+Slug: converse
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: sports
+Zone: iconactive
+Room: 324/1,3
+---
+
+ID: 217
+Title (EN): Native
+Title (TH): Native
+Title (CN): Native
+Slug: native
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: sports
+Zone: iconactive
+Room: 325/6
+---
+
+ID: 218
+Title (EN): Nike
+Title (TH): Nike
+Title (CN): Nike
+Slug: nike
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: sports
+Zone: iconactive
+Room: 326/1-3
+---
+
+ID: 219
+Title (EN): OOFOS
+Title (TH): OOFOS
+Title (CN): OOFOS
+Slug: oofos
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: sports
+Zone: iconactive
+Room: 326/5-1
+---
+
+ID: 220
+Title (EN): Ripcurl
+Title (TH): Ripcurl
+Title (CN): Ripcurl
+Slug: ripcurl
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: sports
+Zone: iconactive
+Room: 326/5-2
+---
+
+ID: 221
+Title (EN): Quiksilver
+Title (TH): Quiksilver
+Title (CN): Quiksilver
+Slug: quiksilver
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: sports
+Zone: iconactive
+Room: 326/7
+---
+
+ID: 222
+Title (EN): Roxy
+Title (TH): Roxy
+Title (CN): Roxy
+Slug: roxy
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: sports
+Zone: iconactive
+Room: 326/8
+---
+
+ID: 223
+Title (EN): Liver Pool
+Title (TH): Liver Pool
+Title (CN): Liver Pool
+Slug: liver-pool
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: sports
+Zone: iconactive
+Room: 324/2
+---
+
+ID: 224
+Title (EN): Bratpack
+Title (TH): Bratpack
+Title (CN): Bratpack
+Slug: bratpack
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: iconactive
+Room: 322/4
+---
+
+ID: 225
+Title (EN): Herschel
+Title (TH): Herschel
+Title (CN): Herschel
+Slug: herschel
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: iconactive
+Room: 322/4
+---
+
+ID: 226
+Title (EN): Eastpak
+Title (TH): Eastpak
+Title (CN): Eastpak
+Slug: eastpak
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: iconactive
+Room: 325/1
+---
+
+ID: 227
+Title (EN): Jansport
+Title (TH): Jansport
+Title (CN): Jansport
+Slug: jansport
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: iconactive
+Room: 325/4
+---
+
+ID: 228
+Title (EN): Anello
+Title (TH): Anello
+Title (CN): Anello
+Slug: anello
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: iconactive
+Room: 325/5
+---
+
+ID: 229
+Title (EN): Waking Bee
+Title (TH): Waking Bee
+Title (CN): Waking Bee
+Slug: waking-b-women-sportswear
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: sports
+Zone: iconactive
+Room: 326/4
+---
+
+ID: 230
+Title (EN): TA ACTIVE 
+Title (TH): TA ACTIVE 
+Title (CN): TA ACTIVE 
+Slug: ta-active-women-sportswear
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: sports
+Zone: iconactive
+Room: 326/5-1
+---
+
+ID: 231
+Title (EN): CK Performance
+Title (TH): CK Performance
+Title (CN): CK Performance
+Slug: ck-performance
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: sports
+Zone: iconactive
+Room: 326/6
+---
+
+ID: 232
+Title (EN): Speedo
+Title (TH): Speedo
+Title (CN): Speedo
+Slug: speedo
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: sports
+Zone: iconactive
+Room: 326/9
+---
+
+ID: 233
+Title (EN): The North Face
+Title (TH): The North Face
+Title (CN): The North Face
+Slug: the-north-face
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: iconactive
+Room: 327/1-3
+---
+
+ID: 234
+Title (EN): Smart Travel
+Title (TH): Smart Travel
+Title (CN): Smart Travel
+Slug: smart-travel
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: iconactive
+Room: 324/4
+---
+
+ID: 235
+Title (EN): Suunto
+Title (TH): Suunto
+Title (CN): Suunto
+Slug: suunto
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: iconactive
+Room: 326/9
+---
+
+ID: 236
+Title (EN): Guess Watches
+Title (TH): Guess Watches
+Title (CN): Guess Watches
+Slug: guess-watches
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: iconactive
+Room: 336
+---
+
+ID: 237
+Title (EN): Super
+Title (TH): Super
+Title (CN): Super
+Slug: super
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: iconactive
+Room: 333/3
+---
+
+ID: 238
+Title (EN): Rayban
+Title (TH): Rayban
+Title (CN): Rayban
+Slug: rayban
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: iconactive
+Room: 
+---
+
+ID: 239
+Title (EN): Seven Friday
+Title (TH): Seven Friday
+Title (CN): Seven Friday
+Slug: seven-friday
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: iconactive
+Room: 331/1-2
+---
+
+ID: 240
+Title (EN): AVIATOR
+Title (TH): AVIATOR
+Title (CN): AVIATOR
+Slug: aviator
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: null
+Zone: iconactive
+Room: 331/1-2
+---
+
+ID: 241
+Title (EN): The Electricianz
+Title (TH): The Electricianz
+Title (CN): The Electricianz
+Slug: the-electricianz
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: iconactive
+Room: 331/1-2
+---
+
+ID: 242
+Title (EN): Lee
+Title (TH): Lee
+Title (CN): Lee
+Slug: lee
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: iconactive
+Room: 328/1
+---
+
+ID: 243
+Title (EN): Wrangler
+Title (TH): Wrangler
+Title (CN): Wrangler
+Slug: wrangler
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: iconactive
+Room: 328/2
+---
+
+ID: 244
+Title (EN): Mc.Jeans
+Title (TH): Mc.Jeans
+Title (CN): Mc.Jeans
+Slug: mcjeans
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: iconactive
+Room: 328/3
+---
+
+ID: 245
+Title (EN): Nama Denim Jeans
+Title (TH): Nama Denim Jeans
+Title (CN): Nama Denim Jeans
+Slug: nama-denim-jeans
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: iconactive
+Room: 328/4-1
+---
+
+ID: 247
+Title (EN): Von Dutch
+Title (TH): Von Dutch
+Title (CN): Von Dutch
+Slug: von-dutch
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: iconactive
+Room: 328/5
+---
+
+ID: 248
+Title (EN): Porche Design 
+Title (TH): Porche Design 
+Title (CN): Porche Design 
+Slug: porche-design
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: auto
+Zone: iconactive
+Room: 332
+---
+
+ID: 249
+Title (EN): Lamborghini
+Title (TH): Lamborghini
+Title (CN): Lamborghini
+Slug: lamborghini
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: auto
+Zone: iconactive
+Room: 332
+---
+
+ID: 250
+Title (EN): BMW
+Title (TH): BMW
+Title (CN): BMW
+Slug: bmw
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: auto
+Zone: iconactive
+Room: 332
+---
+
+ID: 251
+Title (EN): Mercedes
+Title (TH): Mercedes
+Title (CN): Mercedes
+Slug: mercedes
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: auto
+Zone: iconactive
+Room: 332
+---
+
+ID: 252
+Title (EN): FITNESS FIRST CLUB ICON 
+Title (TH): FITNESS FIRST CLUB ICON 
+Title (CN): FITNESS FIRST CLUB ICON 
+Slug: fitness-first
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: health
+Zone: 
+Room: 702, 7M02, 8M01
+---
+
+ID: 253
+Title (EN): TrueCoffee
+Title (TH): TrueCoffee
+Title (CN): TrueCoffee
+Slug: true-coffee
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: cafes
+Zone: dining-on-4th
+Room: 
+---
+
+ID: 254
+Title (EN): Bankara Ramen
+Title (TH): Bankara Ramen
+Title (CN): Bankara Ramen
+Slug: bankara-ramen
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: restaurant
+Zone: the-veranda
+Room: VG15, VUG15
+---
+
+ID: 255
+Title (EN): Bangkok Bootery
+Title (TH): Bangkok Bootery
+Title (CN): Bangkok Bootery
+Slug: bangkok-bootery
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 1690428833
+Room: 
+---
+
+ID: 256
+Title (EN): Opium
+Title (TH): Opium
+Title (CN): Opium
+Slug: opium
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 1690428833
+Room: 
+---
+
+ID: 257
+Title (EN): Kipling
+Title (TH): Kipling
+Title (CN): Kipling
+Slug: kipling
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: women&#039;s-club
+Room: 
+---
+
+ID: 258
+Title (EN): Mis Zapatos
+Title (TH): Mis Zapatos
+Title (CN): Mis Zapatos
+Slug: mis-zapatos
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: women&#039;s-club
+Room: 
+---
+
+ID: 259
+Title (EN): Shoe Story
+Title (TH): Shoe Story
+Title (CN): Shoe Story
+Slug: shoe-story
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: women&#039;s-club
+Room: 
+---
+
+ID: 260
+Title (EN): Sirena
+Title (TH): Sirena
+Title (CN): Sirena
+Slug: sirena
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: women&#039;s-club
+Room: 
+---
+
+ID: 261
+Title (EN): MOS
+Title (TH): MOS
+Title (CN): MOS
+Slug: mos
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: women&#039;s-club
+Room: 
+---
+
+ID: 262
+Title (EN): Seacret
+Title (TH): Seacret
+Title (CN): Seacret
+Slug: seacret
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: beauty
+Zone: women&#039;s-club
+Room: 
+---
+
+ID: 263
+Title (EN): Premier
+Title (TH): Premier
+Title (CN): Premier
+Slug: premiere
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: beauty
+Zone: women&#039;s-club
+Room: 
+---
+
+ID: 264
+Title (EN): Sunglass Hut
+Title (TH): Sunglass Hut
+Title (CN): Sunglass Hut
+Slug: sunglass-hut
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: women&#039;s-club
+Room: 
+---
+
+ID: 265
+Title (EN): Mira Madison
+Title (TH): Mira Madison
+Title (CN): Mira Madison
+Slug: mira-madison
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: women&#039;s-club
+Room: 
+---
+
+ID: 266
+Title (EN): Kiss me doll
+Title (TH): Kiss me doll
+Title (CN): Kiss me doll
+Slug: kiss-me-doll
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: women&#039;s-club
+Room: 
+---
+
+ID: 267
+Title (EN): Maison de Fleur
+Title (TH): Maison de Fleur
+Title (CN): Maison de Fleur
+Slug: maison-de-fleur
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: women&#039;s-club
+Room: 
+---
+
+ID: 268
+Title (EN): Mellow
+Title (TH): Mellow
+Title (CN): Mellow
+Slug: mellow
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: women&#039;s-club
+Room: 
+---
+
+ID: 269
+Title (EN): Miss Flora
+Title (TH): Miss Flora
+Title (CN): Miss Flora
+Slug: miss-flora
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: women&#039;s-club
+Room: 
+---
+
+ID: 270
+Title (EN): Jeune
+Title (TH): Jeune
+Title (CN): Jeune
+Slug: jeune
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: women&#039;s-club
+Room: 
+---
+
+ID: 271
+Title (EN): American Holic
+Title (TH): American Holic
+Title (CN): American Holic
+Slug: american-holic
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: women&#039;s-club
+Room: 
+---
+
+ID: 272
+Title (EN): Earth Music and Ecology
+Title (TH): Earth Music and Ecology
+Title (CN): Earth Music and Ecology
+Slug: earth-music-and-ecology
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: women&#039;s-club
+Room: 
+---
+
+ID: 273
+Title (EN): 12 Victory
+Title (TH): 12 Victory
+Title (CN): 12 Victory
+Slug: 12-victory
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 1690428833
+Room: 
+---
+
+ID: 274
+Title (EN): Herit
+Title (TH): Herit
+Title (CN): Herit
+Slug: herit
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: women&#039;s-club
+Room: 
+---
+
+ID: 275
+Title (EN): De Preco 
+Title (TH): De Preco
+Title (CN): De Preco 
+Slug: de-preco
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: women&#039;s-club
+Room: 
+---
+
+ID: 276
+Title (EN): Philips
+Title (TH): Philips
+Title (CN): Philips
+Slug: philips
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: women&#039;s-club
+Room: 
+---
+
+ID: 277
+Title (EN): Brother by Pinn shop
+Title (TH): Brother by Pinn shop
+Title (CN): Brother by Pinn shop
+Slug: brother-by-pinn-shop
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: women&#039;s-club
+Room: 
+---
+
+ID: 278
+Title (EN): Philipp Plein
+Title (TH): Philipp Plein
+Title (CN): Philipp Plein
+Slug: philipp-plein
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: iconluxe
+Room: L104
+---
+
+ID: 279
+Title (EN): Jim Thompson
+Title (TH): Jim Thompson
+Title (CN): Jim Thompson
+Slug: jim-thompson
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: iconluxe
+Room: L112/1, L112/2 
+---
+
+ID: 280
+Title (EN): CoCo ICHIBANYA
+Title (TH): CoCo ICHIBANYA
+Title (CN): CoCo ICHIBANYA
+Slug: coco-ichibanya
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: restaurant
+Zone: 
+Room: 612
+---
+
+ID: 283
+Title (EN): KANE MOCHI
+Title (TH): KANE MOCHI
+Title (CN): KANE MOCHI
+Slug: kane-mochi
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: dessert
+Zone: 
+Room: RK608
+---
+
+ID: 284
+Title (EN): MAISON BERGER PARIS
+Title (TH): เมซอง แบร์เช่ ปารีส
+Title (CN): MAISON BERGER PARIS
+Slug: maison-berger-paris
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: 1690428833
+Room: 555/1
+---
+
+ID: 285
+Title (EN): ALAND
+Title (TH): ALAND
+Title (CN): ALAND
+Slug: aland
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 
+Room: 227
+---
+
+ID: 286
+Title (EN): Fashion TV Cosmetics
+Title (TH): Fashion TV Cosmetics
+Title (CN): Fashion TV Cosmetics
+Slug: fashion-tv-cosmetics
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: beauty
+Zone: 
+Room: K202
+---
+
+ID: 288
+Title (EN): Skinny Spoon
+Title (TH): Skinny Spoon
+Title (CN): Skinny Spoon
+Slug: skinny-spoon
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: restaurant
+Zone: 
+Room: RK602
+---
+
+ID: 289
+Title (EN): Cafe Chilli
+Title (TH): Cafe Chilli (คาเฟ่ ชิลลี่)
+Title (CN): Cafe Chilli
+Slug: cafe-chilli
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: restaurant
+Zone: the-veranda
+Room: VG02
+---
+
+ID: 290
+Title (EN): Dear Tummy
+Title (TH): Dear Tummy
+Title (CN): Dear Tummy
+Slug: dear-tummy
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: restaurant
+Zone: 
+Room: G05-G06
+---
+
+ID: 291
+Title (EN): nice two Meat U
+Title (TH): nice two Meat U
+Title (CN): nice two Meat U
+Slug: nice-two-meat-u
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: restaurant
+Zone: 
+Room: 512/2
+---
+
+ID: 292
+Title (EN): LONGCHAMP
+Title (TH): LONGCHAMP
+Title (CN): LONGCHAMP
+Slug: longchamp
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 
+Room: M14/1
+---
+
+ID: 293
+Title (EN): Naiin
+Title (TH): นายอินทร์
+Title (CN): Naiin
+Slug: naiin
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: book
+Zone: 
+Room: K512
+---
+
+ID: 295
+Title (EN): KWANPEN
+Title (TH): KWANPEN
+Title (CN): KWANPEN
+Slug: kwanpen
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 
+Room: M15/1
+---
+
+ID: 296
+Title (EN): Blue by Alain Ducasse
+Title (TH): Blue by Alain Ducasse
+Title (CN): Blue by Alain Ducasse
+Slug: blue-by-alain-ducasse-dining
+Collection: dinings
+Reason: Found existing by title - Updated instead of created
+CID: dining
+SCID: restaurant
+Zone: iconluxe
+Room: L101
+---
+
+ID: 297
+Title (EN): Ros&#039;niyom
+Title (TH): Ros&#039;niyom (รส&#039;นิยม)
+Title (CN): Ros&#039;niyom
+Slug: rosniyom
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: restaurant
+Zone: the-veranda
+Room: VG14
+---
+
+ID: 298
+Title (EN): Zaab Eli
+Title (TH): แซ่บอีลี่
+Title (CN): Zaab Eli
+Slug: zaab-eli
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: restaurant
+Zone: the-veranda
+Room: VG09,VUG09
+---
+
+ID: 299
+Title (EN): SCB Investment Center
+Title (TH): SCB Investment Center
+Title (CN): SCB Investment Center
+Slug: scb-investment-center
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: bank
+SCID: 
+Zone: 
+Room: 413/1
+---
+
+ID: 300
+Title (EN): ICONCRAFT (FASHION, TEXTILE, SPA, BEAUTY)
+Title (TH): ICONCRAFT (FASHION, TEXTILE, SPA, BEAUTY)
+Title (CN): ICONCRAFT (FASHION, TEXTILE, SPA, BEAUTY)
+Slug: shop-iconcraft
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: 
+Zone: iconcraft
+Room: 
+---
+
+ID: 301
+Title (EN): ICONCRAFT (LIVING, ECO, SOUVENIR, COFFEE)
+Title (TH): ICONCRAFT (LIVING, ECO, SOUVENIR, COFFEE)
+Title (CN): ICONCRAFT (LIVING, ECO, SOUVENIR, COFFEE)
+Slug: shop-iconcraft-4fl
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: 
+Zone: iconcraft
+Room: 
+---
+
+ID: 302
+Title (EN): 5IVE SIS
+Title (TH): 5IVE SIS
+Title (CN): 5IVE SIS
+Slug: 5ive-sis
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: iconcraft
+Room: 
+---
+
+ID: 303
+Title (EN): AKARA
+Title (TH): AKARA
+Title (CN): AKARA
+Slug: akara
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: iconcraft
+Room: 
+---
+
+ID: 304
+Title (EN): AKHA AMA COFFEE    
+Title (TH): AKHA AMA COFFEE    
+Title (CN): AKHA AMA COFFEE    
+Slug: akha-ama-coffee
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: iconcraft
+Room: 
+---
+
+ID: 305
+Title (EN): AMPHAN
+Title (TH): AMPHAN
+Title (CN): AMPHAN
+Slug: amphan
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: iconcraft
+Room: 
+---
+
+ID: 306
+Title (EN): ANGO
+Title (TH): ANGO
+Title (CN): ANGO
+Slug: ango
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: iconcraft
+Room: 
+---
+
+ID: 307
+Title (EN): ANGSA
+Title (TH): ANGSA
+Title (CN): ANGSA
+Slug: angsa
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: iconcraft
+Room: 
+---
+
+ID: 308
+Title (EN): ANNART BOTANIC
+Title (TH): ANNART BOTANIC
+Title (CN): ANNART BOTANIC
+Slug: annart-botanic
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: iconcraft
+Room: 
+---
+
+ID: 309
+Title (EN): ARTWORK
+Title (TH): ARTWORK
+Title (CN): ARTWORK
+Slug: artwork
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: 
+Zone: iconcraft
+Room: 
+---
+
+ID: 310
+Title (EN): AWA DECOR
+Title (TH): AWA DECOR
+Title (CN): AWA DECOR
+Slug: awa-decor
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: iconcraft
+Room: 
+---
+
+ID: 311
+Title (EN): AYADA
+Title (TH): AYADA
+Title (CN): AYADA
+Slug: ayada
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: iconcraft
+Room: 
+---
+
+ID: 312
+Title (EN): AYODHYA
+Title (TH): AYODHYA
+Title (CN): AYODHYA
+Slug: ayodhya
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: iconcraft
+Room: 
+---
+
+ID: 313
+Title (EN): BAMBUNIQUE
+Title (TH): BAMBUNIQUE
+Title (CN): BAMBUNIQUE
+Slug: bambunique
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: iconcraft
+Room: 
+---
+
+ID: 314
+Title (EN): BANH
+Title (TH): BANH
+Title (CN): BANH
+Slug: banh
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: iconcraft
+Room: 
+---
+
+ID: 315
+Title (EN): BENJAMETHA 
+Title (TH): BENJAMETHA 
+Title (CN): BENJAMETHA 
+Slug: benjametha
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: iconcraft
+Room: 
+---
+
+ID: 316
+Title (EN): BOONYARAT
+Title (TH): BOONYARAT
+Title (CN): BOONYARAT
+Slug: boonyarat
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: iconcraft
+Room: 
+---
+
+ID: 317
+Title (EN): BORRIBOON
+Title (TH): BORRIBOON
+Title (CN): BORRIBOON
+Slug: borriboon
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: 
+Zone: iconcraft
+Room: 
+---
+
+ID: 318
+Title (EN): BUA BHAT
+Title (TH): BUA BHAT
+Title (CN): BUA BHAT
+Slug: bua-bhat
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: 
+Zone: iconcraft
+Room: 
+---
+
+ID: 319
+Title (EN): BUGBEAT 
+Title (TH): BUGBEAT 
+Title (CN): BUGBEAT 
+Slug: bugbeat
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: iconcraft
+Room: 
+---
+
+ID: 320
+Title (EN): Corner 43 Decor
+Title (TH): Corner 43 Decor
+Title (CN): Corner 43 Decor
+Slug: corner-43-decor
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: iconcraft
+Room: 
+---
+
+ID: 321
+Title (EN): COTH STUDIO
+Title (TH): COTH STUDIO
+Title (CN): COTH STUDIO
+Slug: coth-studio
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: iconcraft
+Room: 
+---
+
+ID: 322
+Title (EN): DIFF
+Title (TH): DIFF
+Title (CN): DIFF
+Slug: diff
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: iconcraft
+Room: 
+---
+
+ID: 323
+Title (EN): DOTING
+Title (TH): DOTING
+Title (CN): DOTING
+Slug: doting
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: iconcraft
+Room: 
+---
+
+ID: 324
+Title (EN): DOY DIN DANG 
+Title (TH): DOY DIN DANG 
+Title (CN): DOY DIN DANG 
+Slug: doy-din-dang
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: iconcraft
+Room: 
+---
+
+ID: 325
+Title (EN): EARTH &amp; FIRE
+Title (TH): EARTH &amp; FIRE
+Title (CN): EARTH &amp; FIRE
+Slug: earth-and-fire
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: iconcraft
+Room: 
+---
+
+ID: 326
+Title (EN): EUREKA
+Title (TH): EUREKA
+Title (CN): EUREKA
+Slug: eureka
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: 
+Zone: iconcraft
+Room: 
+---
+
+ID: 327
+Title (EN): FLOW
+Title (TH): FLOW
+Title (CN): FLOW
+Slug: flow
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: iconcraft
+Room: 
+---
+
+ID: 328
+Title (EN): HERBAHOLIC
+Title (TH): HERBAHOLIC
+Title (CN): HERBAHOLIC
+Slug: herbaholic
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: health
+Zone: iconcraft
+Room: 
+---
+
+ID: 329
+Title (EN): JAICRAFT
+Title (TH): JAICRAFT
+Title (CN): JAICRAFT
+Slug: jaicraft
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: iconcraft
+Room: 
+---
+
+ID: 330
+Title (EN): JITTRAKRAN 
+Title (TH): JITTRAKRAN 
+Title (CN): JITTRAKRAN 
+Slug: jittrakran
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: iconcraft
+Room: 
+---
+
+ID: 331
+Title (EN): JUNO JANSSEN
+Title (TH): JUNO JANSSEN
+Title (CN): JUNO JANSSEN
+Slug: juno-janssen
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: iconcraft
+Room: 
+---
+
+ID: 332
+Title (EN): JUTATIP
+Title (TH): JUTATIP
+Title (CN): JUTATIP
+Slug: jutatip
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: iconcraft
+Room: 
+---
+
+ID: 333
+Title (EN): KEDTAWA
+Title (TH): KEDTAWA
+Title (CN): KEDTAWA
+Slug: kedtawa
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: iconcraft
+Room: 
+---
+
+ID: 334
+Title (EN): LA’MIAT
+Title (TH): LA’MIAT
+Title (CN): LA’MIAT
+Slug: lamiat
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: health
+Zone: iconcraft
+Room: 
+---
+
+ID: 335
+Title (EN): LAMUN LAMAI
+Title (TH): LAMUN LAMAI
+Title (CN): LAMUN LAMAI
+Slug: lamun-lamai
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: gadget
+Zone: iconcraft
+Room: 
+---
+
+ID: 336
+Title (EN): LERKA
+Title (TH): LERKA
+Title (CN): LERKA
+Slug: lerka
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: iconcraft
+Room: 
+---
+
+ID: 337
+Title (EN): LIVELY WARE
+Title (TH): LIVELY WARE
+Title (CN): LIVELY WARE
+Slug: lively-ware
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: gadget
+Zone: iconcraft
+Room: 
+---
+
+ID: 338
+Title (EN): LONG GOY
+Title (TH): LONG GOY
+Title (CN): LONG GOY
+Slug: long-goy
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: iconcraft
+Room: 
+---
+
+ID: 339
+Title (EN): MAB-EUANG
+Title (TH): MAB-EUANG
+Title (CN): MAB-EUANG
+Slug: mab-euang
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: iconcraft
+Room: 
+---
+
+ID: 340
+Title (EN): MAISON CRAFT
+Title (TH): MAISON CRAFT
+Title (CN): MAISON CRAFT
+Slug: maison-craft
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: iconcraft
+Room: 
+---
+
+ID: 341
+Title (EN): MEAMTARN
+Title (TH): MEAMTARN
+Title (CN): MEAMTARN
+Slug: meamtarn
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: iconcraft
+Room: 
+---
+
+ID: 342
+Title (EN): MELA
+Title (TH): MELA
+Title (CN): MELA
+Slug: mela
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: iconcraft
+Room: 
+---
+
+ID: 343
+Title (EN): MERRY LIFE
+Title (TH): MERRY LIFE
+Title (CN): MERRY LIFE
+Slug: merry-life
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: gadget
+Zone: iconcraft
+Room: 
+---
+
+ID: 344
+Title (EN): MON STUDIO
+Title (TH): MON STUDIO
+Title (CN): MON STUDIO
+Slug: mon-studio
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: gadget
+Zone: iconcraft
+Room: 
+---
+
+ID: 345
+Title (EN): MONCHAN
+Title (TH): MONCHAN
+Title (CN): MONCHAN
+Slug: monchan
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: 
+Zone: iconcraft
+Room: 
+---
+
+ID: 346
+Title (EN): MOWAAN
+Title (TH): MOWAAN
+Title (CN): MOWAAN
+Slug: mowaan
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: health
+Zone: iconcraft
+Room: 
+---
+
+ID: 347
+Title (EN): NATURELIFEHERB
+Title (TH): NATURELIFEHERB
+Title (CN): NATURELIFEHERB
+Slug: naturelifeherb
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: iconcraft
+Room: 
+---
+
+ID: 348
+Title (EN): NIMBUS LIVING
+Title (TH): NIMBUS LIVING
+Title (CN): NIMBUS LIVING
+Slug: nimbus-living
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: iconcraft
+Room: 
+---
+
+ID: 349
+Title (EN): NINE CHAIDEE
+Title (TH): NINE CHAIDEE
+Title (CN): NINE CHAIDEE
+Slug: nine-chaidee
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: iconcraft
+Room: 
+---
+
+ID: 350
+Title (EN): NINO SARABUTRA
+Title (TH): NINO SARABUTRA
+Title (CN): NINO SARABUTRA
+Slug: nino-sarabutra
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: gadget
+Zone: iconcraft
+Room: 
+---
+
+ID: 351
+Title (EN): NUAYNARD
+Title (TH): NUAYNARD
+Title (CN): NUAYNARD
+Slug: nuaynard
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: iconcraft
+Room: 
+---
+
+ID: 352
+Title (EN): NUDE ORGANIC
+Title (TH): NUDE ORGANIC
+Title (CN): NUDE ORGANIC
+Slug: nude-organic
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: iconcraft
+Room: 
+---
+
+ID: 353
+Title (EN): PASUTARA
+Title (TH): PASUTARA
+Title (CN): PASUTARA
+Slug: pasutara
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: iconcraft
+Room: 
+---
+
+ID: 354
+Title (EN): PERFUM
+Title (TH): PERFUM
+Title (CN): PERFUM
+Slug: perfum
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: 
+Zone: iconcraft
+Room: 
+---
+
+ID: 355
+Title (EN): PHU KLON
+Title (TH): PHU KLON
+Title (CN): PHU KLON
+Slug: phu-klon
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: iconcraft
+Room: 
+---
+
+ID: 356
+Title (EN): PHUTAWAN
+Title (TH): PHUTAWAN
+Title (CN): PHUTAWAN
+Slug: phutawan
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: iconcraft
+Room: 
+---
+
+ID: 357
+Title (EN): PILANTHA
+Title (TH): PILANTHA
+Title (CN): PILANTHA
+Slug: pilantha
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: iconcraft
+Room: 
+---
+
+ID: 358
+Title (EN): PL WOOD
+Title (TH): PL WOOD
+Title (CN): PL WOOD
+Slug: pl-wood
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: iconcraft
+Room: 
+---
+
+ID: 359
+Title (EN): PREM
+Title (TH): PREM
+Title (CN): PREM
+Slug: prem
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: 
+Zone: iconcraft
+Room: 
+---
+
+ID: 360
+Title (EN): REUNROM
+Title (TH): REUNROM
+Title (CN): REUNROM
+Slug: reunrom
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: iconcraft
+Room: 
+---
+
+ID: 361
+Title (EN): RUK BATIK 
+Title (TH): RUK BATIK 
+Title (CN): RUK BATIK 
+Slug: ruk-batik
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: iconcraft
+Room: 
+---
+
+ID: 362
+Title (EN): SALT &amp; PEPPER
+Title (TH): SALT &amp; PEPPER
+Title (CN): SALT &amp; PEPPER
+Slug: salt-and-pepper
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: gadget
+Zone: iconcraft
+Room: 
+---
+
+ID: 363
+Title (EN): SAMPHAT
+Title (TH): SAMPHAT
+Title (CN): SAMPHAT
+Slug: samphat
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: gadget
+Zone: iconcraft
+Room: 
+---
+
+ID: 364
+Title (EN): SAPRANG
+Title (TH): SAPRANG
+Title (CN): SAPRANG
+Slug: saprang
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: iconcraft
+Room: 
+---
+
+ID: 365
+Title (EN): SIAM CANDLES
+Title (TH): SIAM CANDLES
+Title (CN): SIAM CANDLES
+Slug: siam-candles
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: iconcraft
+Room: 
+---
+
+ID: 366
+Title (EN): SOAP VILLA
+Title (TH): SOAP VILLA
+Title (CN): SOAP VILLA
+Slug: soap-villa
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: iconcraft
+Room: 
+---
+
+ID: 367
+Title (EN): STORY OF SILVER &amp; SILK 
+Title (TH): STORY OF SILVER &amp; SILK 
+Title (CN): STORY OF SILVER &amp; SILK 
+Slug: story-of-silver-and-silk
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: iconcraft
+Room: 
+---
+
+ID: 368
+Title (EN): SUM THING
+Title (TH): SUM THING
+Title (CN): SUM THING
+Slug: sum-thing
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: iconcraft
+Room: 
+---
+
+ID: 369
+Title (EN): SUMPHAT
+Title (TH): SUMPHAT
+Title (CN): SUMPHAT
+Slug: sumphat
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: gadget
+Zone: iconcraft
+Room: 
+---
+
+ID: 370
+Title (EN): TAMADA STUDIO
+Title (TH): TAMADA STUDIO
+Title (CN): TAMADA STUDIO
+Slug: tamada-studio
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: iconcraft
+Room: 
+---
+
+ID: 371
+Title (EN): THAIBUTTERFLY
+Title (TH): THAIBUTTERFLY
+Title (CN): THAIBUTTERFLY
+Slug: thaibutterfly
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: iconcraft
+Room: 
+---
+
+ID: 372
+Title (EN): THAICRAFT
+Title (TH): THAICRAFT
+Title (CN): THAICRAFT
+Slug: thaicraft
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: 
+Zone: iconcraft
+Room: 
+---
+
+ID: 373
+Title (EN): THORR
+Title (TH): THORR
+Title (CN): THORR
+Slug: thorr
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: gadget
+Zone: iconcraft
+Room: 
+---
+
+ID: 374
+Title (EN): THXFUL FOR SMALL MERCIES
+Title (TH): THXFUL FOR SMALL MERCIES
+Title (CN): THXFUL FOR SMALL MERCIES
+Slug: thxful-for-small-mercies
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: gadget
+Zone: iconcraft
+Room: 
+---
+
+ID: 375
+Title (EN): TNOP
+Title (TH): TNOP
+Title (CN): TNOP
+Slug: tnop
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: book
+Zone: iconcraft
+Room: 
+---
+
+ID: 376
+Title (EN): TRIMODE
+Title (TH): TRIMODE
+Title (CN): TRIMODE
+Slug: trimode
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: iconcraft
+Room: 
+---
+
+ID: 377
+Title (EN): TROPICANA
+Title (TH): TROPICANA
+Title (CN): TROPICANA
+Slug: tropicana
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: iconcraft
+Room: 
+---
+
+ID: 378
+Title (EN): VARNI
+Title (TH): VARNI
+Title (CN): VARNI
+Slug: varni
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: iconcraft
+Room: 
+---
+
+ID: 379
+Title (EN): WARANIST 
+Title (TH): WARANIST 
+Title (CN): WARANIST 
+Slug: waranist
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: iconcraft
+Room: 
+---
+
+ID: 380
+Title (EN): WATAPO
+Title (TH): WATAPO
+Title (CN): WATAPO
+Slug: watapo
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: 
+Zone: iconcraft
+Room: 
+---
+
+ID: 381
+Title (EN): YANO
+Title (TH): YANO
+Title (CN): YANO
+Slug: yano
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: iconcraft
+Room: 
+---
+
+ID: 382
+Title (EN): AUTOSMART
+Title (TH): AUTOSMART
+Title (CN): AUTOSMART
+Slug: autosmart
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: facility
+SCID: 
+Zone: 
+Room: B107
+---
+
+ID: 383
+Title (EN): Guljak Topokki Chicken
+Title (TH): Guljak Topokki Chicken
+Title (CN): Guljak Topokki Chicken
+Slug: guljak-topokki-chicken
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: restaurant
+Zone: 
+Room: R606
+---
+
+ID: 384
+Title (EN): % Arabica
+Title (TH): % Arabica
+Title (CN): % Arabica
+Slug: arabica
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: cafes
+Zone: 
+Room: L125
+---
+
+ID: 385
+Title (EN): TRUE ICON HALL
+Title (TH): TRUE ICON HALL
+Title (CN): TRUE ICON HALL
+Slug: true-icon-hall
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: hall
+SCID: 
+Zone: 
+Room: 
+---
+
+ID: 386
+Title (EN): HOBS
+Title (TH): HOBS
+Title (CN): HOBS
+Slug: hobs
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: restaurant
+Zone: 
+Room: 
+---
+
+ID: 387
+Title (EN): All About You
+Title (TH): All About You
+Title (CN): All About You
+Slug: all-about-you-0cef6090-f991-11ea-829c-11ea03ab86f1
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: beauty
+Zone: 
+Room: K104
+---
+
+ID: 467
+Title (EN): CHOL Aromatique
+Title (TH): CHOL Aromatique
+Title (CN): CHOL Aromatique
+Slug: chol-aromatique
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: 
+Zone: 
+Room: K104
+---
+
+ID: 390
+Title (EN): BIRKENSTOCK
+Title (TH): BIRKENSTOCK
+Title (CN): BIRKENSTOCK
+Slug: birkenstock
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 
+Room: 116/1
+---
+
+ID: 391
+Title (EN): Fire Tiger Bar &amp; Restaurant
+Title (TH): โรงเตี๊ยมเสือพ่นไฟ
+Title (CN): 火老虎酒吧餐厅 
+Slug: fire-tiger-bar-and-restaurant
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: 
+Zone: the-veranda
+Room: VG04
+---
+
+ID: 392
+Title (EN): Starbucks Reserve™ Chao Phraya Riverfront, ICONSIAM 7th FL
+Title (TH): Starbucks Reserve™ Chao Phraya Riverfront, ICONSIAM 7th FL
+Title (CN): Starbucks Reserve™ Chao Phraya Riverfront, ICONSIAM 7th FL
+Slug: starbucks-reserve-chao-phraya-riverfront
+Collection: dinings
+Reason: Found existing by title - Updated instead of created
+CID: dining
+SCID: 
+Zone: 
+Room: 
+---
+
+ID: 393
+Title (EN): Skechers
+Title (TH): Skechers
+Title (CN): Skechers
+Slug: skechers-shop
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: 
+Zone: 
+Room: 320-321
+---
+
+ID: 395
+Title (EN): Great Harbour
+Title (TH): Great Harbour
+Title (CN): Great Harbour
+Slug: great-harbour
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: restaurant
+Zone: 
+Room: 629
+---
+
+ID: 397
+Title (EN): MUJI
+Title (TH): MUJI
+Title (CN): MUJI
+Slug: muji
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: null
+Zone: 
+Room: 302-303
+---
+
+ID: 498
+Title (EN): THE KLINIQUE
+Title (TH): THE KLINIQUE
+Title (CN): THE KLINIQUE
+Slug: the-klinique
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: 
+Zone: 
+Room: 
+---
+
+ID: 399
+Title (EN): Atelier De Prestige
+Title (TH): Atelier De Prestige
+Title (CN): Atelier De Prestige
+Slug: atelier-de-prestige
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: beauty
+Zone: plaza
+Room:   M07
+---
+
+ID: 400
+Title (EN): U.S. Polo Assn.
+Title (TH): U.S. Polo Assn.
+Title (CN): U.S. Polo Assn.
+Slug: us-polo-assn
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: null
+Zone: 
+Room: M01
+---
+
+ID: 401
+Title (EN): Bang &amp; Olufsen
+Title (TH): Bang &amp; Olufsen
+Title (CN): Bang &amp; Olufsen
+Slug: bang-and-olufsen
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: null
+Zone: 
+Room: L117/1-2
+---
+
+ID: 402
+Title (EN): Yuzu Suki
+Title (TH): Yuzu Suki
+Title (CN): Yuzu Suki
+Slug: yuzu-suki
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: restaurant
+Zone: 
+Room: 606
+---
+
+ID: 403
+Title (EN): MEGA HarborLand
+Title (TH): MEGA HarborLand
+Title (CN): MEGA HarborLand
+Slug: mega-harborland
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: entertaining
+SCID: null
+Zone: 
+Room: 616
+---
+
+ID: 480
+Title (EN): BHU MHAI No.5
+Title (TH): BHU MHAI No.5
+Title (CN): BHU MHAI No.5
+Slug: bhu-mhai-no5
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: 
+Zone: 
+Room: 529
+---
+
+ID: 406
+Title (EN): DHL Express
+Title (TH): DHL Express
+Title (CN): DHL Express
+Slug: dhl
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: facility
+SCID: 
+Zone: 
+Room: B102/2
+---
+
+ID: 408
+Title (EN): ANG BAO
+Title (TH): ANG BAO
+Title (CN): 
+Slug: angbao
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: dessert
+Zone: plaza
+Room: 
+---
+
+ID: 409
+Title (EN): Minimelts Thailand
+Title (TH): Minimelts Thailand
+Title (CN): Minimelts Thailand
+Slug: minimelts-thailand
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: dessert
+Zone: 
+Room: 
+---
+
+ID: 410
+Title (EN): Dakasi
+Title (TH): Dakasi
+Title (CN): Dakasi
+Slug: dakasi
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: beverage
+Zone: 
+Room: K502
+---
+
+ID: 411
+Title (EN): Tasty Congee &amp; Noodle Wantun Shop
+Title (TH): Tasty Congee &amp; Noodle Wantun Shop
+Title (CN): 正斗粥麵專家 - 泰國 Tasty Congee &amp; Noodle Wantun Shop
+Slug: tasty-congee-and-noodle-wantun-shop
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: restaurant
+Zone: the-veranda
+Room: VG13
+---
+
+ID: 412
+Title (EN): Levi&#039;s
+Title (TH): Levi&#039;s
+Title (CN): Levi&#039;s
+Slug: levis
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 
+Room: 223
+---
+
+ID: 512
+Title (EN): LOEWE
+Title (TH): LOEWE
+Title (CN): LOEWE
+Slug: loewe
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: 
+Zone: 
+Room: 
+---
+
+ID: 414
+Title (EN): VANS
+Title (TH): VANS
+Title (CN): VANS
+Slug: vans-of-the-wall
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: 
+Zone: 
+Room: 306
+---
+
+ID: 415
+Title (EN): Tenjo Sushi &amp; Yakiniku Premium Buffet
+Title (TH): Tenjo Sushi &amp; Yakiniku Premium Buffet
+Title (CN): Tenjo Sushi &amp; Yakiniku Premium Buffet
+Slug: tenjo-sushi-and-yakiniku-premium-buffet
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: restaurant
+Zone: dining-on-4th
+Room: 401/1
+---
+
+ID: 416
+Title (EN): KISS ME DOLL
+Title (TH): KISS ME DOLL
+Title (CN): KISS ME DOLL
+Slug: kiss-me-doll-2
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 
+Room: K201
+---
+
+ID: 417
+Title (EN): Toro Fries Signature
+Title (TH): Toro Fries Signature
+Title (CN): Toro Fries Signature
+Slug: toro-fries-signature
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: 
+Zone: 
+Room: RK605
+---
+
+ID: 420
+Title (EN): SUVARN
+Title (TH): SUVARN
+Title (CN): SUVARN
+Slug: suvarn
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: 
+Room: KM09
+---
+
+ID: 421
+Title (EN): Rimowa
+Title (TH): Rimowa
+Title (CN): 
+Slug: rimowa
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: the-veranda
+Room: 
+---
+
+ID: 422
+Title (EN): James Boulangerie
+Title (TH): James Boulangerie
+Title (CN): James Boulangerie
+Slug: james-boulangerie
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: restaurant
+Zone: 
+Room: 609
+---
+
+ID: 423
+Title (EN): SUSHIRO
+Title (TH): SUSHIRO
+Title (CN): 
+Slug: sushiro
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: restaurant
+Zone: 
+Room: UG20/2
+---
+
+ID: 424
+Title (EN): Waleerat Clinic
+Title (TH): Waleerat Clinic
+Title (CN): Waleerat Clinic (薇丽来 诊所)
+Slug: waleerat-clinic
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: beauty
+Zone: 
+Room: 541/1
+---
+
+ID: 425
+Title (EN): Maison Francis Kurkdjian Boutique
+Title (TH): Maison Francis Kurkdjian Boutique
+Title (CN): Maison Francis Kurkdjian Boutique
+Slug: maison-francis-kurkdjian-boutique
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: null
+Zone: 
+Room: M09
+---
+
+ID: 426
+Title (EN): MAKOTO
+Title (TH): MAKOTO
+Title (CN): MAKOTO
+Slug: makoto
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: null
+Zone: 
+Room: 424/1
+---
+
+ID: 428
+Title (EN): Play Sound
+Title (TH): Play Sound
+Title (CN): Play Sound
+Slug: play-sound
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: edutainment
+SCID: music
+Zone: icon-education
+Room: 535
+---
+
+ID: 429
+Title (EN): GEE
+Title (TH): GEE
+Title (CN): GEE
+Slug: gees
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: dessert
+Zone: 
+Room: RK607
+---
+
+ID: 431
+Title (EN): MAISON KITSUNE
+Title (TH): MAISON KITSUNE
+Title (CN): MAISON KITSUNE
+Slug: maison-kitsune
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: fashion
+Zone: 
+Room: M14/2
+---
+
+ID: 432
+Title (EN): Ginger Farm Kitchen
+Title (TH): Ginger Farm Kitchen
+Title (CN): Ginger Farm Kitchen
+Slug: ginger-farm-kitchen
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: restaurant
+Zone: alangkarn
+Room: R607
+---
+
+ID: 434
+Title (EN): Volvo Studio Bangkok
+Title (TH): Volvo Studio Bangkok
+Title (CN): Volvo Studio Bangkok
+Slug: volvo
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: auto
+Zone: 
+Room: 316-317
+---
+
+ID: 435
+Title (EN): Sancheck
+Title (TH): Sancheck (ซันเช็ค)
+Title (CN): Sancheck (散策)
+Slug: sancheck
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: restaurant
+Zone: alangkarn
+Room: R613
+---
+
+ID: 436
+Title (EN): TEVA
+Title (TH): TEVA
+Title (CN): TEVA
+Slug: teva
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: 
+Zone: 
+Room: 221/2
+---
+
+ID: 437
+Title (EN): SAUCONY
+Title (TH): SAUCONY
+Title (CN): SAUCONY
+Slug: saucony
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: sports
+Zone: 
+Room: 221/2
+---
+
+ID: 438
+Title (EN): REV RUNNR
+Title (TH): REV RUNNR
+Title (CN): REV RUNNR
+Slug: rev-runnr
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: 
+Zone: 
+Room: 304
+---
+
+ID: 439
+Title (EN): IPPUDO
+Title (TH): IPPUDO
+Title (CN): IPPUDO
+Slug: ippudo
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: restaurant
+Zone: 
+Room: R608
+---
+
+ID: 440
+Title (EN): Kam&#039;s Roast
+Title (TH): Kam&#039;s Roast
+Title (CN): Kam&#039;s Roast
+Slug: kams-roast
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: restaurant
+Zone: alangkarn
+Room: R609
+---
+
+ID: 441
+Title (EN): Akimitsu Tendon
+Title (TH): Akimitsu Tendon
+Title (CN): Akimitsu Tendon
+Slug: akimitsu-tendon
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: restaurant
+Zone: the-veranda
+Room: G08
+---
+
+ID: 442
+Title (EN): Swensen&#039;s
+Title (TH): Swensen&#039;s
+Title (CN): Swensen&#039;s
+Slug: swensens-iconsiam
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: dessert
+Zone: dining-on-4th
+Room: 402/4
+---
+
+ID: 443
+Title (EN): Crocs
+Title (TH): Crocs
+Title (CN): Crocs
+Slug: crocs-iconsiam
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: 
+Zone: 
+Room: 307/1
+---
+
+ID: 444
+Title (EN): Sugi Bee Garden Cafe
+Title (TH): Sugi Bee Garden Cafe
+Title (CN): Sugi Bee Garden Cafe
+Slug: sugi-bee-garden-cafe
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: 
+Zone: 
+Room: K-602
+---
+
+ID: 474
+Title (EN): Ăn Cơm Ăn Cá
+Title (TH): Ăn Cơm Ăn Cá (อันเกิม - อันก๋า)
+Title (CN): Ăn Cơm Ăn Cá
+Slug: Ăn-cơm-Ăn-cá
+Collection: dinings
+Reason: Found existing by title - Updated instead of created
+CID: dining
+SCID: 
+Zone: the-veranda
+Room: VG11
+---
+
+ID: 446
+Title (EN): Rolex
+Title (TH): Rolex
+Title (CN): Rolex
+Slug: rolex
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: 
+Zone: iconluxe
+Room: LG02-03
+---
+
+ID: 447
+Title (EN): MULLER
+Title (TH): MULLER
+Title (CN): MULLER
+Slug: muller
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: living
+Zone: 
+Room: 423/1, 423/2
+---
+
+ID: 448
+Title (EN): G-SHOCK
+Title (TH): G-SHOCK
+Title (CN): G-SHOCK
+Slug: g-shock
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: 
+Zone: 
+Room: 
+---
+
+ID: 449
+Title (EN): Crazy Rich Thai BBQ
+Title (TH): หมูกระทะคนรวย
+Title (CN): Crazy Rich Thai BBQ
+Slug: crazy-rich-thai-bbq
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: restaurant
+Zone: dining-on-5th
+Room: 515/1
+---
+
+ID: 499
+Title (EN): Umami
+Title (TH): Umami
+Title (CN): Umami
+Slug: umami
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: 
+Zone: 
+Room: K601
+---
+
+ID: 451
+Title (EN): Beard Papa&#039;s
+Title (TH): Beard Papa&#039;s
+Title (CN): Beard Papa&#039;s
+Slug: beard-papas
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: dessert
+Zone: 
+Room: K604
+---
+
+ID: 452
+Title (EN): mr.big
+Title (TH): mr.big
+Title (CN): mr.big
+Slug: mr-big
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: 
+Zone: 
+Room: 407
+---
+
+ID: 457
+Title (EN): Cold Stone Creamery
+Title (TH): Cold Stone Creamery
+Title (CN): Cold Stone Creamery
+Slug: cold-stone-creamery
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: 
+Zone: 1690428833
+Room: 
+---
+
+ID: 509
+Title (EN): Karun Thai tea
+Title (TH): Karun Thai tea
+Title (CN): Karun Thai tea
+Slug: karun-thai-tea
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: 
+Zone: the-veranda
+Room: KV05
+---
+
+ID: 466
+Title (EN): BEARHOUSE
+Title (TH): BEARHOUSE
+Title (CN): BEARHOUSE
+Slug: bearhouse
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: 
+Zone: 
+Room: 
+---
+
+ID: 502
+Title (EN): Yolé
+Title (TH): Yolé
+Title (CN): Yolé
+Slug: yol
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: 
+Zone: the-veranda
+Room: KV03-KV04
+---
+
+ID: 475
+Title (EN): ECOTOPIA
+Title (TH): ECOTOPIA
+Title (CN): ECOTOPIA
+Slug: ecotopia
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: 
+Zone: 
+Room: 563-567
+---
+
+ID: 488
+Title (EN): PUFF
+Title (TH): PUFF
+Title (CN): PUFF
+Slug: puff-shoes
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: 
+Zone: 
+Room: 
+---
+
+ID: 455
+Title (EN): Gyukatsu Kyoto Katsugyu
+Title (TH): Gyukatsu Kyoto Katsugyu
+Title (CN): Gyukatsu Kyoto Katsugyu
+Slug: gyukatsu-kyoto-katsugyu
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: 
+Zone: 
+Room: 610
+---
+
+ID: 458
+Title (EN): PHUFA
+Title (TH): PHUFA (ภูฟ้า)
+Title (CN): PHUFA
+Slug: phufa
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: 
+Zone: 1690428833
+Room: 
+---
+
+ID: 459
+Title (EN): Auntie Anne&#039;s
+Title (TH): Auntie Anne&#039;s
+Title (CN): Auntie Anne&#039;s
+Slug: auntie-annes-iconsiam
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: 
+Zone: 1690428833
+Room: 
+---
+
+ID: 460
+Title (EN): MOMOKO Bag &amp; Shoes Spa
+Title (TH): MOMOKO Bag &amp; Shoes Spa
+Title (CN): MOMOKO Bag &amp; Shoes Spa
+Slug: momoko-bag-and-shoes-spa
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: 
+Zone: 
+Room: K-B1-07/1
+---
+
+ID: 461
+Title (EN): DragCura | Curated Oral Care shop
+Title (TH): DragCura | Curated Oral Care shop
+Title (CN): DragCura | Curated Oral Care shop
+Slug: dragcura-curated-oral-care-shop
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: 
+Zone: 1690428833
+Room: K558
+---
+
+ID: 463
+Title (EN): EGG DESU
+Title (TH): EGG DESU
+Title (CN): EGG DESU
+Slug: egg-desu
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: 
+Zone: 1690428833
+Room: 
+---
+
+ID: 464
+Title (EN): Craze Mama
+Title (TH): Craze Mama
+Title (CN): Craze Mama
+Slug: craze-mama
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: 
+Zone: 
+Room: UG01
+---
+
+ID: 493
+Title (EN): CHAUMET
+Title (TH): CHAUMET
+Title (CN): CHAUMET
+Slug: chaumet
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: 
+Zone: iconluxe
+Room: L113/1
+---
+
+ID: 468
+Title (EN): MARC JACOBS
+Title (TH): MARC JACOBS
+Title (CN): MARC JACOBS
+Slug: marc-jacobs
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: 
+Zone: 
+Room: M08
+---
+
+ID: 469
+Title (EN): Karl Lagerfeld
+Title (TH): Karl Lagerfeld
+Title (CN): Karl Lagerfeld
+Slug: karl-lagerfeld
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: 
+Zone: 
+Room: M08
+---
+
+ID: 470
+Title (EN): JIB
+Title (TH): JIB
+Title (CN): JIB
+Slug: jib
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: 
+Zone: 
+Room: 408
+---
+
+ID: 471
+Title (EN): SHOO LOONG KAN
+Title (TH): SHOO LOONG KAN
+Title (CN): SHOO LOONG KAN (小龙坎火锅)
+Slug: shoo-loong-kan
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: 
+Zone: 
+Room: 
+---
+
+ID: 491
+Title (EN): Chongdee Teahouse
+Title (TH): Chongdee Teahouse (โรงชาชงดี)
+Title (CN): Chongdee Teahouse
+Slug: chongdee-teahouse
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: 
+Zone: 
+Room: K504
+---
+
+ID: 492
+Title (EN): Mozza By Cocotte
+Title (TH): Mozza By Cocotte
+Title (CN): Mozza By Cocotte
+Slug: mozza-by-cocotte
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: 
+Zone: the-veranda
+Room: VG04-VG05
+---
+
+ID: 473
+Title (EN): Fire Tiger By Seoulcial Club
+Title (TH): Fire Tiger By Seoulcial Club
+Title (CN): Fire Tiger By Seoulcial Club
+Slug: fire-tiger-by-seoulcial-club
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: 
+Zone: dining-on-5th
+Room: K503
+---
+
+ID: 490
+Title (EN): Van Cleef &amp; Arpels
+Title (TH): Van Cleef &amp; Arpels
+Title (CN): Van Cleef &amp; Arpels
+Slug: van-cleef-and-arpels
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: 
+Zone: iconluxe
+Room: L102
+---
+
+ID: 497
+Title (EN): Thong Smith
+Title (TH): Thong Smith (ทองสมิทธ์)
+Title (CN): Thong Smith
+Slug: thong-smith-iconsiam
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: 
+Zone: 
+Room: 
+---
+
+ID: 506
+Title (EN): Chato Studio
+Title (TH): Chato Studio
+Title (CN): Chato Studio
+Slug: chato-studio
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: 
+Zone: 
+Room: 219
+---
+
+ID: 485
+Title (EN): Lululemon
+Title (TH): Lululemon
+Title (CN): Lululemon
+Slug: lululemon
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: 
+Zone: 
+Room: 212-213
+---
+
+ID: 507
+Title (EN): MITH BANGKOK
+Title (TH): MITH BANGKOK
+Title (CN): MITH BANGKOK
+Slug: mith-bangkok
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: 
+Zone: 1690428833
+Room: K558/2
+---
+
+ID: 478
+Title (EN): JOURNAL
+Title (TH): JOURNAL
+Title (CN): JOURNAL
+Slug: journal
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: 
+Zone: 
+Room: K202
+---
+
+ID: 482
+Title (EN): GENTLEWOMAN
+Title (TH): GENTLEWOMAN
+Title (CN): GENTLEWOMAN
+Slug: gentlewoman
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: 
+Zone: 
+Room: 328-330
+---
+
+ID: 483
+Title (EN): Alexander McQueen
+Title (TH): Alexander McQueen
+Title (CN): Alexander McQueen
+Slug: alexander-mcqueen
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: 
+Zone: iconluxe
+Room: LM16
+---
+
+ID: 486
+Title (EN): PASH Juices
+Title (TH): PASH Juices
+Title (CN): PASH Juices
+Slug: pash-juices
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: 
+Zone: 
+Room: 301
+---
+
+ID: 494
+Title (EN): Jerome Cheesecake
+Title (TH): Jerome Cheesecake
+Title (CN): Jerome Cheesecake
+Slug: jerome-cheesecake
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: 
+Zone: the-veranda
+Room: 
+---
+
+ID: 495
+Title (EN): Chop Chop Chinese Burger
+Title (TH): Chop Chop Chinese Burger
+Title (CN): Chop Chop Chinese Burger
+Slug: chop-chop-chinese-burger
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: 
+Zone: 
+Room: R614
+---
+
+ID: 496
+Title (EN): LELE JUICE BAR
+Title (TH): LELE JUICE BAR
+Title (CN): LELE JUICE BAR
+Slug: lele-juice-bar
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: 
+Zone: 
+Room: RK606 - 607
+---
+
+ID: 500
+Title (EN): Molto
+Title (TH): Molto
+Title (CN): Molto
+Slug: molto
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: 
+Zone: 
+Room: K603
+---
+
+ID: 501
+Title (EN): Pacamara Coffee Roasters
+Title (TH): Pacamara Coffee Roasters
+Title (CN): Pacamara Coffee Roasters
+Slug: pacamara
+Collection: dinings
+Reason: Found existing by slug - Updated instead of created
+CID: dining
+SCID: 
+Zone: the-veranda
+Room: GZB01
+---
+
+ID: 503
+Title (EN): MATTER MAKERS
+Title (TH): MATTER MAKERS
+Title (CN): MATTER MAKERS
+Slug: matter-makers
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: 
+Zone: 
+Room: 
+---
+
+ID: 504
+Title (EN): Apex Beauty
+Title (TH): Apex Beauty
+Title (CN): Apex Beauty
+Slug: apex-beauty
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: 
+Zone: 
+Room: 539
+---
+
+ID: 505
+Title (EN): Gordon Ramsay Bread Street Kitchen &amp; Bar
+Title (TH): Gordon Ramsay Bread Street Kitchen &amp; Bar
+Title (CN): Gordon Ramsay Bread Street Kitchen &amp; Bar
+Slug: gordon-ramsay-bread-street-kitchen-and-bar
+Collection: dinings
+Reason: Found existing by title - Updated instead of created
+CID: dining
+SCID: 
+Zone: 
+Room: 314
+---
+
+ID: 511
+Title (EN): Shichi Japanese Restaurant
+Title (TH): Shichi Japanese Restaurant
+Title (CN): Shichi Japanese Restaurant
+Slug: shichi-japanese-restaurant
+Collection: shops
+Reason: Found existing by slug - Updated instead of created
+CID: shop
+SCID: 
+Zone: dining-on-4th
+Room: 401/3
+---
