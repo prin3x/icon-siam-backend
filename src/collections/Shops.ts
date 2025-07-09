@@ -12,6 +12,14 @@ export const Shops: CollectionConfig = {
   },
   fields: [
     {
+      name: 'unique_id',
+      type: 'text',
+      label: 'Unique ID',
+      admin: {
+        disabled: true,
+      },
+    },
+    {
       name: 'title',
       localized: true,
       type: 'textarea',
