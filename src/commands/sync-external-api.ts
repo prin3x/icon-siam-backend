@@ -298,15 +298,95 @@ async function findCategory(
 
   const searchName = categoryNameEn || categoryNameTh
 
+  // Common category mappings for better matching based on actual sample data
+  const categoryMappings: { [key: string]: string } = {
+    // International Luxury → Luxury (based on your requirement)
+    'international luxury': 'LUXURY',
+    'international luxury brands': 'LUXURY',
+    'luxury international': 'LUXURY',
+    'premium luxury': 'LUXURY',
+    'high-end luxury': 'LUXURY',
+    'luxury brands': 'LUXURY',
+    'luxury fashion': 'LUXURY',
+
+    // Fashion & Accessories → FASHION (from sample data)
+    'fashion & accessories': 'FASHION',
+    'fashion accessories': 'FASHION',
+    'international fashion': 'FASHION',
+    'premium fashion': 'FASHION',
+    'high-end fashion': 'FASHION',
+    'fashion brands': 'FASHION',
+
+    // Health & Beauty → BEAUTY (from sample data)
+    'health & beauty': 'BEAUTY',
+    'beauty & wellness': 'BEAUTY',
+    'international beauty': 'BEAUTY',
+    'premium beauty': 'BEAUTY',
+    'beauty brands': 'BEAUTY',
+    'international cosmetics': 'BEAUTY',
+    'premium cosmetics': 'BEAUTY',
+
+    // Mobile, Gadget, Electronics → GADGET (from sample data)
+    'mobile, gadget, electronics': 'GADGET',
+    'mobile gadget electronics': 'GADGET',
+    'electronics & gadgets': 'GADGET',
+    'gadget electronics': 'GADGET',
+    'mobile electronics': 'GADGET',
+
+    // Food & Beverage → DINING categories (from sample data)
+    'food & beverage': 'RESTAURANT', // Default to restaurant for food
+    'food beverage': 'RESTAURANT',
+    'food and beverage': 'RESTAURANT',
+
+    // Grocery, Lifestyle & Department Store → HOME & LIVING
+    'grocery, lifestyle & department store': 'HOME & LIVING',
+    'grocery lifestyle department store': 'HOME & LIVING',
+    'lifestyle department store': 'HOME & LIVING',
+    'grocery lifestyle': 'HOME & LIVING',
+
+    // Leisure and Entertainment → CLUB & LOUNGE
+    'leisure and entertainment': 'CLUB & LOUNGE',
+    'leisure entertainment': 'CLUB & LOUNGE',
+    'entertainment leisure': 'CLUB & LOUNGE',
+
+    // Service → GENERAL (default for services)
+    service: 'GENERAL',
+    services: 'GENERAL',
+
+    // Specialty → GENERAL (default for specialty items)
+    specialty: 'GENERAL',
+    'specialty items': 'GENERAL',
+
+    // Additional mappings for common variations
+    'international accessories': 'FASHION',
+    'premium accessories': 'FASHION',
+    'luxury accessories': 'LUXURY',
+    'international jewelry': 'LUXURY',
+    'premium jewelry': 'LUXURY',
+    'luxury jewelry': 'LUXURY',
+    'international watches': 'LUXURY',
+    'premium watches': 'LUXURY',
+    'luxury watches': 'LUXURY',
+    'international footwear': 'FASHION',
+    'premium footwear': 'FASHION',
+    'luxury footwear': 'LUXURY',
+    'international bags': 'FASHION',
+    'premium bags': 'FASHION',
+    'luxury bags': 'LUXURY',
+    'international handbags': 'FASHION',
+    'premium handbags': 'FASHION',
+    'luxury handbags': 'LUXURY',
+  }
+
   try {
-    // Find existing category only
-    const existingCategory = await payload.find({
+    // Strategy 1: Try exact match first
+    let existingCategory = await payload.find({
       collection: 'categories',
       where: {
         and: [
           {
             name: {
-              ilike: `%${searchName}%`,
+              equals: searchName,
             },
           },
           {
@@ -320,22 +400,144 @@ async function findCategory(
     })
 
     if (existingCategory.docs.length > 0) {
-      console.log(`✅ Found existing category: ${searchName} (${type})`)
+      console.log(`✅ Found existing category (exact match): ${searchName} (${type})`)
       return existingCategory.docs[0].id.toString()
-    } else {
-      // Track unmapped category names
-      const categoryInfo = {
-        name: searchName,
-        type: type,
-        englishName: categoryNameEn,
-        thaiName: categoryNameTh,
-      }
-      unmappedCategories.add(JSON.stringify(categoryInfo))
-      console.log(
-        `⚠️  Category "${searchName}" (${type}) does not exist - skipping category assignment`,
-      )
-      return null
     }
+
+    // Strategy 2: Try category mappings
+    const normalizedSearchName = searchName.toLowerCase().trim()
+    const mappedCategory = categoryMappings[normalizedSearchName]
+
+    if (mappedCategory) {
+      existingCategory = await payload.find({
+        collection: 'categories',
+        where: {
+          and: [
+            {
+              name: {
+                equals: mappedCategory,
+              },
+            },
+            {
+              type: {
+                equals: type,
+              },
+            },
+          ],
+        },
+        limit: 1,
+      })
+
+      if (existingCategory.docs.length > 0) {
+        console.log(
+          `✅ Found existing category (mapped): ${searchName} → ${mappedCategory} (${type})`,
+        )
+        return existingCategory.docs[0].id.toString()
+      }
+    }
+
+    // Strategy 3: Try partial match (current behavior)
+    existingCategory = await payload.find({
+      collection: 'categories',
+      where: {
+        and: [
+          {
+            name: {
+              like: `%${searchName}%`,
+            },
+          },
+          {
+            type: {
+              equals: type,
+            },
+          },
+        ],
+      },
+      limit: 1,
+    })
+
+    if (existingCategory.docs.length > 0) {
+      console.log(`✅ Found existing category (partial match): ${searchName} (${type})`)
+      return existingCategory.docs[0].id.toString()
+    }
+
+    // Strategy 4: Try word-based matching (split by spaces and try each word)
+    const words = searchName
+      .toLowerCase()
+      .split(/\s+/)
+      .filter((word) => word.length > 2)
+
+    for (const word of words) {
+      existingCategory = await payload.find({
+        collection: 'categories',
+        where: {
+          and: [
+            {
+              name: {
+                like: `%${word}%`,
+              },
+            },
+            {
+              type: {
+                equals: type,
+              },
+            },
+          ],
+        },
+        limit: 1,
+      })
+
+      if (existingCategory.docs.length > 0) {
+        console.log(
+          `✅ Found existing category (word match): ${searchName} → ${existingCategory.docs[0].name} (${type})`,
+        )
+        return existingCategory.docs[0].id.toString()
+      }
+    }
+
+    // Strategy 5: Try reverse mapping (check if any mapped category contains our search term)
+    for (const [mappedKey, mappedValue] of Object.entries(categoryMappings)) {
+      if (mappedKey.includes(normalizedSearchName) || normalizedSearchName.includes(mappedKey)) {
+        existingCategory = await payload.find({
+          collection: 'categories',
+          where: {
+            and: [
+              {
+                name: {
+                  equals: mappedValue,
+                },
+              },
+              {
+                type: {
+                  equals: type,
+                },
+              },
+            ],
+          },
+          limit: 1,
+        })
+
+        if (existingCategory.docs.length > 0) {
+          console.log(
+            `✅ Found existing category (reverse mapping): ${searchName} → ${mappedValue} (${type})`,
+          )
+          return existingCategory.docs[0].id.toString()
+        }
+      }
+    }
+
+    // No match found - track unmapped category names
+    const categoryInfo = {
+      name: searchName,
+      type: type,
+      englishName: categoryNameEn,
+      thaiName: categoryNameTh,
+    }
+    unmappedCategories.add(JSON.stringify(categoryInfo))
+    console.log(
+      `⚠️  Category "${searchName}" (${type}) does not exist - skipping category assignment`,
+    )
+    return null
   } catch (error) {
     console.error(`❌ Error finding category ${searchName}:`, error)
     return null
@@ -490,6 +692,20 @@ function mergeDataPreservingExisting(existingData: any, newData: any): any {
       continue
     }
 
+    // Special handling for unique_id - always update if new unique_id is provided
+    if (key === 'unique_id' && newValue) {
+      // Always update unique_id if we have a valid unique_id from external API
+      merged[key] = newValue
+      continue
+    }
+
+    // Special handling for categories - always update if new category is found
+    if (key === 'categories' && newValue && Array.isArray(newValue) && newValue.length > 0) {
+      // Always update categories if we have a valid category from external API
+      merged[key] = newValue
+      continue
+    }
+
     if (typeof newValue === 'object' && newValue !== null && !Array.isArray(newValue)) {
       // Handle nested objects
       if (!merged[key] || typeof merged[key] !== 'object') {
@@ -600,6 +816,15 @@ async function syncRecord(payload: any, record: ExternalApiRecord) {
     // Only add category if found - don't set to null
     if (categoryId) {
       baseData.categories = [parseInt(categoryId)]
+      console.log(`   📂 Category assigned: ${record.categoryNameEn} → Category ID: ${categoryId}`)
+    } else {
+      console.log(`   ⚠️  No category found for: ${record.categoryNameEn}`)
+    }
+
+    // Always add unique_id from external API
+    if (record.uniqueId) {
+      baseData.unique_id = record.uniqueId
+      console.log(`   🆔 Unique ID assigned: ${record.uniqueId}`)
     }
 
     // Note: Slug will be generated only for new records, existing records keep their current slug
@@ -607,67 +832,142 @@ async function syncRecord(payload: any, record: ExternalApiRecord) {
     // Check if record already exists - try multiple search strategies
     let existingRecordData = null
 
-    // Strategy 1: Search by English title
-    if (record.brandNameEn || record.shopNameEnglish) {
-      const englishSearch = await payload.find({
+    // Strategy 1: Search by unique_id (primary method)
+    // if (record.uniqueId) {
+    //   const uniqueIdSearch = await payload.find({
+    //     collection,
+    //     where: {
+    //       unique_id: {
+    //         equals: record.uniqueId,
+    //       },
+    //     },
+    //     limit: 1,
+    //   })
+
+    //   if (uniqueIdSearch.docs.length > 0) {
+    //     existingRecordData = uniqueIdSearch.docs[0]
+    //     console.log(`Found existing record by unique_id: ${record.uniqueId}`)
+    //   } else {
+    //     console.log(`No existing record found by unique_id: ${record.uniqueId}`)
+    //   }
+    // }
+
+    // Strategy 2: Search by English title (fallback)
+    if (!existingRecordData && (record.brandNameEn || record.shopNameEnglish)) {
+      const searchTerm = decodeText(record.brandNameEn || record.shopNameEnglish).toLowerCase()
+      console.log(`Searching for existing record by English name: "${searchTerm}"`)
+
+      // Try exact match first
+      const exactSearch = await payload.find({
         collection,
         where: {
           title: {
-            ilike: `%${decodeText(record.brandNameEn || record.shopNameEnglish).toLowerCase()}%`,
+            equals: searchTerm,
           },
         },
         locale: 'en',
         limit: 1,
       })
 
-      if (englishSearch.docs.length > 0) {
-        existingRecordData = englishSearch.docs[0]
-        console.log(
-          `Found existing record by English name: ${record.brandNameEn || record.shopNameEnglish}`,
-        )
+      if (exactSearch.docs.length > 0) {
+        existingRecordData = exactSearch.docs[0]
+      } else {
+        // Try partial match with word boundaries
+        const partialSearch = await payload.find({
+          collection,
+          where: {
+            title: {
+              like: `%${searchTerm} %`,
+            },
+          },
+          locale: 'en',
+          limit: 1,
+        })
+
+        if (partialSearch.docs.length > 0) {
+          existingRecordData = partialSearch.docs[0]
+          console.log(
+            `Found existing record by partial English name: "${existingRecordData.title}"`,
+          )
+        } else {
+          // Try start of title match
+          const startSearch = await payload.find({
+            collection,
+            where: {
+              title: {
+                like: `${searchTerm}%`,
+              },
+            },
+            locale: 'en',
+            limit: 1,
+          })
+
+          if (startSearch.docs.length > 0) {
+            existingRecordData = startSearch.docs[0]
+            console.log(
+              `Found existing record by start of English name: "${existingRecordData.title}"`,
+            )
+          }
+        }
       }
     }
 
-    // Strategy 2: Search by Thai title if English search failed
+    // Strategy 3: Search by Thai title if English search failed
     if (!existingRecordData && (record.brandNameTh || record.shopNameThai)) {
-      const thaiSearch = await payload.find({
+      const searchTerm = decodeText(record.brandNameTh || record.shopNameThai).toLowerCase()
+      console.log(`Searching for existing record by Thai name: "${searchTerm}"`)
+
+      // Try exact match first
+      const exactSearch = await payload.find({
         collection,
         where: {
           title: {
-            ilike: `%${decodeText(record.brandNameTh || record.shopNameThai).toLowerCase()}%`,
+            equals: searchTerm,
           },
         },
         locale: 'th',
         limit: 1,
       })
 
-      if (thaiSearch.docs.length > 0) {
-        existingRecordData = thaiSearch.docs[0]
-        console.log(
-          `Found existing record by Thai name: ${record.brandNameTh || record.shopNameThai}`,
-        )
-      }
-    }
-
-    // Strategy 3: Search by potential slug if we have a title
-    if (!existingRecordData && (record.brandNameEn || record.shopNameEnglish)) {
-      const potentialSlug = generateSafeSlug(
-        record.brandNameEn || record.shopNameEnglish,
-        record.tenantId,
-      )
-      const slugSearch = await payload.find({
-        collection,
-        where: {
-          slug: {
-            equals: potentialSlug,
+      if (exactSearch.docs.length > 0) {
+        existingRecordData = exactSearch.docs[0]
+        console.log(`Found existing record by exact Thai name: "${existingRecordData.title}"`)
+      } else {
+        // Try partial match with word boundaries
+        const partialSearch = await payload.find({
+          collection,
+          where: {
+            title: {
+              like: `%${searchTerm} %`,
+            },
           },
-        },
-        limit: 1,
-      })
+          locale: 'th',
+          limit: 1,
+        })
 
-      if (slugSearch.docs.length > 0) {
-        existingRecordData = slugSearch.docs[0]
-        console.log(`Found existing record by slug: ${potentialSlug}`)
+        if (partialSearch.docs.length > 0) {
+          existingRecordData = partialSearch.docs[0]
+          console.log(`Found existing record by partial Thai name: "${existingRecordData.title}"`)
+        } else {
+          // Try start of title match
+          const startSearch = await payload.find({
+            collection,
+            where: {
+              title: {
+                like: `${searchTerm}%`,
+              },
+            },
+            locale: 'th',
+            limit: 1,
+          })
+
+          if (startSearch.docs.length > 0) {
+            existingRecordData = startSearch.docs[0]
+            console.log(
+              `Found existing record by start of Thai name: "${existingRecordData.title}"`,
+            )
+          }
+        }
       }
     }
 
@@ -682,13 +982,35 @@ async function syncRecord(payload: any, record: ExternalApiRecord) {
       console.log(`   Fields to update: ${Object.keys(baseData).join(', ')}`)
       console.log(`   Preserving existing slug: ${existingData.slug}`)
 
+      // Log category update if applicable
+      if (baseData.categories && existingData.categories) {
+        console.log(
+          `   📂 Updating categories: ${existingData.categories.map((c: any) => c.name).join(', ')} → ${baseData.categories.map((c: any) => c.name).join(', ')}`,
+        )
+      } else if (baseData.categories) {
+        console.log(
+          `   📂 Adding categories: ${baseData.categories.map((c: any) => c.name).join(', ')}`,
+        )
+      }
+
+      // Log unique_id update if applicable
+      if (baseData.unique_id && existingData.unique_id) {
+        console.log(
+          `   🆔 Updating unique_id: "${existingData.unique_id}" → "${baseData.unique_id}"`,
+        )
+      } else if (baseData.unique_id && !existingData.unique_id) {
+        console.log(`   🆔 Adding unique_id: "${baseData.unique_id}"`)
+      } else if (baseData.unique_id) {
+        console.log(`   🆔 Setting unique_id: "${baseData.unique_id}"`)
+      }
+
       // Merge new data with existing data, preserving existing non-empty values
       const mergedData = mergeDataPreservingExisting(existingData, baseData)
 
       // Update English version
       await payload.update({
         collection,
-        id: existingId,
+        where: { id: { equals: existingId } },
         data: mergedData,
         locale: 'en',
       })
@@ -768,11 +1090,15 @@ async function syncRecord(payload: any, record: ExternalApiRecord) {
         // Categories are handled in baseData - only added if found
       }
 
-      const newRecord = await payload.create({
+      await payload.create({
         collection,
         data: createData,
         locale: 'en',
       })
+
+      console.log(`✅ Created ${recordType}: ${record.brandNameEn || record.shopNameEnglish}`)
+      console.log(`   Created new slug: ${newSlug}`)
+      console.log(`   Status set to: INACTIVE`)
 
       // Create Thai version with only Thai data
       const thaiData: any = {}

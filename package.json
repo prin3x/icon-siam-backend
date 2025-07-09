@@ -28,7 +28,8 @@
     "fix-promotion-categories": "cross-env NODE_OPTIONS=--no-deprecation payload run ./src/commands/fix-promotion-categories.ts",
     "debug-promotion-categories": "cross-env NODE_OPTIONS=--no-deprecation payload run ./src/commands/debug-promotion-categories.ts",
     "fix-promotion-titles": "cross-env NODE_OPTIONS=--no-deprecation payload run ./src/commands/fix-promotion-titles.ts",
-    "debug-title-validation": "cross-env NODE_OPTIONS=--no-deprecation payload run ./src/commands/debug-title-validation.ts"
+    "debug-title-validation": "cross-env NODE_OPTIONS=--no-deprecation payload run ./src/commands/debug-title-validation.ts",
+    "flag-records-without-unique-id": "cross-env NODE_OPTIONS=--no-deprecation payload run ./src/commands/flag-records-without-unique-id.ts"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "3.44.0",
