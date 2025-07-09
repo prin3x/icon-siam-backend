@@ -73,7 +73,7 @@ export async function findFloor(
     '8F Floor': '8F',
 
     //   special case
-    'Fl. 1': '1f',
+    'Fl. 1': '1F',
     'Fl. 2': '2F',
     'Fl. 3': '3F',
     'Fl. 4': '4F',
@@ -92,6 +92,10 @@ export async function findFloor(
     BM: 'BM',
     'Fl. BM1': 'BM1',
     'Fl. BM1,G': 'BM1',
+    // Fl. GA, Fl. 1, Fl. G,GA, Fl. M,1, Fl. 3,4, Fl. BF
+    'Fl. GA': 'GF',
+    'Fl. BF': 'BF',
+    GA: 'GF',
   }
 
   // Try to map the floor name
