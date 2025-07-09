@@ -16,7 +16,19 @@
     "test": "pnpm run test:int && pnpm run test:e2e",
     "test:e2e": "cross-env NODE_OPTIONS=\"--no-deprecation --no-experimental-strip-types\" pnpm exec playwright test",
     "test:int": "cross-env NODE_OPTIONS=--no-deprecation vitest run --config ./vitest.config.mts",
-    "sync:external": "cross-env NODE_OPTIONS=--no-deprecation payload run src/commands/sync-external-api.ts"
+    "sync:external": "cross-env NODE_OPTIONS=--no-deprecation payload run src/commands/sync-external-api.ts",
+    "migrate-direct-table": "cross-env NODE_OPTIONS=--no-deprecation payload run ./src/commands/migrate-direct-table.ts",
+    "migrate-events-table": "cross-env NODE_OPTIONS=--no-deprecation payload run ./src/commands/migrate-events-table.ts",
+    "migrate-promotions-table": "cross-env NODE_OPTIONS=--no-deprecation payload run ./src/commands/migrate-promotions-table.ts",
+    "sync-external-api": "cross-env NODE_OPTIONS=--no-deprecation payload run ./src/commands/sync-external-api.ts",
+    "fix-direct-categories": "cross-env NODE_OPTIONS=--no-deprecation payload run ./src/commands/fix-direct-categories.ts",
+    "debug-categories": "cross-env NODE_OPTIONS=--no-deprecation payload run ./src/commands/debug-categories.ts",
+    "migrate-direct-table-3": "cross-env NODE_OPTIONS=--no-deprecation payload run ./src/commands/migrate-direct-table-3.ts",
+    "fix-direct-table-3-localization": "cross-env NODE_OPTIONS=--no-deprecation payload run ./src/commands/fix-direct-table-3-localization.ts",
+    "fix-promotion-categories": "cross-env NODE_OPTIONS=--no-deprecation payload run ./src/commands/fix-promotion-categories.ts",
+    "debug-promotion-categories": "cross-env NODE_OPTIONS=--no-deprecation payload run ./src/commands/debug-promotion-categories.ts",
+    "fix-promotion-titles": "cross-env NODE_OPTIONS=--no-deprecation payload run ./src/commands/fix-promotion-titles.ts",
+    "debug-title-validation": "cross-env NODE_OPTIONS=--no-deprecation payload run ./src/commands/debug-title-validation.ts"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "3.44.0",

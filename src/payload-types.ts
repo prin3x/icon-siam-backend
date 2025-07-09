@@ -229,6 +229,7 @@ export interface Homepage {
 export interface Dining {
   id: number;
   title: string;
+  unique_id?: string | null;
   subtitle?: string | null;
   description?: string | null;
   /**
@@ -395,6 +396,7 @@ export interface Floor {
  */
 export interface Shop {
   id: number;
+  unique_id?: string | null;
   title?: string | null;
   subtitle?: string | null;
   description?: string | null;
@@ -1337,6 +1339,7 @@ export interface EventsSelect<T extends boolean = true> {
  * via the `definition` "shops_select".
  */
 export interface ShopsSelect<T extends boolean = true> {
+  unique_id?: T;
   title?: T;
   subtitle?: T;
   description?: T;
@@ -1431,6 +1434,7 @@ export interface ShopsSelect<T extends boolean = true> {
  */
 export interface DiningsSelect<T extends boolean = true> {
   title?: T;
+  unique_id?: T;
   subtitle?: T;
   description?: T;
   categories?: T;
