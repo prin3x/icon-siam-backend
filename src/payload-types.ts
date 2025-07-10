@@ -807,8 +807,6 @@ export interface IconCraft {
         id?: string | null;
       }[]
     | null;
-  showcase_title?: string | null;
-  showcase_description?: string | null;
   craft_highlight_title?: string | null;
   craft_highlight_description?: string | null;
   craft_highlight_content?:
@@ -1626,8 +1624,6 @@ export interface IconCraftSelect<T extends boolean = true> {
         image_url?: T;
         id?: T;
       };
-  showcase_title?: T;
-  showcase_description?: T;
   craft_highlight_title?: T;
   craft_highlight_description?: T;
   craft_highlight_content?:
