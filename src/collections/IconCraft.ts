@@ -69,6 +69,37 @@ export const IconCraft: CollectionConfig = {
       localized: true,
     },
     {
+      name: 'craft_highlight_title',
+      type: 'text',
+      label: 'Craft Highlight Title',
+      localized: true,
+    },
+    {
+      name: 'craft_highlight_description',
+      type: 'text',
+      label: 'Craft Highlight Description',
+      localized: true,
+    },
+    {
+      name: 'craft_highlight_content',
+      type: 'array',
+      label: 'Craft Highlight Content',
+      fields: [
+        {
+          name: 'title',
+          type: 'text',
+          label: 'Title',
+          localized: true,
+        },
+        {
+          name: 'image_url',
+          type: 'upload',
+          relationTo: 'media',
+          label: 'Image URL',
+        },
+      ],
+    },
+    {
       name: 'gallery_image_urls',
       type: 'array',
       label: 'Gallery Image URLs',
