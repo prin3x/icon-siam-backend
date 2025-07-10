@@ -917,6 +917,32 @@ export interface GettingHere {
         id?: string | null;
       }[]
     | null;
+  explore_icon_siam?:
+    | {
+        placement_key:
+          | 'HOMEPAGE'
+          | 'ABOUT'
+          | 'DINING'
+          | 'SHOPPING'
+          | 'EVENTS'
+          | 'PROMOTIONS'
+          | 'GETTING_HERE'
+          | 'DIRECTORY'
+          | 'ICON_CRAFT'
+          | 'ICON_LUXE'
+          | 'ATTRACTION'
+          | 'NEWS'
+          | 'STORIES'
+          | 'FACILITIES'
+          | 'RESIDENCES'
+          | 'TENANT_SERVICES'
+          | 'VISION_AND_MISSION'
+          | 'BOARD_OF_DIRECTORS'
+          | 'AWARDS';
+        image?: (number | null) | Media;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1689,6 +1715,13 @@ export interface GettingHereSelect<T extends boolean = true> {
         icon?: T;
         title?: T;
         details?: T;
+        id?: T;
+      };
+  explore_icon_siam?:
+    | T
+    | {
+        placement_key?: T;
+        image?: T;
         id?: T;
       };
   updatedAt?: T;
