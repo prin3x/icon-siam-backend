@@ -809,6 +809,15 @@ export interface IconCraft {
     | null;
   showcase_title?: string | null;
   showcase_description?: string | null;
+  craft_highlight_title?: string | null;
+  craft_highlight_description?: string | null;
+  craft_highlight_content?:
+    | {
+        title?: string | null;
+        image_url?: (number | null) | Media;
+        id?: string | null;
+      }[]
+    | null;
   gallery_image_urls?:
     | {
         image_url?: (number | null) | Media;
@@ -1619,6 +1628,15 @@ export interface IconCraftSelect<T extends boolean = true> {
       };
   showcase_title?: T;
   showcase_description?: T;
+  craft_highlight_title?: T;
+  craft_highlight_description?: T;
+  craft_highlight_content?:
+    | T
+    | {
+        title?: T;
+        image_url?: T;
+        id?: T;
+      };
   gallery_image_urls?:
     | T
     | {
