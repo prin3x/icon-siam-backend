@@ -336,6 +336,7 @@ export interface Dining {
 export interface Category {
   id: number;
   name?: string | null;
+  pin_to_directory?: boolean | null;
   description?: string | null;
   image?: (number | null) | Media;
   type: 'shops' | 'dinings' | 'promotions' | 'events' | 'directory';
@@ -1824,6 +1825,7 @@ export interface MediaSelect<T extends boolean = true> {
  */
 export interface CategoriesSelect<T extends boolean = true> {
   name?: T;
+  pin_to_directory?: T;
   description?: T;
   image?: T;
   type?: T;

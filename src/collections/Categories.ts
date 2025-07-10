@@ -16,6 +16,11 @@ export const Categories: CollectionConfig = {
       localized: true,
     },
     {
+      name: 'pin_to_directory',
+      type: 'checkbox',
+      defaultValue: false,
+    },
+    {
       name: 'description',
       type: 'textarea',
       localized: true,
