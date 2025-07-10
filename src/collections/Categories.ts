@@ -21,6 +21,11 @@ export const Categories: CollectionConfig = {
       defaultValue: false,
     },
     {
+      name: 'display_name',
+      type: 'text',
+      localized: true,
+    },
+    {
       name: 'description',
       type: 'textarea',
       localized: true,
