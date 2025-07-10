@@ -42,11 +42,13 @@ export const IconCraft: CollectionConfig = {
           name: 'title',
           type: 'text',
           label: 'Title',
+          localized: true,
         },
         {
           name: 'description',
           type: 'textarea',
           label: 'Description',
+          localized: true,
         },
         {
           name: 'image_url',
@@ -55,18 +57,6 @@ export const IconCraft: CollectionConfig = {
           relationTo: 'media',
         },
       ],
-    },
-    {
-      name: 'showcase_title',
-      type: 'text',
-      label: 'Showcase Title',
-      localized: true,
-    },
-    {
-      name: 'showcase_description',
-      type: 'textarea',
-      label: 'Showcase Description',
-      localized: true,
     },
     {
       name: 'craft_highlight_title',
