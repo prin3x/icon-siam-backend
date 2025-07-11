@@ -786,9 +786,17 @@ export interface PageBanner {
   first_section_title?: string | null;
   first_section_subtitle?: string | null;
   custom_image_url?: (number | null) | Media;
+  custom_banner_images?:
+    | {
+        banner_image?: (number | null) | Media;
+        id?: string | null;
+      }[]
+    | null;
   custom_image_alt_text?: string | null;
   call_to_action_text?: string | null;
   target_url?: string | null;
+  custom_banner_section_title?: string | null;
+  custom_banner_section_subtitle?: string | null;
   status?: ('ACTIVE' | 'INACTIVE') | null;
   updatedAt: string;
   createdAt: string;
@@ -1296,9 +1304,17 @@ export interface PageBannersSelect<T extends boolean = true> {
   first_section_title?: T;
   first_section_subtitle?: T;
   custom_image_url?: T;
+  custom_banner_images?:
+    | T
+    | {
+        banner_image?: T;
+        id?: T;
+      };
   custom_image_alt_text?: T;
   call_to_action_text?: T;
   target_url?: T;
+  custom_banner_section_title?: T;
+  custom_banner_section_subtitle?: T;
   status?: T;
   updatedAt?: T;
   createdAt?: T;
