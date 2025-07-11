@@ -8,7 +8,7 @@ export const PageBanners: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'custom_title',
-    defaultColumns: ['placement_key', 'active_start_date', 'active_end_date', 'display_order'],
+    defaultColumns: ['placement_key', 'status'],
   },
   access: {
     read: () => true,
