@@ -12,6 +12,12 @@ function addCorsHeaders(response: NextResponse): NextResponse {
   response.headers.set('Access-Control-Allow-Methods', 'GET, OPTIONS')
   response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-API-Key')
   response.headers.set('Access-Control-Allow-Credentials', 'true')
+  // Security headers
+  response.headers.set('Content-Security-Policy', "default-src 'self'")
+  response.headers.set('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload')
+  response.headers.set('X-Frame-Options', 'DENY')
+  response.headers.set('X-Content-Type-Options', 'nosniff')
+  response.headers.set('X-XSS-Protection', '1; mode=block')
   return response
 }
 
