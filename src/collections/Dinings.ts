@@ -19,6 +19,12 @@ export const Dinings: CollectionConfig = {
       required: true,
     },
     {
+      name: 'pin_to_iconluxe',
+      type: 'checkbox',
+      label: 'Pin to Iconluxe',
+      defaultValue: false,
+    },
+    {
       name: 'unique_id',
       type: 'text',
       label: 'Unique ID',

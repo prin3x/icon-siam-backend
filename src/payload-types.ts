@@ -229,6 +229,7 @@ export interface Homepage {
 export interface Dining {
   id: number;
   title: string;
+  pin_to_iconluxe?: boolean | null;
   unique_id?: string | null;
   subtitle?: string | null;
   description?: string | null;
@@ -400,6 +401,7 @@ export interface Shop {
   id: number;
   unique_id?: string | null;
   title?: string | null;
+  pin_to_iconluxe?: boolean | null;
   subtitle?: string | null;
   description?: string | null;
   /**
@@ -1376,6 +1378,7 @@ export interface EventsSelect<T extends boolean = true> {
 export interface ShopsSelect<T extends boolean = true> {
   unique_id?: T;
   title?: T;
+  pin_to_iconluxe?: T;
   subtitle?: T;
   description?: T;
   categories?: T;
@@ -1469,6 +1472,7 @@ export interface ShopsSelect<T extends boolean = true> {
  */
 export interface DiningsSelect<T extends boolean = true> {
   title?: T;
+  pin_to_iconluxe?: T;
   unique_id?: T;
   subtitle?: T;
   description?: T;

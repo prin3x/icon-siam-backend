@@ -26,6 +26,12 @@ export const Shops: CollectionConfig = {
       label: 'Title',
     },
     {
+      name: 'pin_to_iconluxe',
+      type: 'checkbox',
+      label: 'Pin to Iconluxe',
+      defaultValue: false,
+    },
+    {
       name: 'subtitle',
       type: 'textarea',
       localized: true,
