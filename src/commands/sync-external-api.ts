@@ -832,8 +832,8 @@ function parseOpeningHours(openingHours: string): any {
     }
   }
 
-  // Parse format like "10.00 - 22.00"
-  const timeMatch = openingHours.match(/(\d+\.\d+)\s*-\s*(\d+\.\d+)/)
+  // Parse format like "10.00 - 22.00" with non-backtracking regex
+  const timeMatch = openingHours.match(/^(\d{1,2}\.\d{2})\s*-\s*(\d{1,2}\.\d{2})$/)
   if (timeMatch && timeMatch[1] && timeMatch[2]) {
     const openTime = timeMatch[1].replace('.', ':')
     const closeTime = timeMatch[2].replace('.', ':')
