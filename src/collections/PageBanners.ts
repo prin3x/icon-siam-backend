@@ -2,9 +2,13 @@ import type { CollectionConfig } from 'payload'
 
 export const PageBanners: CollectionConfig = {
   slug: 'page-banners',
+  labels: {
+    singular: 'Page',
+    plural: 'Pages',
+  },
   admin: {
     useAsTitle: 'custom_title',
-    defaultColumns: ['placement_key', 'active_start_date', 'active_end_date', 'display_order'],
+    defaultColumns: ['placement_key', 'status'],
   },
   access: {
     read: () => true,
@@ -138,6 +142,20 @@ export const PageBanners: CollectionConfig = {
       label: 'Custom Image',
     },
     {
+      name: 'custom_banner_images',
+      localized: true,
+      type: 'array',
+      label: 'Custom Banner Images',
+      fields: [
+        {
+          name: 'banner_image',
+          type: 'upload',
+          label: 'Banner Image',
+          relationTo: 'media',
+        },
+      ],
+    },
+    {
       name: 'custom_image_alt_text',
       type: 'text',
       localized: true,
@@ -154,6 +172,18 @@ export const PageBanners: CollectionConfig = {
       type: 'text',
       localized: true,
       label: 'Target URL',
+    },
+    {
+      name: 'custom_banner_section_title',
+      type: 'text',
+      localized: true,
+      label: 'Custom Banner Section Title',
+    },
+    {
+      name: 'custom_banner_section_subtitle',
+      type: 'textarea',
+      localized: true,
+      label: 'Custom Banner Section Subtitle',
     },
     {
       name: 'status',
