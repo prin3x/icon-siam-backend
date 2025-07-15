@@ -182,378 +182,6 @@ const unmappedFloors = new Set<string>()
 // Track unmapped category names
 const unmappedCategories = new Set<string>()
 
-// Function to log errors to file
-function logErrorToFile(error: any, record: ExternalApiRecord | null, context: string = '') {
-  const timestamp = new Date().toISOString()
-  const logDir = path.join(process.cwd(), 'logs')
-
-  // Create logs directory if it doesn't exist
-  if (!fs.existsSync(logDir)) {
-    fs.mkdirSync(logDir, { recursive: true })
-  }
-
-  const logFile = path.join(logDir, `sync-errors-${new Date().toISOString().split('T')[0]}.log`)
-
-  const recordInfo = record
-    ? {
-        recordId: record.uniqueId,
-        tenantId: record.tenantId,
-        brandNameEn: record.brandNameEn,
-        brandNameTh: record.brandNameTh,
-        shopNameEnglish: record.shopNameEnglish,
-        shopNameThai: record.shopNameThai,
-        categoryNameEn: record.categoryNameEn,
-        categoryNameTh: record.categoryNameTh,
-        recordData: JSON.stringify(record, null, 2),
-      }
-    : {
-        recordId: 'N/A',
-        tenantId: 'N/A',
-        brandNameEn: 'N/A',
-        brandNameTh: 'N/A',
-        shopNameEnglish: 'N/A',
-        shopNameThai: 'N/A',
-        categoryNameEn: 'N/A',
-        categoryNameTh: 'N/A',
-        recordData: 'N/A',
-      }
-
-  const logEntry =
-    `[${timestamp}] ${context} - Record: ${recordInfo.recordId} (${recordInfo.brandNameEn || recordInfo.shopNameEnglish})\n` +
-    `Error: ${error.message || error.toString()}\n` +
-    `Stack: ${error.stack}\n` +
-    `Category Info: ${recordInfo.categoryNameEn || 'N/A'} / ${recordInfo.categoryNameTh || 'N/A'}\n` +
-    `Record Data: ${recordInfo.recordData}\n` +
-    `---\n`
-
-  try {
-    fs.appendFileSync(logFile, logEntry)
-    console.log(`📝 Error logged to: ${logFile}`)
-  } catch (writeError) {
-    console.error('Failed to write error log:', writeError)
-  }
-}
-
-// Function to log creation failures specifically
-function logCreationFailure(
-  record: ExternalApiRecord,
-  error: any,
-  reason: string,
-  additionalInfo?: any,
-) {
-  const timestamp = new Date().toISOString()
-  const logDir = path.join(process.cwd(), 'logs')
-
-  // Create logs directory if it doesn't exist
-  if (!fs.existsSync(logDir)) {
-    fs.mkdirSync(logDir, { recursive: true })
-  }
-
-  const logFile = path.join(
-    logDir,
-    `creation-failures-${new Date().toISOString().split('T')[0]}.log`,
-  )
-
-  const recordType = determineRecordType(record)
-  const recordName =
-    record.brandNameEn ||
-    record.shopNameEnglish ||
-    record.brandNameTh ||
-    record.shopNameThai ||
-    'Unknown'
-
-  const failureInfo = {
-    timestamp,
-    recordType,
-    uniqueId: record.uniqueId,
-    tenantId: record.tenantId,
-    recordName,
-    reason,
-    error: error.message || error.toString(),
-    stack: error.stack,
-    categoryNameEn: record.categoryNameEn,
-    categoryNameTh: record.categoryNameTh,
-    floor: record.floorRevised || record.floor,
-    status: record.status,
-    statusRevised: record.statusRevised,
-    additionalInfo,
-    fullRecord: record,
-  }
-
-  const logEntry =
-    `[${timestamp}] CREATION FAILURE - ${recordType.toUpperCase()}\n` +
-    `Name: ${recordName}\n` +
-    `Unique ID: ${record.uniqueId}\n` +
-    `Tenant ID: ${record.tenantId}\n` +
-    `Reason: ${reason}\n` +
-    `Error: ${failureInfo.error}\n` +
-    `Category: ${record.categoryNameEn || 'N/A'} / ${record.categoryNameTh || 'N/A'}\n` +
-    `Floor: ${record.floorRevised || record.floor || 'N/A'}\n` +
-    `Status: ${record.status} (${record.statusRevised || 'N/A'})\n` +
-    `Additional Info: ${JSON.stringify(additionalInfo, null, 2)}\n` +
-    `Full Record: ${JSON.stringify(record, null, 2)}\n` +
-    `---\n`
-
-  try {
-    fs.appendFileSync(logFile, logEntry)
-    console.log(`❌ Creation failure logged: ${recordName} (${reason})`)
-  } catch (writeError) {
-    console.error('Failed to write creation failure log:', writeError)
-  }
-}
-
-// Function to log validation issues
-function logValidationIssue(
-  record: ExternalApiRecord,
-  field: string,
-  value: any,
-  expectedType: string,
-  reason: string,
-) {
-  const timestamp = new Date().toISOString()
-  const logDir = path.join(process.cwd(), 'logs')
-
-  // Create logs directory if it doesn't exist
-  if (!fs.existsSync(logDir)) {
-    fs.mkdirSync(logDir, { recursive: true })
-  }
-
-  const logFile = path.join(
-    logDir,
-    `validation-issues-${new Date().toISOString().split('T')[0]}.log`,
-  )
-
-  const recordType = determineRecordType(record)
-  const recordName =
-    record.brandNameEn ||
-    record.shopNameEnglish ||
-    record.brandNameTh ||
-    record.shopNameThai ||
-    'Unknown'
-
-  const logEntry =
-    `[${timestamp}] VALIDATION ISSUE - ${recordType.toUpperCase()}\n` +
-    `Name: ${recordName}\n` +
-    `Unique ID: ${record.uniqueId}\n` +
-    `Field: ${field}\n` +
-    `Value: ${JSON.stringify(value)}\n` +
-    `Expected Type: ${expectedType}\n` +
-    `Reason: ${reason}\n` +
-    `---\n`
-
-  try {
-    fs.appendFileSync(logFile, logEntry)
-    console.log(`⚠️  Validation issue: ${recordName} - ${field}: ${reason}`)
-  } catch (writeError) {
-    console.error('Failed to write validation log:', writeError)
-  }
-}
-
-// Function to create comprehensive failure report
-function createFailureReport(
-  creationFailures: any[],
-  validationIssues: any[],
-  unmappedFloors: Set<string>,
-  unmappedCategories: Set<string>,
-) {
-  const timestamp = new Date().toISOString()
-  const logDir = path.join(process.cwd(), 'logs')
-
-  // Create logs directory if it doesn't exist
-  if (!fs.existsSync(logDir)) {
-    fs.mkdirSync(logDir, { recursive: true })
-  }
-
-  const reportFile = path.join(
-    logDir,
-    `failure-report-${new Date().toISOString().split('T')[0]}.md`,
-  )
-
-  let reportContent = `# Sync Failure Report - ${new Date().toLocaleDateString()}\n\n`
-  reportContent += `Generated at: ${timestamp}\n\n`
-
-  // Creation Failures Section
-  if (creationFailures.length > 0) {
-    reportContent += `## 🚫 Creation Failures (${creationFailures.length})\n\n`
-    reportContent += `The following records failed to be created or updated:\n\n`
-
-    creationFailures.forEach((failure, index) => {
-      const record = failure.record
-      const recordName =
-        record.brandNameEn ||
-        record.shopNameEnglish ||
-        record.brandNameTh ||
-        record.shopNameThai ||
-        'Unknown'
-      const recordType = determineRecordType(record)
-
-      reportContent += `### ${index + 1}. ${recordName}\n`
-      reportContent += `- **Type**: ${recordType}\n`
-      reportContent += `- **Unique ID**: ${record.uniqueId || 'Missing'}\n`
-      reportContent += `- **Tenant ID**: ${record.tenantId || 'Missing'}\n`
-      reportContent += `- **Reason**: ${failure.reason}\n`
-      reportContent += `- **Error**: ${failure.error}\n`
-      reportContent += `- **Category**: ${record.categoryNameEn || 'N/A'} / ${record.categoryNameTh || 'N/A'}\n`
-      reportContent += `- **Floor**: ${record.floorRevised || record.floor || 'N/A'}\n`
-      reportContent += `- **Status**: ${record.status} (${record.statusRevised || 'N/A'})\n\n`
-    })
-  }
-
-  // Validation Issues Section
-  if (validationIssues.length > 0) {
-    reportContent += `## ⚠️ Validation Issues (${validationIssues.length})\n\n`
-    reportContent += `The following records have validation problems:\n\n`
-
-    validationIssues.forEach((issue, index) => {
-      const record = issue.record
-      const recordName =
-        record.brandNameEn ||
-        record.shopNameEnglish ||
-        record.brandNameTh ||
-        record.shopNameThai ||
-        'Unknown'
-      const recordType = determineRecordType(record)
-
-      reportContent += `### ${index + 1}. ${recordName}\n`
-      reportContent += `- **Type**: ${recordType}\n`
-      reportContent += `- **Unique ID**: ${record.uniqueId || 'Missing'}\n`
-      reportContent += `- **Tenant ID**: ${record.tenantId || 'Missing'}\n`
-      reportContent += `- **Issues**:\n`
-      issue.issues.forEach((validationIssue: string) => {
-        reportContent += `  - ${validationIssue}\n`
-      })
-      reportContent += `- **Category**: ${record.categoryNameEn || 'N/A'} / ${record.categoryNameTh || 'N/A'}\n`
-      reportContent += `- **Floor**: ${record.floorRevised || record.floor || 'N/A'}\n\n`
-    })
-  }
-
-  // Unmapped Floors Section
-  if (unmappedFloors.size > 0) {
-    reportContent += `## 🏢 Unmapped Floor Names (${unmappedFloors.size})\n\n`
-    reportContent += `The following floor names could not be mapped:\n\n`
-
-    const sortedFloors = Array.from(unmappedFloors).sort((a, b) => a.localeCompare(b))
-    sortedFloors.forEach((floorName) => {
-      reportContent += `- "${floorName}"\n`
-    })
-    reportContent += `\n**To fix this:**\n`
-    reportContent += `1. Add missing floor names to the floorMapping object in the findFloor function\n`
-    reportContent += `2. Create the missing floors manually in the admin panel\n\n`
-  }
-
-  // Unmapped Categories Section
-  if (unmappedCategories.size > 0) {
-    reportContent += `## 📂 Unmapped Category Names (${unmappedCategories.size})\n\n`
-    reportContent += `The following category names could not be found:\n\n`
-
-    const sortedCategories = Array.from(unmappedCategories)
-      .map((cat) => JSON.parse(cat))
-      .sort((a, b) => a.name.localeCompare(b.name))
-
-    sortedCategories.forEach((categoryInfo) => {
-      reportContent += `- **"${categoryInfo.name}"** (${categoryInfo.type})\n`
-      reportContent += `  - English: "${categoryInfo.englishName}"\n`
-      reportContent += `  - Thai: "${categoryInfo.thaiName}"\n\n`
-    })
-
-    reportContent += `**To fix this:**\n`
-    reportContent += `1. Create the missing categories manually in the admin panel\n`
-    reportContent += `2. Ensure category names match exactly (case-sensitive)\n`
-    reportContent += `3. Check if categories exist with different names\n\n`
-  }
-
-  // Summary Section
-  reportContent += `## 📊 Summary\n\n`
-  reportContent += `- **Creation Failures**: ${creationFailures.length}\n`
-  reportContent += `- **Validation Issues**: ${validationIssues.length}\n`
-  reportContent += `- **Unmapped Floors**: ${unmappedFloors.size}\n`
-  reportContent += `- **Unmapped Categories**: ${unmappedCategories.size}\n\n`
-
-  reportContent += `## 🔧 Recommended Actions\n\n`
-
-  if (creationFailures.length > 0) {
-    reportContent += `1. **Review creation failures** - Check the detailed error logs for specific issues\n`
-  }
-
-  if (validationIssues.length > 0) {
-    reportContent += `2. **Fix validation issues** - Ensure all required fields are properly filled\n`
-  }
-
-  if (unmappedFloors.size > 0) {
-    reportContent += `3. **Add missing floors** - Update the floor mapping or create floors in admin\n`
-  }
-
-  if (unmappedCategories.size > 0) {
-    reportContent += `4. **Create missing categories** - Add the missing categories to the system\n`
-  }
-
-  try {
-    fs.writeFileSync(reportFile, reportContent)
-    console.log(`📋 Comprehensive failure report created: ${reportFile}`)
-  } catch (writeError) {
-    console.error('Failed to write failure report:', writeError)
-  }
-}
-
-// Function to log sync summary to file
-function logSyncSummary(
-  successCount: number,
-  errorCount: number,
-  totalRecords: number,
-  unmappedFloors: Set<string>,
-  unmappedCategories: Set<string>,
-  creationFailures: any[] = [],
-  validationIssues: any[] = [],
-) {
-  const timestamp = new Date().toISOString()
-  const logDir = path.join(process.cwd(), 'logs')
-
-  // Create logs directory if it doesn't exist
-  if (!fs.existsSync(logDir)) {
-    fs.mkdirSync(logDir, { recursive: true })
-  }
-
-  const logFile = path.join(logDir, `sync-summary-${new Date().toISOString().split('T')[0]}.log`)
-
-  const summary = {
-    timestamp,
-    successCount,
-    errorCount,
-    totalRecords,
-    creationFailures: creationFailures.length,
-    validationIssues: validationIssues.length,
-    unmappedFloors: Array.from(unmappedFloors),
-    unmappedCategories: Array.from(unmappedCategories).map((cat) => JSON.parse(cat)),
-    successRate: totalRecords > 0 ? ((successCount / totalRecords) * 100).toFixed(2) + '%' : '0%',
-  }
-
-  const logEntry =
-    `[${timestamp}] Sync Summary\n` +
-    `✅ Successfully synced: ${successCount} records\n` +
-    `❌ Errors: ${errorCount} records\n` +
-    `🚫 Creation Failures: ${creationFailures.length} records\n` +
-    `⚠️  Validation Issues: ${validationIssues.length} records\n` +
-    `📊 Total records processed: ${totalRecords}\n` +
-    `📈 Success rate: ${summary.successRate}\n` +
-    `⚠️  Unmapped/Missing floors: ${unmappedFloors.size}\n` +
-    `   ${Array.from(unmappedFloors).join(', ')}\n` +
-    `⚠️  Unmapped/Missing categories: ${unmappedCategories.size}\n` +
-    `   ${Array.from(unmappedCategories)
-      .map((cat) => {
-        const categoryInfo = JSON.parse(cat)
-        return `${categoryInfo.name} (${categoryInfo.type}) - EN: "${categoryInfo.englishName}" TH: "${categoryInfo.thaiName}"`
-      })
-      .join('\n   ')}\n` +
-    `---\n`
-
-  try {
-    fs.appendFileSync(logFile, logEntry)
-    console.log(`📝 Summary logged to: ${logFile}`)
-  } catch (writeError) {
-    console.error('Failed to write summary log:', writeError)
-  }
-}
-
 // Find existing category only - do not create new categories
 async function findCategory(
   payload: any,
@@ -578,6 +206,7 @@ async function findCategory(
 
     // Fashion & Accessories → FASHION (from sample data)
     'fashion & accessories': 'FASHION',
+    'fashion&accessories': 'FASHION',
     'fashion accessories': 'FASHION',
     'international fashion': 'FASHION',
     'premium fashion': 'FASHION',
@@ -586,6 +215,8 @@ async function findCategory(
 
     // Health & Beauty → BEAUTY (from sample data)
     'health & beauty': 'BEAUTY',
+    'health beauty': 'BEAUTY',
+    'health&beauty': 'BEAUTY',
     'beauty & wellness': 'BEAUTY',
     'international beauty': 'BEAUTY',
     'premium beauty': 'BEAUTY',
@@ -811,16 +442,6 @@ async function findCategory(
   }
 }
 
-// Create media record from URL
-async function createMediaRecord(
-  payload: any,
-  imageUrl: string,
-  altText: string,
-): Promise<string | null> {
-  // Media functionality removed - always return null
-  return null
-}
-
 // Parse opening hours
 function parseOpeningHours(openingHours: string): any {
   if (!openingHours || openingHours.trim() === '') {
@@ -872,26 +493,6 @@ function determineRecordType(record: ExternalApiRecord): 'dinings' | 'shops' {
   }
 
   return 'shops'
-}
-
-// Parse status
-function parseStatus(status: boolean, statusRevised: string): 'ACTIVE' | 'INACTIVE' {
-  // If statusRevised has specific values, use those
-  if (statusRevised) {
-    const statusLower = statusRevised.toLowerCase()
-    if (statusLower.includes('active') || statusLower.includes('open')) {
-      return 'ACTIVE'
-    }
-    if (statusLower.includes('inactive') || statusLower.includes('closed')) {
-      return 'INACTIVE'
-    }
-    if (statusLower.includes('coming')) {
-      return 'INACTIVE' // Treat "Coming Soon" as inactive
-    }
-  }
-
-  // Fall back to boolean status
-  return status ? 'ACTIVE' : 'INACTIVE'
 }
 
 // Utility to generate safe slug
@@ -966,10 +567,21 @@ function mergeDataPreservingExisting(existingData: any, newData: any): any {
       continue
     }
 
-    // Special handling for categories - always update if new category is found
+    // Special handling for categories - add new categories to existing ones
     if (key === 'categories' && newValue && Array.isArray(newValue) && newValue.length > 0) {
-      // Always update categories if we have a valid category from external API
-      merged[key] = newValue
+      const existingCategories = merged[key] || []
+      const existingCategoryIds = existingCategories.map((cat: any) =>
+        typeof cat === 'object' ? cat.id : cat,
+      )
+
+      const newCategoryIds = newValue.map((cat: any) => (typeof cat === 'object' ? cat.id : cat))
+
+      // Add new categories that don't already exist
+      const uniqueNewCategories = newCategoryIds.filter((id) => !existingCategoryIds.includes(id))
+
+      if (uniqueNewCategories.length > 0) {
+        merged[key] = [...existingCategories, ...uniqueNewCategories]
+      }
       continue
     }
 
@@ -1005,7 +617,6 @@ async function syncRecord(payload: any, record: ExternalApiRecord) {
     const validationIssues = []
 
     if (!record.uniqueId) {
-      logValidationIssue(record, 'uniqueId', record.uniqueId, 'string', 'Missing unique ID')
       validationIssues.push('Missing unique ID')
     }
 
@@ -1015,18 +626,10 @@ async function syncRecord(payload: any, record: ExternalApiRecord) {
       !record.brandNameTh &&
       !record.shopNameThai
     ) {
-      logValidationIssue(
-        record,
-        'title',
-        'all name fields empty',
-        'string',
-        'No name found in any language',
-      )
       validationIssues.push('No name found in any language')
     }
 
     if (!record.tenantId) {
-      logValidationIssue(record, 'tenantId', record.tenantId, 'string', 'Missing tenant ID')
       validationIssues.push('Missing tenant ID')
     }
 
@@ -1306,12 +909,6 @@ async function syncRecord(payload: any, record: ExternalApiRecord) {
 
         console.log(`✅ Updated ${recordType}: ${record.brandNameEn || record.shopNameEnglish}`)
       } catch (updateError) {
-        logCreationFailure(record, updateError, 'Failed to update existing record', {
-          existingId,
-          collection,
-          mergedData,
-          validationIssues,
-        })
         throw updateError
       }
     } else {
@@ -1422,12 +1019,6 @@ async function syncRecord(payload: any, record: ExternalApiRecord) {
         console.log(`   Created new slug: ${newSlug}`)
         console.log(`   Status set to: INACTIVE`)
       } catch (createError) {
-        logCreationFailure(record, createError, 'Failed to create new record', {
-          collection,
-          createData,
-          newSlug,
-          validationIssues,
-        })
         throw createError
       }
     }
@@ -1436,7 +1027,6 @@ async function syncRecord(payload: any, record: ExternalApiRecord) {
     return { validationIssues }
   } catch (error) {
     console.error(`❌ Error syncing record ${record.uniqueId}:`, error)
-    logErrorToFile(error, record, 'syncRecord')
     throw error
   }
 }
@@ -1560,7 +1150,6 @@ async function syncExternalApi() {
             }
           }
         } catch (error) {
-          logErrorToFile(error, record, 'syncRecord')
           return { success: false, record, validationIssues: [], error }
         }
       })
@@ -1655,23 +1244,8 @@ async function syncExternalApi() {
     } else {
       console.log('\n✅ All category names were successfully found!')
     }
-
-    // Log sync summary to file
-    logSyncSummary(
-      successCount,
-      errorCount,
-      records.length,
-      unmappedFloors,
-      unmappedCategories,
-      creationFailures,
-      validationIssues,
-    )
-
-    // Create comprehensive failure report
-    createFailureReport(creationFailures, validationIssues, unmappedFloors, unmappedCategories)
   } catch (error) {
     console.error('Sync failed:', error)
-    logErrorToFile(error, null, 'syncExternalApi')
   } finally {
     process.exit(0)
   }
