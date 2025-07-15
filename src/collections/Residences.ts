@@ -5,133 +5,25 @@ export const Residences: CollectionConfig = {
   slug: 'residences',
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'status'],
-    hidden: true,
+    defaultColumns: ['title', 'status', 'sort_order'],
   },
   access: {
     read: () => true,
   },
   fields: [
     {
-      name: 'main_image',
+      name: 'banner_image',
       type: 'upload',
+      label: 'Banner Image',
       relationTo: 'media',
-      label: 'Main Residence Image',
     },
     {
       name: 'title',
-      localized: true,
-      type: 'textarea',
-      label: 'Residence Title',
-    },
-    {
-      name: 'subtitle',
-      type: 'textarea',
-      localized: true,
-      label: 'Residence Subtitle',
-    },
-    {
-      name: 'description',
-      type: 'textarea',
-      localized: true,
-      label: 'Residence Description',
-    },
-    {
-      name: 'highlight_images',
-      type: 'array',
-      label: 'Highlight Images',
-      fields: [
-        {
-          name: 'image',
-          type: 'upload',
-          relationTo: 'media',
-          label: 'Image',
-        },
-      ],
-    },
-    {
-      name: 'feature_image',
-      type: 'upload',
-      relationTo: 'media',
-      label: 'Feature Image',
-    },
-    {
-      name: 'feature_title',
       type: 'text',
-      label: 'Feature Title',
+      label: 'Page Title',
       localized: true,
-    },
-    {
-      name: 'feature_description',
-      type: 'textarea',
-      label: 'Feature Description',
-      localized: true,
-    },
-    {
-      name: 'showcase_image',
-      type: 'upload',
-      relationTo: 'media',
-      label: 'Residence Showcase Image',
-    },
-    {
-      name: 'showcase_background_color',
-      type: 'text',
-      label: 'Showcase Background Color',
-      defaultValue: '#000000',
-      admin: {
-        components: {
-          Field: '@/components/ColorPicker',
-        },
-      },
-    },
-    {
-      name: 'showcase_title',
-      type: 'text',
-      label: 'Showcase Title',
-      localized: true,
-    },
-    {
-      name: 'showcase_subtitle',
-      type: 'text',
-      label: 'Showcase Subtitle',
-      localized: true,
-    },
-    {
-      name: 'showcase_description',
-      type: 'textarea',
-      label: 'Showcase Description',
-      localized: true,
-    },
-    {
-      name: 'gallery_main_image',
-      type: 'upload',
-      relationTo: 'media',
-      label: 'Gallery Main Image',
-    },
-    {
-      name: 'gallery_title',
-      type: 'text',
-      label: 'Gallery Title',
-      localized: true,
-    },
-    {
-      name: 'gallery_images',
-      type: 'array',
-      label: 'Gallery Images',
-      fields: [
-        {
-          name: 'image',
-          type: 'upload',
-          relationTo: 'media',
-          label: 'Image',
-        },
-      ],
-    },
-    {
-      name: 'gallery_description',
-      type: 'textarea',
-      label: 'Gallery Description',
-      localized: true,
+      required: true,
+      defaultValue: 'RESIDENCES',
     },
     {
       name: 'status',
@@ -139,89 +31,124 @@ export const Residences: CollectionConfig = {
       required: true,
       defaultValue: 'ACTIVE',
       options: [
+        { label: 'Active', value: 'ACTIVE' },
+        { label: 'Inactive', value: 'INACTIVE' },
+      ],
+    },
+    {
+      name: 'residence_sections',
+      type: 'array',
+      label: 'Residence Sections',
+      fields: [
         {
-          label: 'Active',
-          value: 'ACTIVE',
+          name: 'logo',
+          type: 'upload',
+          label: 'Residence Logo',
+          relationTo: 'media',
         },
         {
-          label: 'Inactive',
-          value: 'INACTIVE',
+          name: 'title',
+          type: 'text',
+          label: 'Residence Title',
+          localized: true,
+          required: true,
         },
         {
-          label: 'Closed',
-          value: 'CLOSED',
+          name: 'description',
+          type: 'textarea',
+          label: 'Description',
+          localized: true,
         },
         {
-          label: 'Temporarily Closed',
-          value: 'TEMPORARILY_CLOSED',
+          name: 'image',
+          type: 'upload',
+          label: 'Residence Image',
+          relationTo: 'media',
+        },
+        {
+          name: 'sort_order',
+          type: 'number',
+          label: 'Sort Order',
+          defaultValue: 0,
+        },
+        {
+          name: 'call_to_action',
+          type: 'group',
+          label: 'Call to Action',
+          fields: [
+            {
+              name: 'text',
+              type: 'text',
+              label: 'Button Text',
+              localized: true,
+              defaultValue: 'GO TO WEBSITE',
+            },
+            {
+              name: 'link',
+              type: 'text',
+              label: 'Button Link',
+            },
+          ],
         },
       ],
     },
     {
-      name: 'meta',
+      name: 'gallery',
       type: 'group',
+      label: 'Gallery Section',
       fields: [
         {
           name: 'title',
           type: 'text',
+          label: 'Gallery Title',
           localized: true,
-          label: 'Meta Title',
+        },
+        {
+          name: 'description',
+          type: 'textarea',
+          label: 'Gallery Description',
+          localized: true,
+        },
+        {
+          name: 'images',
+          type: 'array',
+          label: 'Gallery Images',
+          fields: [
+            {
+              name: 'image',
+              type: 'upload',
+              label: 'Gallery Image',
+              relationTo: 'media',
+              required: true,
+            },
+            {
+              name: 'alt_text',
+              type: 'text',
+              label: 'Alt Text',
+              localized: true,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      name: 'seo',
+      type: 'group',
+      label: 'SEO',
+      fields: [
+        {
+          name: 'keywords',
+          type: 'textarea',
+          localized: true,
+          label: 'SEO Keywords',
         },
         {
           name: 'description',
           type: 'textarea',
           localized: true,
-          label: 'Meta Description',
+          label: 'SEO Description',
         },
       ],
-    },
-    {
-      name: 'keywords',
-      type: 'array',
-      label: 'Keywords',
-      localized: true,
-      fields: [
-        {
-          name: 'keyword',
-          type: 'text',
-          label: 'Keyword',
-        },
-      ],
-    },
-    {
-      name: 'order',
-      type: 'number',
-      label: 'Order',
-      required: true,
-      hooks: {
-        beforeChange: [
-          async ({ data, req: { payload }, value, originalDoc, operation }) => {
-            if (operation === 'update' && originalDoc?.order === value) {
-              return value
-            }
-
-            const existingOrder = await payload.find({
-              collection: 'residences' as any,
-              where: {
-                order: {
-                  equals: data?.order,
-                },
-              },
-            })
-
-            if (existingOrder.docs.length > 0) {
-              throw new Error('Order already exists')
-            }
-
-            return value
-          },
-        ],
-      },
-    },
-    {
-      name: 'is_featured',
-      type: 'checkbox',
-      label: 'Is Featured',
     },
     ...slugField(),
   ],
