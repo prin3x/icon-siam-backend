@@ -113,6 +113,7 @@ export const Residences: CollectionConfig = {
           name: 'images',
           type: 'array',
           label: 'Gallery Images',
+          maxRows: 4,
           fields: [
             {
               name: 'image',
