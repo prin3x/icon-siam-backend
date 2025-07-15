@@ -6,6 +6,7 @@ export const Residences: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'status'],
+    hidden: true,
   },
   access: {
     read: () => true,

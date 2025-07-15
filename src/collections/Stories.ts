@@ -7,6 +7,7 @@ export const Stories: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'start_date', 'end_date', 'status', 'pin_to_home', 'pin_to_section'],
+    hidden: true,
   },
   access: {
     read: () => true,

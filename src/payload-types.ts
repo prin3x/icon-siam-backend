@@ -85,6 +85,8 @@ export interface Config {
     promotions: Promotion;
     footers: Footer;
     stickbar: Stickbar;
+    'news-press': NewsPress;
+    stories: Story;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -109,6 +111,8 @@ export interface Config {
     promotions: PromotionsSelect<false> | PromotionsSelect<true>;
     footers: FootersSelect<false> | FootersSelect<true>;
     stickbar: StickbarSelect<false> | StickbarSelect<true>;
+    'news-press': NewsPressSelect<false> | NewsPressSelect<true>;
+    stories: StoriesSelect<false> | StoriesSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -1108,6 +1112,161 @@ export interface Stickbar {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "news-press".
+ */
+export interface NewsPress {
+  id: number;
+  title: string;
+  subtitle?: string | null;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  seo?: {
+    keywords?: string | null;
+    description?: string | null;
+  };
+  highlight?: string | null;
+  section_highlight?: string | null;
+  short_alphabet?: string | null;
+  start_date: string;
+  end_date: string;
+  show_time?: string | null;
+  status: 'ACTIVE' | 'INACTIVE';
+  pin_to_home?: boolean | null;
+  pin_to_section?: boolean | null;
+  sort_order?: number | null;
+  images?: {
+    cover_photo?: (number | null) | Media;
+    thumbnail?: (number | null) | Media;
+    facebook_image?: (number | null) | Media;
+  };
+  relationships?: {
+    categories?: (number | Category)[] | null;
+    related_content?:
+      | (
+          | {
+              relationTo: 'dinings';
+              value: number | Dining;
+            }
+          | {
+              relationTo: 'shops';
+              value: number | Shop;
+            }
+          | {
+              relationTo: 'attractions';
+              value: number | Attraction;
+            }
+          | {
+              relationTo: 'events';
+              value: number | Event;
+            }
+          | {
+              relationTo: 'promotions';
+              value: number | Promotion;
+            }
+        )[]
+      | null;
+  };
+  slug?: string | null;
+  slugLock?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "stories".
+ */
+export interface Story {
+  id: number;
+  title: string;
+  subtitle?: string | null;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  seo?: {
+    keywords?: string | null;
+    description?: string | null;
+  };
+  highlight?: string | null;
+  section_highlight?: string | null;
+  short_alphabet?: string | null;
+  start_date: string;
+  end_date: string;
+  show_time?: string | null;
+  status: 'ACTIVE' | 'INACTIVE';
+  pin_to_home?: boolean | null;
+  pin_to_section?: boolean | null;
+  sort_order?: number | null;
+  images?: {
+    cover_photo?: (number | null) | Media;
+    thumbnail?: (number | null) | Media;
+    facebook_image?: (number | null) | Media;
+  };
+  relationships?: {
+    categories?: (number | Category)[] | null;
+    related_content?:
+      | (
+          | {
+              relationTo: 'dinings';
+              value: number | Dining;
+            }
+          | {
+              relationTo: 'shops';
+              value: number | Shop;
+            }
+          | {
+              relationTo: 'attractions';
+              value: number | Attraction;
+            }
+          | {
+              relationTo: 'events';
+              value: number | Event;
+            }
+          | {
+              relationTo: 'promotions';
+              value: number | Promotion;
+            }
+        )[]
+      | null;
+  };
+  system?: {
+    original_id?: number | null;
+    cid?: string | null;
+    scid?: string | null;
+    create_by?: string | null;
+    modified_at?: string | null;
+  };
+  slug?: string | null;
+  slugLock?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
@@ -1184,6 +1343,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'stickbar';
         value: number | Stickbar;
+      } | null)
+    | ({
+        relationTo: 'news-press';
+        value: number | NewsPress;
+      } | null)
+    | ({
+        relationTo: 'stories';
+        value: number | Story;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -1970,6 +2137,99 @@ export interface StickbarSelect<T extends boolean = true> {
   link?: T;
   status?: T;
   background_color?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "news-press_select".
+ */
+export interface NewsPressSelect<T extends boolean = true> {
+  title?: T;
+  subtitle?: T;
+  content?: T;
+  seo?:
+    | T
+    | {
+        keywords?: T;
+        description?: T;
+      };
+  highlight?: T;
+  section_highlight?: T;
+  short_alphabet?: T;
+  start_date?: T;
+  end_date?: T;
+  show_time?: T;
+  status?: T;
+  pin_to_home?: T;
+  pin_to_section?: T;
+  sort_order?: T;
+  images?:
+    | T
+    | {
+        cover_photo?: T;
+        thumbnail?: T;
+        facebook_image?: T;
+      };
+  relationships?:
+    | T
+    | {
+        categories?: T;
+        related_content?: T;
+      };
+  slug?: T;
+  slugLock?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "stories_select".
+ */
+export interface StoriesSelect<T extends boolean = true> {
+  title?: T;
+  subtitle?: T;
+  content?: T;
+  seo?:
+    | T
+    | {
+        keywords?: T;
+        description?: T;
+      };
+  highlight?: T;
+  section_highlight?: T;
+  short_alphabet?: T;
+  start_date?: T;
+  end_date?: T;
+  show_time?: T;
+  status?: T;
+  pin_to_home?: T;
+  pin_to_section?: T;
+  sort_order?: T;
+  images?:
+    | T
+    | {
+        cover_photo?: T;
+        thumbnail?: T;
+        facebook_image?: T;
+      };
+  relationships?:
+    | T
+    | {
+        categories?: T;
+        related_content?: T;
+      };
+  system?:
+    | T
+    | {
+        original_id?: T;
+        cid?: T;
+        scid?: T;
+        create_by?: T;
+        modified_at?: T;
+      };
+  slug?: T;
+  slugLock?: T;
   updatedAt?: T;
   createdAt?: T;
 }
