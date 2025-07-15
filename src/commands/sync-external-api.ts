@@ -135,6 +135,10 @@ async function fetchExternalData(apiUrl: string, apiKey?: string): Promise<Exter
     'Content-Type': 'application/json',
   }
 
+  if (process.env.NODE_ENV === 'production') {
+    headers['Cookie'] = process.env.EXTERNAL_API_COOKIES || ''
+  }
+
   if (apiKey) {
     headers['X-Apig-AppCode'] = `${apiKey}`
   }
@@ -731,17 +735,13 @@ async function syncRecord(payload: any, record: ExternalApiRecord) {
     // Check if record already exists - try multiple search strategies
     let existingRecordData = null
 
-    // Strategy 1: Search by unique_id and English title
-    if (record.uniqueId && (record.brandNameEn || record.shopNameEnglish)) {
-      const searchTermEn = decodeText(record.brandNameEn || record.shopNameEnglish).toLowerCase()
+    // Strategy 1: Search by unique_id
+    if (record.uniqueId) {
       const uniqueIdSearch = await payload.find({
         collection,
         where: {
           unique_id: {
             equals: record.uniqueId,
-          },
-          title: {
-            equals: searchTermEn,
           },
         },
         limit: 1,
@@ -752,74 +752,6 @@ async function syncRecord(payload: any, record: ExternalApiRecord) {
         console.log(`Found existing record by unique_id: ${record.uniqueId}`)
       } else {
         console.log(`No existing record found by unique_id: ${record.uniqueId}`)
-      }
-    }
-
-    // Strategy 2: Search by Thai title if English search failed
-    if (!existingRecordData && record.uniqueId && (record.brandNameTh || record.shopNameThai)) {
-      const searchTermTh = decodeText(record.brandNameTh || record.shopNameThai).toLowerCase()
-      console.log(`Searching for existing record by Thai name: "${searchTermTh}"`)
-
-      // Try exact match first
-      const exactSearch = await payload.find({
-        collection,
-        where: {
-          unique_id: {
-            equals: record.uniqueId,
-          },
-          title: {
-            equals: searchTermTh,
-          },
-        },
-        locale: 'th',
-        limit: 1,
-      })
-
-      if (exactSearch.docs.length > 0) {
-        existingRecordData = exactSearch.docs[0]
-        console.log(`Found existing record by exact Thai name: "${existingRecordData.title}"`)
-      } else {
-        // Try partial match with word boundaries
-        const partialSearch = await payload.find({
-          collection,
-          where: {
-            unique_id: {
-              equals: record.uniqueId,
-            },
-            title: {
-              like: `%${searchTermTh}%`,
-            },
-          },
-          locale: 'th',
-          limit: 1,
-        })
-
-        if (partialSearch.docs.length > 0) {
-          existingRecordData = partialSearch.docs[0]
-          console.log(`Found existing record by partial Thai name: "${existingRecordData.title}"`)
-        } else {
-          // Try start of title match
-          const startSearch = await payload.find({
-            collection,
-            where: {
-              unique_id: {
-                equals: record.uniqueId,
-              },
-              title: {
-                like: `${searchTermTh}%`,
-              },
-            },
-            locale: 'th',
-            limit: 1,
-          })
-
-          if (startSearch.docs.length > 0) {
-            existingRecordData = startSearch.docs[0]
-            console.log(
-              `Found existing record by start of Thai name: "${existingRecordData.title}"`,
-            )
-          }
-        }
       }
     }
 
