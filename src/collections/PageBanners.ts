@@ -156,6 +156,20 @@ export const PageBanners: CollectionConfig = {
       ],
     },
     {
+      name: 'custom_mobile_banner_images',
+      localized: true,
+      type: 'array',
+      label: 'Custom Mobile Banner Images',
+      fields: [
+        {
+          name: 'mobile_banner_image',
+          type: 'upload',
+          label: 'Mobile Banner Image',
+          relationTo: 'media',
+        },
+      ],
+    },
+    {
       name: 'custom_image_alt_text',
       type: 'text',
       localized: true,

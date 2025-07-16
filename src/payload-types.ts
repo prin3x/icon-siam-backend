@@ -796,6 +796,12 @@ export interface PageBanner {
         id?: string | null;
       }[]
     | null;
+  custom_mobile_banner_images?:
+    | {
+        mobile_banner_image?: (number | null) | Media;
+        id?: string | null;
+      }[]
+    | null;
   custom_image_alt_text?: string | null;
   call_to_action_text?: string | null;
   target_url?: string | null;
@@ -1475,6 +1481,12 @@ export interface PageBannersSelect<T extends boolean = true> {
     | T
     | {
         banner_image?: T;
+        id?: T;
+      };
+  custom_mobile_banner_images?:
+    | T
+    | {
+        mobile_banner_image?: T;
         id?: T;
       };
   custom_image_alt_text?: T;
