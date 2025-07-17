@@ -1,8 +1,6 @@
 import { getPayload } from 'payload'
 import config from '../payload.config'
 import { findFloor } from '../utilities/find-floor'
-import * as fs from 'fs'
-import * as path from 'path'
 
 interface ExternalApiRecord {
   uniqueId: string

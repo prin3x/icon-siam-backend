@@ -28,6 +28,7 @@ import { Footers } from './collections/Footers'
 import { Stickbar } from './collections/Stickbar'
 import { NewsPress } from './collections/NewsPress'
 import { Stories } from './collections/Stories'
+import { ApiSyncLogs } from './collections/ApiSyncLogs'
 
 export const useLocal = process.env.UPLOAD_STRATEGY === 'local'
 export const isDev = process.env.NODE_ENV === 'development'
@@ -71,6 +72,7 @@ export default buildConfig({
     Stickbar,
     NewsPress,
     Stories,
+    ApiSyncLogs,
   ],
 
   // CORS configuration for frontend access
