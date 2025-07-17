@@ -87,6 +87,7 @@ export interface Config {
     stickbar: Stickbar;
     'news-press': NewsPress;
     stories: Story;
+    'api-sync-logs': ApiSyncLog;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -113,6 +114,7 @@ export interface Config {
     stickbar: StickbarSelect<false> | StickbarSelect<true>;
     'news-press': NewsPressSelect<false> | NewsPressSelect<true>;
     stories: StoriesSelect<false> | StoriesSelect<true>;
+    'api-sync-logs': ApiSyncLogsSelect<false> | ApiSyncLogsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -1272,6 +1274,84 @@ export interface Story {
   createdAt: string;
 }
 /**
+ * Track external API sync operations
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "api-sync-logs".
+ */
+export interface ApiSyncLog {
+  id: number;
+  /**
+   * Unique identifier for this sync operation
+   */
+  sync_id: string;
+  status: 'RUNNING' | 'COMPLETED' | 'FAILED' | 'PARTIAL';
+  started_at: string;
+  completed_at?: string | null;
+  /**
+   * How long the sync took to complete
+   */
+  duration_seconds?: number | null;
+  external_api_url: string;
+  api_response_summary?: {
+    total_records_fetched?: number | null;
+    total_pages?: number | null;
+    last_page_processed?: number | null;
+  };
+  processing_summary?: {
+    records_processed?: number | null;
+    records_created?: number | null;
+    records_updated?: number | null;
+    records_failed?: number | null;
+    shops_processed?: number | null;
+    dinings_processed?: number | null;
+  };
+  validation_issues?:
+    | {
+        record_unique_id?: string | null;
+        description?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  unmapped_data?: {
+    unmapped_floors?:
+      | {
+          floor_name?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    unmapped_categories?:
+      | {
+          category_name?: string | null;
+          type?: ('shops' | 'dinings') | null;
+          english_name?: string | null;
+          thai_name?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  errors?:
+    | {
+        timestamp?: string | null;
+        record_unique_id?: string | null;
+        error_message?: string | null;
+        error_stack?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  performance_metrics?: {
+    avg_time_per_record?: number | null;
+    memory_usage_mb?: number | null;
+    api_response_time_avg?: number | null;
+  };
+  /**
+   * Additional notes about this sync operation
+   */
+  notes?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
@@ -1357,6 +1437,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'stories';
         value: number | Story;
+      } | null)
+    | ({
+        relationTo: 'api-sync-logs';
+        value: number | ApiSyncLog;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -2242,6 +2326,80 @@ export interface StoriesSelect<T extends boolean = true> {
       };
   slug?: T;
   slugLock?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "api-sync-logs_select".
+ */
+export interface ApiSyncLogsSelect<T extends boolean = true> {
+  sync_id?: T;
+  status?: T;
+  started_at?: T;
+  completed_at?: T;
+  duration_seconds?: T;
+  external_api_url?: T;
+  api_response_summary?:
+    | T
+    | {
+        total_records_fetched?: T;
+        total_pages?: T;
+        last_page_processed?: T;
+      };
+  processing_summary?:
+    | T
+    | {
+        records_processed?: T;
+        records_created?: T;
+        records_updated?: T;
+        records_failed?: T;
+        shops_processed?: T;
+        dinings_processed?: T;
+      };
+  validation_issues?:
+    | T
+    | {
+        record_unique_id?: T;
+        description?: T;
+        id?: T;
+      };
+  unmapped_data?:
+    | T
+    | {
+        unmapped_floors?:
+          | T
+          | {
+              floor_name?: T;
+              id?: T;
+            };
+        unmapped_categories?:
+          | T
+          | {
+              category_name?: T;
+              type?: T;
+              english_name?: T;
+              thai_name?: T;
+              id?: T;
+            };
+      };
+  errors?:
+    | T
+    | {
+        timestamp?: T;
+        record_unique_id?: T;
+        error_message?: T;
+        error_stack?: T;
+        id?: T;
+      };
+  performance_metrics?:
+    | T
+    | {
+        avg_time_per_record?: T;
+        memory_usage_mb?: T;
+        api_response_time_avg?: T;
+      };
+  notes?: T;
   updatedAt?: T;
   createdAt?: T;
 }
