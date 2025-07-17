@@ -2,12 +2,15 @@ import type { FieldHook } from 'payload'
 import { transliterate } from 'transliteration'
 
 export const formatSlug = (val: string): string => {
-  // First transliterate the text to handle non-English characters
+  if (!val) return ''
+
   const transliterated = transliterate(val)
-  // Then format the slug
+
   return transliterated
-    .replace(/ /g, '-')
-    .replace(/[^\w-]+/g, '')
+    .replace(/[^\w\s-]+/g, '-') // Replace special chars with hyphens
+    .replace(/\s+/g, '-') // Replace spaces with hyphens
+    .replace(/-+/g, '-') // Replace multiple hyphens with single
+    .replace(/^-|-$/g, '') // Remove leading/trailing hyphens
     .toLowerCase()
 }
 
