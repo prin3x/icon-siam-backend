@@ -16,7 +16,6 @@ export const Dinings: CollectionConfig = {
       localized: true,
       type: 'textarea',
       label: 'Title',
-      required: true,
     },
     {
       name: 'pin_to_iconluxe',
