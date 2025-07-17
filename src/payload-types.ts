@@ -234,7 +234,7 @@ export interface Homepage {
  */
 export interface Dining {
   id: number;
-  title: string;
+  title?: string | null;
   pin_to_iconluxe?: boolean | null;
   unique_id?: string | null;
   subtitle?: string | null;
