@@ -68,6 +68,11 @@ export const Dinings: CollectionConfig = {
       name: 'location_zone',
       type: 'text',
       label: 'Location Zone',
+      admin: {
+        components: {
+          Field: '@/components/LocationZonePicker',
+        },
+      },
     },
     {
       name: 'location_shop_number',
@@ -248,7 +253,8 @@ export const Dinings: CollectionConfig = {
       defaultValue: 'ACTIVE',
       options: [
         {
-          label: 'Active',
+          label:
+            'Active (มีร้านในศูนย์ฯ และเปิดให้บริการแล้ว  หรือ The store is located in the mall and is currently open for service.)',
           value: 'ACTIVE',
         },
         {

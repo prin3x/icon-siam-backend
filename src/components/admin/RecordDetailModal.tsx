@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { getApiHeaders, isInternalRequest } from '@/utilities/apiKeyUtils'
 import { RichTextEditor } from './RichTextEditor'
 import { ImageUpload } from './ImageUpload'
+import { ComboBox } from './ComboBox'
 
 interface RecordDetailModalProps {
   isOpen: boolean
@@ -240,6 +241,7 @@ export function RecordDetailModal({
       case 'textarea':
       case 'richText':
       case 'image':
+      case 'comboBox':
         return (
           <div key={field.name} style={{ marginBottom: '20px' }}>
             <label
@@ -265,6 +267,13 @@ export function RecordDetailModal({
                 value={value}
                 onChange={(newValue) => handleInputChange(field.name, newValue)}
                 placeholder={`Upload ${field.label.toLowerCase()}...`}
+              />
+            ) : field.type === 'comboBox' ? (
+              <ComboBox
+                value={value}
+                onChange={(newValue) => handleInputChange(field.name, newValue)}
+                options={field.options || []}
+                placeholder={`Type or select ${field.label.toLowerCase()}...`}
               />
             ) : field.type === 'textarea' ? (
               <textarea
