@@ -15,7 +15,7 @@ export default function AdminPage() {
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">Custom Admin Console</h1>
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">Admin Console</h1>
             <p className="text-lg text-gray-600">Manage your content collections with ease</p>
           </div>
 

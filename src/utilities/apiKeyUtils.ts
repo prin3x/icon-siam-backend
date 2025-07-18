@@ -77,3 +77,35 @@ export function checkRateLimit(
   // You can implement proper rate limiting logic here
   return true
 }
+
+// Utility function to get headers for API requests
+export function getApiHeaders(includeApiKey = false): Record<string, string> {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  }
+
+  // Only include API key for external requests
+  if (includeApiKey) {
+    const apiKey = process.env.NEXT_PUBLIC_API_KEY
+    if (apiKey) {
+      headers['x-api-key'] = apiKey
+    }
+  }
+
+  return headers
+}
+
+// Check if we're in a browser environment
+export function isBrowser(): boolean {
+  return typeof window !== 'undefined'
+}
+
+// Check if this is an internal request (same origin)
+export function isInternalRequest(): boolean {
+  if (!isBrowser()) return true
+
+  const currentOrigin = window.location.origin
+  const appUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3001'
+
+  return currentOrigin === appUrl || currentOrigin.startsWith('http://localhost:')
+}

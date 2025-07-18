@@ -12,11 +12,27 @@ declare global {
 export interface ApiKeyUser {
   name: string
   collections: string[]
-  type: 'api-key'
+  type: 'api-key' | 'internal'
 }
 
 export async function validateApiKey(req: NextRequest): Promise<ApiKeyUser | null> {
   try {
+    // For internal requests (same origin), allow without API key
+    const origin = req.headers.get('origin')
+    const referer = req.headers.get('referer')
+    const appUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3001'
+    const isInternalRequest =
+      !origin || origin === appUrl || (referer && referer.startsWith(appUrl))
+
+    // If it's an internal request, allow access
+    if (isInternalRequest) {
+      return {
+        name: 'Internal App',
+        collections: ['*'],
+        type: 'internal',
+      }
+    }
+
     // if pathname include /authenticated, return null
     if (req.nextUrl.pathname.includes('/authenticated')) {
       return {
@@ -26,7 +42,7 @@ export async function validateApiKey(req: NextRequest): Promise<ApiKeyUser | nul
       }
     }
 
-    // Check for API key in headers
+    // For external requests, require API key
     const authHeader = req.headers.get('authorization')
     const apiKeyHeader = req.headers.get('x-api-key')
 
@@ -58,7 +74,7 @@ export async function validateApiKey(req: NextRequest): Promise<ApiKeyUser | nul
       allowedCollections === '*' ? ['*'] : allowedCollections.split(',').map((c) => c.trim())
 
     return {
-      name: 'Frontend App',
+      name: 'External App',
       collections: collections,
       type: 'api-key',
     }
