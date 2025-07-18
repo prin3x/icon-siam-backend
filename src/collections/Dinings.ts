@@ -253,8 +253,7 @@ export const Dinings: CollectionConfig = {
       defaultValue: 'ACTIVE',
       options: [
         {
-          label:
-            'Active (มีร้านในศูนย์ฯ และเปิดให้บริการแล้ว  หรือ The store is located in the mall and is currently open for service.)',
+          label: 'Active (The store is located in the mall and is currently open for service.)',
           value: 'ACTIVE',
         },
         {
