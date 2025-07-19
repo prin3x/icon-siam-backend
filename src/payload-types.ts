@@ -284,7 +284,7 @@ export interface Dining {
         }[]
       | null;
   };
-  status: 'ACTIVE' | 'INACTIVE' | 'CLOSED' | 'TEMPORARILY_CLOSED' | 'COMING_SOON';
+  status: 'ACTIVE' | 'INACTIVE' | 'CLOSED' | 'TEMPORARILY_CLOSED' | 'COMING_SOON' | 'MASTER';
   date_range?: {
     start_date?: string | null;
     end_date?: string | null;
@@ -455,7 +455,7 @@ export interface Shop {
         }[]
       | null;
   };
-  status: 'ACTIVE' | 'INACTIVE' | 'CLOSED' | 'TEMPORARILY_CLOSED' | 'COMING_SOON';
+  status: 'ACTIVE' | 'INACTIVE' | 'CLOSED' | 'TEMPORARILY_CLOSED' | 'COMING_SOON' | 'MASTER';
   date_range?: {
     start_date?: string | null;
     end_date?: string | null;

@@ -272,6 +272,10 @@ export const Dinings: CollectionConfig = {
           label: 'Coming Soon',
           value: 'COMING_SOON',
         },
+        {
+          label: 'Master',
+          value: 'MASTER',
+        },
       ],
     },
     {

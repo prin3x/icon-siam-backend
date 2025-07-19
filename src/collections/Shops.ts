@@ -272,6 +272,10 @@ export const Shops: CollectionConfig = {
           label: 'Coming Soon',
           value: 'COMING_SOON',
         },
+        {
+          label: 'Master',
+          value: 'MASTER',
+        },
       ],
     },
     {
