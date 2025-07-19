@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
 const COLLECTIONS = [
   'homepage',
@@ -13,7 +14,6 @@ const COLLECTIONS = [
   'directory',
   'floors',
   'users',
-  'media',
   'categories',
   'gallery-collections',
   'promotions',
@@ -25,15 +25,11 @@ const COLLECTIONS = [
 ]
 
 interface CollectionsListProps {
-  onSelect: (slug: string) => void
+  onSelect?: (slug: string) => void
 }
 
 export function CollectionsList({ onSelect }: CollectionsListProps) {
-  useEffect(() => {
-    console.log('CollectionsList mounted')
-  }, [])
-
-  console.log('CollectionsList render')
+  const router = useRouter()
 
   return (
     <div
@@ -68,7 +64,11 @@ export function CollectionsList({ onSelect }: CollectionsListProps) {
             key={slug}
             onClick={() => {
               console.log('Collection selected:', slug)
-              onSelect(slug)
+              if (onSelect) {
+                onSelect(slug)
+              } else {
+                router.push(`/custom-admin/collections/${slug}`)
+              }
             }}
             style={{
               padding: '16px 20px',

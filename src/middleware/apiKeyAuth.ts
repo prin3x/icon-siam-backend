@@ -1,14 +1,5 @@
 import type { NextRequest } from 'next/server'
 
-// Extend PayloadRequest type to include apiKeyUser
-declare global {
-  namespace Express {
-    interface Request {
-      apiKeyUser?: any
-    }
-  }
-}
-
 export interface ApiKeyUser {
   name: string
   collections: string[]

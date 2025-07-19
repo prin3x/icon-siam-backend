@@ -1,4 +1,7 @@
+'use client'
+
 import React, { useEffect, useState, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import { useLocale } from './LocaleContext'
 import { ViewModeToggle } from './ViewModeToggle'
 import { ListView } from './ListView'
@@ -25,6 +28,7 @@ interface PaginationInfo {
 }
 
 export function CollectionItems({ slug, onBack }: CollectionItemsProps) {
+  const router = useRouter()
   const { locale } = useLocale()
   const [items, setItems] = useState<any[]>([])
   const [initialLoading, setInitialLoading] = useState(true)
@@ -44,8 +48,8 @@ export function CollectionItems({ slug, onBack }: CollectionItemsProps) {
     hasPrevPage: false,
   })
 
-  // Modal state
-  const [isModalOpen, setIsModalOpen] = useState(false)
+  // Modal state (only for preview)
+  const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false)
   const [selectedRecordId, setSelectedRecordId] = useState<string>('')
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
 
@@ -145,9 +149,12 @@ export function CollectionItems({ slug, onBack }: CollectionItemsProps) {
   }, [debouncedSearchTerm, pagination.page, pagination.limit])
 
   const handleEdit = (id: string) => {
-    console.log('Edit item:', id)
+    router.push(`/custom-admin/collections/${slug}/edit/${id}`)
+  }
+
+  const handlePreview = (id: string) => {
     setSelectedRecordId(id)
-    setIsModalOpen(true)
+    setIsPreviewModalOpen(true)
   }
 
   const handleDelete = (id: string) => {
@@ -167,8 +174,8 @@ export function CollectionItems({ slug, onBack }: CollectionItemsProps) {
     setSearchTerm(value)
   }
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false)
+  const handleClosePreviewModal = () => {
+    setIsPreviewModalOpen(false)
     setSelectedRecordId('')
   }
 
@@ -468,13 +475,28 @@ export function CollectionItems({ slug, onBack }: CollectionItemsProps) {
           )}
 
           {viewMode === 'list' && (
-            <ListView items={items} onEdit={handleEdit} onDelete={handleDelete} />
+            <ListView
+              items={items}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              onPreview={handlePreview}
+            />
           )}
           {viewMode === 'grid' && (
-            <GridView items={items} onEdit={handleEdit} onDelete={handleDelete} />
+            <GridView
+              items={items}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              onPreview={handlePreview}
+            />
           )}
           {viewMode === 'table' && (
-            <TableView items={items} onEdit={handleEdit} onDelete={handleDelete} />
+            <TableView
+              items={items}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              onPreview={handlePreview}
+            />
           )}
         </div>
 
@@ -601,20 +623,11 @@ export function CollectionItems({ slug, onBack }: CollectionItemsProps) {
         )}
       </div>
 
-      {/* Record Detail Modal */}
+      {/* Record Detail Modal (Preview Only) */}
       <RecordDetailModal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
+        isOpen={isPreviewModalOpen}
+        onClose={handleClosePreviewModal}
         recordId={selectedRecordId}
-        collectionSlug={slug}
-        locale={locale}
-        onSuccess={handleCreateSuccess}
-      />
-
-      {/* Create Record Modal */}
-      <CreateRecordModal
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
         collectionSlug={slug}
         locale={locale}
         onSuccess={handleCreateSuccess}

@@ -1,8 +1,11 @@
+'use client'
+
 import React, { useEffect, useState } from 'react'
 import { getApiHeaders, isInternalRequest } from '@/utilities/apiKeyUtils'
 import { RichTextEditor } from './RichTextEditor'
 import { ImageUpload } from './ImageUpload'
 import { ComboBox } from './ComboBox'
+import { useRouter } from 'next/navigation'
 
 interface RecordDetailModalProps {
   isOpen: boolean
@@ -53,6 +56,11 @@ export function RecordDetailModal({
   const [isEditMode, setIsEditMode] = useState(false)
   const [formData, setFormData] = useState<Record<string, any>>({})
   const [schema, setSchema] = useState<FieldSchema[]>([])
+
+  const router = useRouter()
+  const goToEdit = (path: string) => {
+    router.push(path)
+  }
 
   useEffect(() => {
     if (isOpen && recordId) {
@@ -107,21 +115,7 @@ export function RecordDetailModal({
     } catch (error: any) {
       console.error('Error fetching schema:', error)
       // Fallback to basic fields if schema fetch fails
-      setSchema([
-        { name: 'title', type: 'text', label: 'Title', required: true },
-        { name: 'description', type: 'textarea', label: 'Description' },
-        {
-          name: 'status',
-          type: 'select',
-          label: 'Status',
-          required: true,
-          options: [
-            { label: 'Active', value: 'ACTIVE' },
-            { label: 'Inactive', value: 'INACTIVE' },
-          ],
-          defaultValue: 'ACTIVE',
-        },
-      ])
+      setSchema([])
     }
   }
 
@@ -233,6 +227,7 @@ export function RecordDetailModal({
   const renderField = (field: FieldSchema) => {
     const value = formData[field.name] || field.defaultValue || ''
     const isRequired = field.required
+    console.log('field:::', field)
 
     switch (field.type) {
       case 'text':
@@ -581,6 +576,8 @@ export function RecordDetailModal({
 
         return a.name.localeCompare(b.name)
       })
+
+      console.log('sortedSchema:::', sortedSchema)
 
       return (
         <div style={{ maxHeight: '60vh', overflowY: 'auto' }}>
@@ -965,7 +962,9 @@ export function RecordDetailModal({
                 Close
               </button>
               <button
-                onClick={() => setIsEditMode(true)}
+                onClick={() =>
+                  goToEdit(`/custom-admin/collections/${collectionSlug}/edit/${recordId}`)
+                }
                 style={{
                   padding: '10px 20px',
                   border: '1px solid #3b82f6',
