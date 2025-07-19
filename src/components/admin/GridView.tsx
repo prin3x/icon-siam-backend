@@ -4,9 +4,10 @@ interface GridViewProps {
   items: any[]
   onEdit: (id: string) => void
   onDelete: (id: string) => void
+  onPreview: (id: string) => void
 }
 
-export function GridView({ items, onEdit, onDelete }: GridViewProps) {
+export function GridView({ items, onEdit, onDelete, onPreview }: GridViewProps) {
   return (
     <div
       style={{
@@ -100,20 +101,46 @@ export function GridView({ items, onEdit, onDelete }: GridViewProps) {
           <div
             style={{
               display: 'flex',
-              gap: '12px',
+              gap: '8px',
               marginTop: '20px',
             }}
           >
             <button
+              onClick={() => onPreview(item.id)}
+              style={{
+                padding: '10px 16px',
+                border: '1px solid #10b981',
+                borderRadius: '10px',
+                backgroundColor: '#ffffff',
+                color: '#10b981',
+                cursor: 'pointer',
+                fontSize: '13px',
+                fontWeight: '500',
+                transition: 'all 0.2s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#10b981'
+                e.currentTarget.style.color = '#ffffff'
+                e.currentTarget.style.transform = 'translateY(-1px)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#ffffff'
+                e.currentTarget.style.color = '#10b981'
+                e.currentTarget.style.transform = 'translateY(0)'
+              }}
+            >
+              Preview
+            </button>
+            <button
               onClick={() => onEdit(item.id)}
               style={{
-                padding: '10px 20px',
+                padding: '10px 16px',
                 border: '1px solid #3b82f6',
                 borderRadius: '10px',
                 backgroundColor: '#ffffff',
                 color: '#3b82f6',
                 cursor: 'pointer',
-                fontSize: '14px',
+                fontSize: '13px',
                 fontWeight: '500',
                 transition: 'all 0.2s ease',
                 flex: 1,
@@ -134,16 +161,15 @@ export function GridView({ items, onEdit, onDelete }: GridViewProps) {
             <button
               onClick={() => onDelete(item.id)}
               style={{
-                padding: '10px 20px',
+                padding: '10px 16px',
                 border: '1px solid #ef4444',
                 borderRadius: '10px',
                 backgroundColor: '#ffffff',
                 color: '#ef4444',
                 cursor: 'pointer',
-                fontSize: '14px',
+                fontSize: '13px',
                 fontWeight: '500',
                 transition: 'all 0.2s ease',
-                flex: 1,
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.backgroundColor = '#ef4444'

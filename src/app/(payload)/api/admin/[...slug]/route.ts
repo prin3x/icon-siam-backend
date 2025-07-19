@@ -93,128 +93,133 @@ async function handleSchemaRequest(request: NextRequest, collectionSlug: string)
       return NextResponse.json({ fields: [] })
     }
 
-    // Extract field schema - include media fields but exclude other complex types
-    const fields = collection.config.fields
-      .filter((field: any) => {
-        // Exclude certain complex field types but include media
-        const excludedTypes = ['relationship', 'array', 'group', 'tabs', 'row', 'collapsible']
-        return !excludedTypes.includes(field.type)
-      })
-      .map((field: any) => {
-        // Map PayloadCMS field types to our form field types
-        let formType = field.type
+    // Extract field schema - include all field types
+    const fields = collection.config.fields.map((field: any) => {
+      // Map PayloadCMS field types to our form field types
+      let formType = field.type
 
-        // Handle specific field type mappings
-        if (field.type === 'richText') formType = 'richText'
-        if (field.type === 'email') formType = 'text'
-        if (field.type === 'number') formType = 'text'
-        if (field.type === 'date') formType = 'date'
-        if (field.type === 'checkbox') formType = 'checkbox'
-        if (field.type === 'select') formType = 'select'
-        if (field.type === 'radioGroup') formType = 'select'
-        if (field.type === 'upload') formType = 'image'
-        if (field.type === 'media') formType = 'image'
+      // Handle specific field type mappings
+      if (field.type === 'richText') formType = 'richText'
+      if (field.type === 'email') formType = 'text'
+      if (field.type === 'number') formType = 'text'
+      if (field.type === 'date') formType = 'date'
+      if (field.type === 'checkbox') formType = 'checkbox'
+      if (field.type === 'select') formType = 'select'
+      if (field.type === 'radioGroup') formType = 'select'
+      if (field.type === 'upload') formType = 'image'
+      if (field.type === 'media') formType = 'image'
+      if (field.type === 'relationship') formType = 'relationship'
+      if (field.type === 'array') formType = 'array'
+      if (field.type === 'group') formType = 'group'
+      if (field.type === 'tabs') formType = 'tabs'
+      if (field.type === 'row') formType = 'row'
+      if (field.type === 'collapsible') formType = 'collapsible'
 
-        // Detect fields that should use ComboBox (text fields with common patterns)
-        if (field.type === 'text') {
-          const fieldName = field.name.toLowerCase()
-          const fieldLabel = (field.label || field.name).toLowerCase()
+      // Detect fields that should use ComboBox (text fields with common patterns)
+      if (field.type === 'text') {
+        const fieldName = field.name.toLowerCase()
+        const fieldLabel = (field.label || field.name).toLowerCase()
 
-          // Common patterns that suggest predefined options
-          const comboBoxPatterns = [
-            'zone',
-            'area',
-            'region',
-            'location',
-            'category',
-            'type',
-            'status',
-            'level',
-            'floor',
-            'section',
-            'department',
-            'division',
-            'group',
-            'brand',
-            'model',
-            'version',
-            'size',
-            'color',
-            'material',
+        // Common patterns that suggest predefined options
+        const comboBoxPatterns = [
+          'zone',
+          'area',
+          'region',
+          'location',
+          'category',
+          'type',
+          'status',
+          'level',
+          'floor',
+          'section',
+          'department',
+          'division',
+          'group',
+          'brand',
+          'model',
+          'version',
+          'size',
+          'color',
+          'material',
+        ]
+
+        if (
+          comboBoxPatterns.some(
+            (pattern) => fieldName.includes(pattern) || fieldLabel.includes(pattern),
+          )
+        ) {
+          formType = 'comboBox'
+        }
+      }
+
+      // Generate options for ComboBox fields based on field name/type
+      let generatedOptions: Array<{ label: string; value: string }> = []
+
+      if (formType === 'comboBox') {
+        const fieldName = field.name.toLowerCase()
+        const fieldLabel = (field.label || field.name).toLowerCase()
+
+        // Generate options based on field patterns
+        if (fieldName.includes('zone') || fieldLabel.includes('zone')) {
+          generatedOptions = [
+            { label: 'Zone A', value: 'zone-a' },
+            { label: 'Zone B', value: 'zone-b' },
+            { label: 'Zone C', value: 'zone-c' },
+            { label: 'Zone D', value: 'zone-d' },
+            { label: 'Zone E', value: 'zone-e' },
           ]
-
-          if (
-            comboBoxPatterns.some(
-              (pattern) => fieldName.includes(pattern) || fieldLabel.includes(pattern),
-            )
-          ) {
-            formType = 'comboBox'
-          }
+        } else if (fieldName.includes('floor') || fieldLabel.includes('floor')) {
+          generatedOptions = [
+            { label: 'Ground Floor', value: 'ground' },
+            { label: '1st Floor', value: '1st' },
+            { label: '2nd Floor', value: '2nd' },
+            { label: '3rd Floor', value: '3rd' },
+            { label: '4th Floor', value: '4th' },
+            { label: '5th Floor', value: '5th' },
+          ]
+        } else if (fieldName.includes('status') || fieldLabel.includes('status')) {
+          generatedOptions = [
+            { label: 'Active', value: 'active' },
+            { label: 'Inactive', value: 'inactive' },
+            { label: 'Pending', value: 'pending' },
+            { label: 'Draft', value: 'draft' },
+            { label: 'Published', value: 'published' },
+          ]
+        } else if (fieldName.includes('type') || fieldLabel.includes('type')) {
+          generatedOptions = [
+            { label: 'Standard', value: 'standard' },
+            { label: 'Premium', value: 'premium' },
+            { label: 'VIP', value: 'vip' },
+            { label: 'Special', value: 'special' },
+          ]
+        } else if (fieldName.includes('category') || fieldLabel.includes('category')) {
+          generatedOptions = [
+            { label: 'Fashion', value: 'fashion' },
+            { label: 'Electronics', value: 'electronics' },
+            { label: 'Food & Beverage', value: 'food-beverage' },
+            { label: 'Beauty', value: 'beauty' },
+            { label: 'Home & Living', value: 'home-living' },
+            { label: 'Sports', value: 'sports' },
+          ]
         }
+      }
 
-        // Generate options for ComboBox fields based on field name/type
-        let generatedOptions: Array<{ label: string; value: string }> = []
-
-        if (formType === 'comboBox') {
-          const fieldName = field.name.toLowerCase()
-          const fieldLabel = (field.label || field.name).toLowerCase()
-
-          // Generate options based on field patterns
-          if (fieldName.includes('zone') || fieldLabel.includes('zone')) {
-            generatedOptions = [
-              { label: 'Zone A', value: 'zone-a' },
-              { label: 'Zone B', value: 'zone-b' },
-              { label: 'Zone C', value: 'zone-c' },
-              { label: 'Zone D', value: 'zone-d' },
-              { label: 'Zone E', value: 'zone-e' },
-            ]
-          } else if (fieldName.includes('floor') || fieldLabel.includes('floor')) {
-            generatedOptions = [
-              { label: 'Ground Floor', value: 'ground' },
-              { label: '1st Floor', value: '1st' },
-              { label: '2nd Floor', value: '2nd' },
-              { label: '3rd Floor', value: '3rd' },
-              { label: '4th Floor', value: '4th' },
-              { label: '5th Floor', value: '5th' },
-            ]
-          } else if (fieldName.includes('status') || fieldLabel.includes('status')) {
-            generatedOptions = [
-              { label: 'Active', value: 'active' },
-              { label: 'Inactive', value: 'inactive' },
-              { label: 'Pending', value: 'pending' },
-              { label: 'Draft', value: 'draft' },
-              { label: 'Published', value: 'published' },
-            ]
-          } else if (fieldName.includes('type') || fieldLabel.includes('type')) {
-            generatedOptions = [
-              { label: 'Standard', value: 'standard' },
-              { label: 'Premium', value: 'premium' },
-              { label: 'VIP', value: 'vip' },
-              { label: 'Special', value: 'special' },
-            ]
-          } else if (fieldName.includes('category') || fieldLabel.includes('category')) {
-            generatedOptions = [
-              { label: 'Fashion', value: 'fashion' },
-              { label: 'Electronics', value: 'electronics' },
-              { label: 'Food & Beverage', value: 'food-beverage' },
-              { label: 'Beauty', value: 'beauty' },
-              { label: 'Home & Living', value: 'home-living' },
-              { label: 'Sports', value: 'sports' },
-            ]
-          }
-        }
-
-        return {
-          name: field.name,
-          type: formType,
-          label: field.label || field.name,
-          required: field.required || false,
-          localized: field.localized || false,
-          options: field.options || field.choices || generatedOptions,
-          defaultValue: field.defaultValue,
-          admin: field.admin || {},
-        }
-      })
+      return {
+        name: field.name,
+        type: formType,
+        label: field.label || field.name,
+        required: field.required || false,
+        localized: field.localized || false,
+        options: field.options || field.choices || generatedOptions,
+        defaultValue: field.defaultValue,
+        admin: field.admin || {},
+        // Add relationship-specific properties
+        relationTo: field.relationTo,
+        hasMany: field.hasMany || false,
+        // Add array-specific properties
+        fields: field.fields,
+      }
+    })
 
     console.log('Processed fields:', fields)
     return NextResponse.json({ fields })

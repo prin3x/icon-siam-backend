@@ -4,9 +4,10 @@ interface TableViewProps {
   items: any[]
   onEdit: (id: string) => void
   onDelete: (id: string) => void
+  onPreview: (id: string) => void
 }
 
-export function TableView({ items, onEdit, onDelete }: TableViewProps) {
+export function TableView({ items, onEdit, onDelete, onPreview }: TableViewProps) {
   return (
     <div
       style={{
@@ -154,6 +155,30 @@ export function TableView({ items, onEdit, onDelete }: TableViewProps) {
               </td>
               <td style={{ padding: '16px 20px' }}>
                 <div style={{ display: 'flex', gap: '8px' }}>
+                  <button
+                    onClick={() => onPreview(item.id)}
+                    style={{
+                      padding: '8px 16px',
+                      border: '1px solid #10b981',
+                      borderRadius: '8px',
+                      backgroundColor: '#ffffff',
+                      color: '#10b981',
+                      cursor: 'pointer',
+                      fontSize: '13px',
+                      fontWeight: '500',
+                      transition: 'all 0.2s ease',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = '#10b981'
+                      e.currentTarget.style.color = '#ffffff'
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = '#ffffff'
+                      e.currentTarget.style.color = '#10b981'
+                    }}
+                  >
+                    Preview
+                  </button>
                   <button
                     onClick={() => onEdit(item.id)}
                     style={{

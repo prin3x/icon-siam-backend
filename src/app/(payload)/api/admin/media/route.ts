@@ -29,6 +29,7 @@ async function handleAuthenticatedRequest(
   request: NextRequest,
   handler: (request: Request) => Promise<Response>,
 ) {
+  console.log('handleAuthenticatedRequest')
   try {
     // Validate API key
     const apiKeyUser = await validateApiKey(request)
@@ -128,6 +129,63 @@ async function handleMediaUpload(request: NextRequest) {
     console.error('Error uploading media:', error)
     return NextResponse.json({ error: error.message || 'Failed to upload media' }, { status: 400 })
   }
+}
+
+// Handle schema requests for media collection
+async function handleMediaSchemaRequest(request: NextRequest) {
+  try {
+    const payload = await getPayload({ config })
+    const collection = (payload.collections as any)['media']
+
+    if (!collection) {
+      return NextResponse.json({ error: 'Media collection not found' }, { status: 404 })
+    }
+
+    // Return a simplified schema for media collection
+    const fields = [
+      {
+        name: 'alt',
+        type: 'group',
+        label: 'Alt Text',
+        fields: [
+          {
+            name: 'en',
+            type: 'text',
+            label: 'Alt Text (English)',
+          },
+          {
+            name: 'th',
+            type: 'text',
+            label: 'Alt Text (Thai)',
+          },
+          {
+            name: 'zh',
+            type: 'text',
+            label: 'Alt Text (Chinese)',
+          },
+        ],
+      },
+    ]
+
+    return NextResponse.json({ fields })
+  } catch (error) {
+    console.error('Error fetching media schema:', error)
+    return NextResponse.json({ error: 'Failed to fetch media schema' }, { status: 500 })
+  }
+}
+
+// Handle GET requests for schema
+export const GET = async (request: NextRequest) => {
+  const url = new URL(request.url)
+
+  // Check if this is a schema request
+  if (url.searchParams.get('schema') === 'true') {
+    return handleAuthenticatedRequest(request, async () => {
+      return handleMediaSchemaRequest(request)
+    })
+  }
+
+  return NextResponse.json({ error: 'Method not allowed' }, { status: 405 })
 }
 
 // Handle POST requests for uploading media
