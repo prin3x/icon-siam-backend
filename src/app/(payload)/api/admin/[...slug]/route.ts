@@ -88,8 +88,13 @@ async function handleSchemaRequest(request: NextRequest, collectionSlug: string)
       return NextResponse.json({ error: 'Collection not found' }, { status: 404 })
     }
 
+    if (!collection.config?.fields || !Array.isArray(collection.config.fields)) {
+      console.log('No fields found in collection')
+      return NextResponse.json({ fields: [] })
+    }
+
     // Extract field schema - include media fields but exclude other complex types
-    const fields = collection.fields
+    const fields = collection.config.fields
       .filter((field: any) => {
         // Exclude certain complex field types but include media
         const excludedTypes = ['relationship', 'array', 'group', 'tabs', 'row', 'collapsible']
@@ -211,6 +216,7 @@ async function handleSchemaRequest(request: NextRequest, collectionSlug: string)
         }
       })
 
+    console.log('Processed fields:', fields)
     return NextResponse.json({ fields })
   } catch (error) {
     console.error('Error fetching schema:', error)
@@ -274,6 +280,7 @@ async function handleDeleteRequest(request: NextRequest, collectionSlug: string,
 
 // Handle GET requests for schema
 export const GET = async (request: NextRequest, args: { params: Promise<{ slug: string[] }> }) => {
+  console.log('request', request)
   const url = new URL(request.url)
   const pathSegments = url.pathname.split('/')
   const collectionSlug = pathSegments[pathSegments.length - 1]
@@ -285,7 +292,7 @@ export const GET = async (request: NextRequest, args: { params: Promise<{ slug: 
     })
   }
 
-  return NextResponse.json({ error: 'Method not allowed' }, { status: 405 })
+  return NextResponse.json({ error: 'Method not allowedsss' }, { status: 405 })
 }
 
 // Handle POST requests for creating records
