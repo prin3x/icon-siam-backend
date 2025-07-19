@@ -8,7 +8,6 @@ import { ListView } from './ListView'
 import { GridView } from './GridView'
 import { TableView } from './TableView'
 import { RecordDetailModal } from './RecordDetailModal'
-import { CreateRecordModal } from './CreateRecordModal'
 import { getApiHeaders, isInternalRequest } from '@/utilities/apiKeyUtils'
 
 const API_URL = '/api'

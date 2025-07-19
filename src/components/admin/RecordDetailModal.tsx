@@ -2,10 +2,8 @@
 
 import React, { useEffect, useState } from 'react'
 import { getApiHeaders, isInternalRequest } from '@/utilities/apiKeyUtils'
-import { RichTextEditor } from './RichTextEditor'
-import { ImageUpload } from './ImageUpload'
-import { ComboBox } from './ComboBox'
 import { useRouter } from 'next/navigation'
+import { FieldRenderer } from './FieldRenderer'
 
 interface RecordDetailModalProps {
   isOpen: boolean
@@ -38,6 +36,10 @@ interface FieldSchema {
   localized?: boolean
   options?: Array<{ label: string; value: string }>
   defaultValue?: any
+  relationTo?: string | string[]
+  hasMany?: boolean
+  fields?: FieldSchema[]
+  tabs?: { label: string; fields: FieldSchema[] }[]
 }
 
 const API_URL = '/api'
@@ -224,272 +226,6 @@ export function RecordDetailModal({
     return String(value)
   }
 
-  const renderField = (field: FieldSchema) => {
-    const value = formData[field.name] || field.defaultValue || ''
-    const isRequired = field.required
-    console.log('field:::', field)
-
-    switch (field.type) {
-      case 'text':
-      case 'number':
-      case 'email':
-      case 'textarea':
-      case 'richText':
-      case 'image':
-      case 'comboBox':
-        return (
-          <div key={field.name} style={{ marginBottom: '20px' }}>
-            <label
-              style={{
-                display: 'block',
-                fontSize: '14px',
-                fontWeight: '600',
-                color: '#374151',
-                marginBottom: '8px',
-              }}
-            >
-              {field.label}
-              {isRequired && <span style={{ color: '#ef4444' }}> *</span>}
-            </label>
-            {field.type === 'richText' ? (
-              <RichTextEditor
-                value={value}
-                onChange={(newValue) => handleInputChange(field.name, newValue)}
-                placeholder={`Enter ${field.label.toLowerCase()}...`}
-              />
-            ) : field.type === 'image' ? (
-              <ImageUpload
-                value={value}
-                onChange={(newValue) => handleInputChange(field.name, newValue)}
-                placeholder={`Upload ${field.label.toLowerCase()}...`}
-              />
-            ) : field.type === 'comboBox' ? (
-              <ComboBox
-                value={value}
-                onChange={(newValue) => handleInputChange(field.name, newValue)}
-                options={field.options || []}
-                placeholder={`Type or select ${field.label.toLowerCase()}...`}
-              />
-            ) : field.type === 'textarea' ? (
-              <textarea
-                value={value}
-                onChange={(e) => handleInputChange(field.name, e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '12px',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '8px',
-                  fontSize: '14px',
-                  outline: 'none',
-                  transition: 'all 0.2s ease',
-                  minHeight: '100px',
-                  resize: 'vertical',
-                }}
-                onFocus={(e) => {
-                  e.target.style.borderColor = '#3b82f6'
-                  e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)'
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = '#d1d5db'
-                  e.target.style.boxShadow = 'none'
-                }}
-                placeholder={`Enter ${field.label.toLowerCase()}...`}
-              />
-            ) : (
-              <input
-                type={
-                  field.type === 'number' ? 'number' : field.type === 'email' ? 'email' : 'text'
-                }
-                value={value}
-                onChange={(e) => handleInputChange(field.name, e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '12px',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '8px',
-                  fontSize: '14px',
-                  outline: 'none',
-                  transition: 'all 0.2s ease',
-                }}
-                onFocus={(e) => {
-                  e.target.style.borderColor = '#3b82f6'
-                  e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)'
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = '#d1d5db'
-                  e.target.style.boxShadow = 'none'
-                }}
-                placeholder={`Enter ${field.label.toLowerCase()}...`}
-              />
-            )}
-          </div>
-        )
-
-      case 'select':
-        return (
-          <div key={field.name} style={{ marginBottom: '20px' }}>
-            <label
-              style={{
-                display: 'block',
-                fontSize: '14px',
-                fontWeight: '600',
-                color: '#374151',
-                marginBottom: '8px',
-              }}
-            >
-              {field.label}
-              {isRequired && <span style={{ color: '#ef4444' }}> *</span>}
-            </label>
-            <select
-              value={value}
-              onChange={(e) => handleInputChange(field.name, e.target.value)}
-              style={{
-                width: '100%',
-                padding: '12px',
-                border: '1px solid #d1d5db',
-                borderRadius: '8px',
-                fontSize: '14px',
-                outline: 'none',
-                transition: 'all 0.2s ease',
-                backgroundColor: '#ffffff',
-              }}
-              onFocus={(e) => {
-                e.target.style.borderColor = '#3b82f6'
-                e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)'
-              }}
-              onBlur={(e) => {
-                e.target.style.borderColor = '#d1d5db'
-                e.target.style.boxShadow = 'none'
-              }}
-            >
-              <option value="">Select {field.label.toLowerCase()}...</option>
-              {field.options?.map((option) => {
-                // Handle different option formats
-                const value = typeof option === 'string' ? option : option.value || option
-                const label = typeof option === 'string' ? option : option.label || option
-                return (
-                  <option key={String(value)} value={String(value)}>
-                    {String(label)}
-                  </option>
-                )
-              })}
-            </select>
-          </div>
-        )
-
-      case 'checkbox':
-        return (
-          <div key={field.name} style={{ marginBottom: '20px' }}>
-            <label
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                fontSize: '14px',
-                fontWeight: '600',
-                color: '#374151',
-                cursor: 'pointer',
-              }}
-            >
-              <input
-                type="checkbox"
-                checked={value}
-                onChange={(e) => handleInputChange(field.name, e.target.checked)}
-                style={{
-                  width: '16px',
-                  height: '16px',
-                  cursor: 'pointer',
-                }}
-              />
-              {field.label}
-              {isRequired && <span style={{ color: '#ef4444' }}> *</span>}
-            </label>
-          </div>
-        )
-
-      case 'date':
-        return (
-          <div key={field.name} style={{ marginBottom: '20px' }}>
-            <label
-              style={{
-                display: 'block',
-                fontSize: '14px',
-                fontWeight: '600',
-                color: '#374151',
-                marginBottom: '8px',
-              }}
-            >
-              {field.label}
-              {isRequired && <span style={{ color: '#ef4444' }}> *</span>}
-            </label>
-            <input
-              type="date"
-              value={value}
-              onChange={(e) => handleInputChange(field.name, e.target.value)}
-              style={{
-                width: '100%',
-                padding: '12px',
-                border: '1px solid #d1d5db',
-                borderRadius: '8px',
-                fontSize: '14px',
-                outline: 'none',
-                transition: 'all 0.2s ease',
-              }}
-              onFocus={(e) => {
-                e.target.style.borderColor = '#3b82f6'
-                e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)'
-              }}
-              onBlur={(e) => {
-                e.target.style.borderColor = '#d1d5db'
-                e.target.style.boxShadow = 'none'
-              }}
-            />
-          </div>
-        )
-
-      default:
-        return (
-          <div key={field.name} style={{ marginBottom: '20px' }}>
-            <label
-              style={{
-                display: 'block',
-                fontSize: '14px',
-                fontWeight: '600',
-                color: '#374151',
-                marginBottom: '8px',
-              }}
-            >
-              {field.label}
-              {isRequired && <span style={{ color: '#ef4444' }}> *</span>}
-            </label>
-            <input
-              type="text"
-              value={value}
-              onChange={(e) => handleInputChange(field.name, e.target.value)}
-              style={{
-                width: '100%',
-                padding: '12px',
-                border: '1px solid #d1d5db',
-                borderRadius: '8px',
-                fontSize: '14px',
-                outline: 'none',
-                transition: 'all 0.2s ease',
-              }}
-              onFocus={(e) => {
-                e.target.style.borderColor = '#3b82f6'
-                e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)'
-              }}
-              onBlur={(e) => {
-                e.target.style.borderColor = '#d1d5db'
-                e.target.style.boxShadow = 'none'
-              }}
-              placeholder={`Enter ${field.label.toLowerCase()}...`}
-            />
-          </div>
-        )
-    }
-  }
-
   const renderContent = () => {
     if (loading) {
       return (
@@ -577,8 +313,6 @@ export function RecordDetailModal({
         return a.name.localeCompare(b.name)
       })
 
-      console.log('sortedSchema:::', sortedSchema)
-
       return (
         <div style={{ maxHeight: '60vh', overflowY: 'auto' }}>
           {/* Record ID and Timestamps */}
@@ -624,7 +358,14 @@ export function RecordDetailModal({
             <div style={{ display: 'grid', gap: '16px' }}>
               {sortedSchema
                 .filter((field) => !excludedKeys.includes(field.name))
-                .map((field) => renderField(field))}
+                .map((field) => (
+                  <FieldRenderer
+                    key={field.name}
+                    field={field}
+                    formData={formData}
+                    handleInputChange={handleInputChange}
+                  />
+                ))}
             </div>
           </form>
         </div>
