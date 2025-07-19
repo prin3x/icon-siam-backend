@@ -22,6 +22,7 @@ const COLLECTIONS = [
   'news-press',
   'stories',
   'api-sync-logs',
+  'media',
 ]
 
 interface CollectionsListProps {
@@ -63,7 +64,6 @@ export function CollectionsList({ onSelect }: CollectionsListProps) {
           <button
             key={slug}
             onClick={() => {
-              console.log('Collection selected:', slug)
               if (onSelect) {
                 onSelect(slug)
               } else {

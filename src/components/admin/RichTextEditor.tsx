@@ -1,8 +1,8 @@
-import React from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Link from '@tiptap/extension-link'
-import Image from '@tiptap/extension-image'
+import TiptapImage from '@tiptap/extension-image'
 import TextAlign from '@tiptap/extension-text-align'
 import Underline from '@tiptap/extension-underline'
 import { TextStyle } from '@tiptap/extension-text-style'
@@ -14,6 +14,19 @@ import Blockquote from '@tiptap/extension-blockquote'
 import HorizontalRule from '@tiptap/extension-horizontal-rule'
 import TaskList from '@tiptap/extension-task-list'
 import TaskItem from '@tiptap/extension-task-item'
+import { MediaModal } from './MediaModal'
+
+// Create a custom image extension to store media ID
+const Image = TiptapImage.extend({
+  addAttributes() {
+    return {
+      ...this.parent?.(),
+      'data-id': {
+        default: null,
+      },
+    }
+  },
+})
 
 interface RichTextEditorProps {
   value: any
@@ -24,7 +37,7 @@ interface RichTextEditorProps {
 
 // Convert PayloadCMS rich text format to Tiptap JSON
 const convertPayloadToTiptap = (payloadValue: any): any => {
-  if (!payloadValue) return { type: 'doc', content: [{ type: 'paragraph', content: [] }] }
+  if (!payloadValue) return { type: 'doc', content: [] }
 
   if (typeof payloadValue === 'string') {
     return {
@@ -39,57 +52,130 @@ const convertPayloadToTiptap = (payloadValue: any): any => {
   }
 
   if (Array.isArray(payloadValue)) {
-    return {
-      type: 'doc',
-      content: payloadValue.map((node: any) => {
-        if (node.type === 'paragraph' && node.children) {
-          return {
-            type: 'paragraph',
-            content: node.children.map((child: any) => ({
+    const content = payloadValue.map((node: any) => {
+      if (node.type === 'upload' && node.value?.url) {
+        return {
+          type: 'image',
+          attrs: {
+            src: node.value.url,
+            alt: node.value.filename,
+            'data-id': node.value.id,
+          },
+        }
+      }
+
+      if (node.type === 'paragraph' && node.children) {
+        // Handle payload's empty paragraph representation
+        if (
+          node.children.length === 1 &&
+          node.children[0].text === '' &&
+          Object.keys(node.children[0]).length === 1
+        ) {
+          return { type: 'paragraph' }
+        }
+
+        return {
+          type: 'paragraph',
+          content: node.children.map((child: any) => {
+            const marks = []
+            if (child.bold) marks.push({ type: 'bold' })
+            if (child.italic) marks.push({ type: 'italic' })
+            if (child.underline) marks.push({ type: 'underline' })
+            if (child.strike) marks.push({ type: 'strike' })
+            if (child.code) marks.push({ type: 'code' })
+
+            const tiptapChild: { type: string; text: string; marks?: any[] } = {
               type: 'text',
               text: child.text || '',
-              marks: child.bold
-                ? [{ type: 'bold' }]
-                : child.italic
-                  ? [{ type: 'italic' }]
-                  : child.underline
-                    ? [{ type: 'underline' }]
-                    : [],
-            })),
-          }
+            }
+
+            if (marks.length > 0) {
+              tiptapChild.marks = marks
+            }
+
+            return tiptapChild
+          }),
         }
-        return { type: 'paragraph', content: [{ type: 'text', text: node.text || '' }] }
-      }),
-    }
+      }
+      // Fallback for any unknown node types
+      return { type: 'paragraph' }
+    })
+    return { type: 'doc', content }
   }
 
-  // If it's already in Tiptap format, return as is
   if (payloadValue.type === 'doc') {
     return payloadValue
   }
 
-  return { type: 'doc', content: [{ type: 'paragraph', content: [] }] }
+  return { type: 'doc', content: [] }
 }
 
 // Convert Tiptap JSON to PayloadCMS format
 const convertTiptapToPayload = (tiptapValue: any): any => {
   if (!tiptapValue || !tiptapValue.content) return []
 
-  return tiptapValue.content.map((node: any) => {
-    if (node.type === 'paragraph') {
-      return {
-        type: 'paragraph',
-        children:
-          node.content?.map((child: any) => ({
-            text: child.text || '',
-            bold: child.marks?.some((mark: any) => mark.type === 'bold'),
-            italic: child.marks?.some((mark: any) => mark.type === 'italic'),
-            underline: child.marks?.some((mark: any) => mark.type === 'underline'),
-          })) || [],
+  return tiptapValue.content
+    .map((node: any) => {
+      if (node.type === 'image') {
+        const id = node.attrs['data-id']
+        if (id) {
+          return {
+            type: 'upload',
+            value: { id, url: node.attrs.src, filename: node.attrs.alt },
+            relationTo: 'media',
+            children: [{ text: '' }],
+          }
+        }
+        return null // Don't save images without an ID
       }
-    }
-    return { type: 'paragraph', children: [{ text: '' }] }
-  })
+
+      if (node.type === 'paragraph') {
+        // Handle empty paragraphs from Tiptap
+        if (!node.content) {
+          return {
+            type: 'paragraph',
+            children: [{ text: '' }],
+          }
+        }
+
+        return {
+          type: 'paragraph',
+          children:
+            node.content?.map((child: any) => {
+              const payloadChild: {
+                text: string
+                bold?: true
+                italic?: true
+                underline?: true
+                strike?: true
+                code?: true
+              } = {
+                text: child.text || '',
+              }
+
+              if (child.marks?.some((mark: any) => mark.type === 'bold')) {
+                payloadChild.bold = true
+              }
+              if (child.marks?.some((mark: any) => mark.type === 'italic')) {
+                payloadChild.italic = true
+              }
+              if (child.marks?.some((mark: any) => mark.type === 'underline')) {
+                payloadChild.underline = true
+              }
+              if (child.marks?.some((mark: any) => mark.type === 'strike')) {
+                payloadChild.strike = true
+              }
+              if (child.marks?.some((mark: any) => mark.type === 'code')) {
+                payloadChild.code = true
+              }
+              return payloadChild
+            }) || [],
+        }
+      }
+      // Handle other Tiptap nodes if necessary, otherwise they are ignored
+      return null
+    })
+    .filter(Boolean) // Remove null values
 }
 
 export function RichTextEditor({
@@ -98,6 +184,9 @@ export function RichTextEditor({
   placeholder = 'Enter content...',
   readOnly = false,
 }: RichTextEditorProps) {
+  const [isMediaModalOpen, setIsMediaModalOpen] = useState(false)
+  const isInternallyUpdating = useRef(false)
+
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -152,18 +241,38 @@ export function RichTextEditor({
     editable: !readOnly,
     immediatelyRender: false,
     onUpdate: ({ editor }) => {
+      isInternallyUpdating.current = true
       const json = editor.getJSON()
       const payloadFormat = convertTiptapToPayload(json)
       onChange(payloadFormat)
     },
   })
 
-  React.useEffect(() => {
-    if (editor && value !== undefined) {
+  useEffect(() => {
+    if (isInternallyUpdating.current) {
+      isInternallyUpdating.current = false
+      return
+    }
+
+    if (editor) {
       const tiptapContent = convertPayloadToTiptap(value)
-      editor.commands.setContent(tiptapContent)
+      if (JSON.stringify(tiptapContent) !== JSON.stringify(editor.getJSON())) {
+        editor.commands.setContent(tiptapContent, { emitUpdate: false })
+      }
     }
   }, [editor, value])
+
+  const handleImageSelection = (media: { id: string; url: string; filename: string }) => {
+    if (media.url) {
+      editor
+        ?.chain()
+        .focus()
+        .setImage({ src: media.url, alt: media.filename, 'data-id': media.id } as any)
+        .createParagraphNear()
+        .run()
+    }
+    setIsMediaModalOpen(false)
+  }
 
   if (!editor) {
     return (
@@ -285,6 +394,35 @@ export function RichTextEditor({
             type="button"
           >
             Underline
+          </button>
+          <button
+            onClick={() => setIsMediaModalOpen(true)}
+            style={{
+              padding: '8px 12px',
+              borderRadius: '6px',
+              fontSize: '13px',
+              fontWeight: '500',
+              backgroundColor: editor?.isActive('image') ? '#3b82f6' : '#ffffff',
+              color: editor?.isActive('image') ? '#ffffff' : '#374151',
+              border: '1px solid #d1d5db',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+            }}
+            onMouseEnter={(e) => {
+              if (!editor?.isActive('image')) {
+                e.currentTarget.style.backgroundColor = '#f3f4f6'
+                e.currentTarget.style.borderColor = '#9ca3af'
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!editor?.isActive('image')) {
+                e.currentTarget.style.backgroundColor = '#ffffff'
+                e.currentTarget.style.borderColor = '#d1d5db'
+              }
+            }}
+            type="button"
+          >
+            Image
           </button>
           <button
             onClick={() => editor?.chain().focus().toggleHeading({ level: 1 }).run()}
@@ -574,6 +712,9 @@ export function RichTextEditor({
           </button>
         </div>
       )}
+      {isMediaModalOpen && (
+        <MediaModal onClose={() => setIsMediaModalOpen(false)} onSelect={handleImageSelection} />
+      )}
       <div
         style={{
           border: '1px solid #d1d5db',
@@ -629,9 +770,16 @@ export function RichTextEditor({
               margin: 0 0 0.5em 0 !important;
               color: #111827 !important;
             }
-            .ProseMirror ul, .ProseMirror ol {
+            .ProseMirror ul,
+            .ProseMirror ol {
               margin: 0 0 1em 0 !important;
-              padding-left: 1.5em !important;
+              padding-left: 2em !important;
+            }
+            .ProseMirror ul {
+              list-style-type: disc !important;
+            }
+            .ProseMirror ol {
+              list-style-type: decimal !important;
             }
             .ProseMirror li {
               margin: 0.25em 0 !important;
