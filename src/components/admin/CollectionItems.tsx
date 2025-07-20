@@ -9,6 +9,7 @@ import { GridView } from './GridView'
 import { TableView } from './TableView'
 import { RecordDetailModal } from './RecordDetailModal'
 import { getApiHeaders, isInternalRequest } from '@/utilities/apiKeyUtils'
+import { LocaleSwitcher } from './LocaleSwitcher'
 
 const API_URL = '/api'
 
@@ -30,8 +31,7 @@ export function CollectionItems({ slug, onBack }: CollectionItemsProps) {
   const router = useRouter()
   const { locale } = useLocale()
   const [items, setItems] = useState<any[]>([])
-  const [initialLoading, setInitialLoading] = useState(true)
-  const [searchLoading, setSearchLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string>('')
   const [viewMode, setViewMode] = useState<'list' | 'grid' | 'table'>('list')
 
@@ -67,17 +67,13 @@ export function CollectionItems({ slug, onBack }: CollectionItemsProps) {
   }, [debouncedSearchTerm])
 
   const fetchItems = useCallback(
-    async (isSearch = false) => {
+    async (signal: AbortSignal) => {
       if (!slug || slug === '') {
-        setInitialLoading(false)
+        setLoading(false)
         return
       }
 
-      if (isSearch) {
-        setSearchLoading(true)
-      } else {
-        setInitialLoading(true)
-      }
+      setLoading(true)
       setError('')
 
       const params = new URLSearchParams({
@@ -91,7 +87,8 @@ export function CollectionItems({ slug, onBack }: CollectionItemsProps) {
       }
 
       try {
-        const response = await fetch(`${API_URL}/authenticated/${slug}?${params}`, {
+        const response = await fetch(`${API_URL}/custom-admin/${slug}?${params}`, {
+          signal,
           headers: getApiHeaders(!isInternalRequest()),
         })
 
@@ -122,30 +119,23 @@ export function CollectionItems({ slug, onBack }: CollectionItemsProps) {
           hasPrevPage: data.hasPrevPage || false,
         }))
       } catch (error: any) {
-        console.error('Error fetching items:', error)
-        setError(error.message)
-      } finally {
-        if (isSearch) {
-          setSearchLoading(false)
-        } else {
-          setInitialLoading(false)
+        if (error.name !== 'AbortError') {
+          console.error('Error fetching items:', error)
+          setError(error.message)
         }
+      } finally {
+        setLoading(false)
       }
     },
     [slug, locale, debouncedSearchTerm, pagination.page, pagination.limit],
   )
 
-  // Initial load
+  // Combined effect for all data fetching
   useEffect(() => {
-    fetchItems(false)
-  }, [slug, locale])
-
-  // Search and pagination updates
-  useEffect(() => {
-    if (!initialLoading) {
-      fetchItems(true)
-    }
-  }, [debouncedSearchTerm, pagination.page, pagination.limit])
+    const controller = new AbortController()
+    fetchItems(controller.signal)
+    return () => controller.abort()
+  }, [fetchItems])
 
   const handleEdit = (id: string) => {
     router.push(`/custom-admin/collections/${slug}/edit/${id}`)
@@ -180,11 +170,12 @@ export function CollectionItems({ slug, onBack }: CollectionItemsProps) {
 
   const handleCreateSuccess = () => {
     // Refresh the items list after successful creation
-    fetchItems(true)
+    const controller = new AbortController()
+    fetchItems(controller.signal)
   }
 
-  // Show initial loading only on first load
-  if (initialLoading) {
+  // Show loading state
+  if (loading) {
     return (
       <div
         style={{
@@ -324,6 +315,10 @@ export function CollectionItems({ slug, onBack }: CollectionItemsProps) {
           </div>
         </div>
 
+        <div className="mb-6">
+          <LocaleSwitcher />
+        </div>
+
         <h3
           style={{
             marginBottom: '24px',
@@ -387,7 +382,7 @@ export function CollectionItems({ slug, onBack }: CollectionItemsProps) {
               >
                 🔍
               </div>
-              {searchLoading && (
+              {loading && (
                 <div
                   style={{
                     position: 'absolute',
@@ -432,7 +427,7 @@ export function CollectionItems({ slug, onBack }: CollectionItemsProps) {
 
         {/* Results Section with Search Loading */}
         <div style={{ position: 'relative' }}>
-          {searchLoading && (
+          {loading && (
             <div
               style={{
                 position: 'absolute',

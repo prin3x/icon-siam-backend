@@ -24,7 +24,7 @@ export function MediaModal({ onClose, onSelect }: MediaModalProps) {
       try {
         setLoading(true)
         setError('')
-        const response = await fetch('/api/authenticated/media?limit=100', {
+        const response = await fetch('/api/custom-admin/media?limit=100', {
           headers: getApiHeaders(!isInternalRequest()),
         })
         if (!response.ok) {
@@ -46,7 +46,7 @@ export function MediaModal({ onClose, onSelect }: MediaModalProps) {
 
   const handleUploadComplete = async (mediaId: string) => {
     try {
-      const response = await fetch(`/api/authenticated/media/${mediaId}`, {
+      const response = await fetch(`/api/custom-admin/media/${mediaId}`, {
         headers: getApiHeaders(!isInternalRequest()),
       })
       if (!response.ok) {

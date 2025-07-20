@@ -77,7 +77,7 @@ export function RecordDetailModal({
 
     try {
       const response = await fetch(
-        `${API_URL}/authenticated/${collectionSlug}/${recordId}?locale=${locale}`,
+        `${API_URL}/custom-admin/${collectionSlug}/${recordId}?locale=${locale}`,
         {
           headers: getApiHeaders(!isInternalRequest()),
         },

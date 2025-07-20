@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { getApiHeaders, isInternalRequest } from '@/utilities/apiKeyUtils'
 import { useLocale } from './LocaleContext'
 import { FieldRenderer } from './FieldRenderer'
 
@@ -34,39 +33,40 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
   const [error, setError] = useState<string>('')
 
   useEffect(() => {
+    const controller = new AbortController()
+    const signal = controller.signal
+
     const fetchRecord = async () => {
       try {
         setLoading(true)
         setError('')
 
-        // Fetch record data
+        // Fetch record data from the correct custom-admin endpoint
         const recordResponse = await fetch(
-          `/api/authenticated/${collectionSlug}/${recordId}?locale=${locale}&depth=2`,
-          {
-            headers: getApiHeaders(!isInternalRequest()),
-          },
+          `/api/custom-admin/${collectionSlug}/${recordId}?locale=${locale}&depth=3`,
+          { signal },
         )
 
-        if (!recordResponse.ok) {
+        if (!signal.aborted && !recordResponse.ok) {
           throw new Error(`Failed to fetch record: ${recordResponse.statusText}`)
         }
 
         const recordData = await recordResponse.json()
+        if (signal.aborted) return
         setRecord(recordData)
 
-        // Fetch schema
+        // Fetch schema from the correct custom-admin endpoint
         const schemaResponse = await fetch(
           `/api/admin/${collectionSlug}?schema=true&locale=${locale}`,
-          {
-            headers: getApiHeaders(!isInternalRequest()),
-          },
+          { signal },
         )
 
-        if (!schemaResponse.ok) {
+        if (!signal.aborted && !schemaResponse.ok) {
           throw new Error(`Failed to fetch schema: ${schemaResponse.statusText}`)
         }
 
         const schemaData = await schemaResponse.json()
+        if (signal.aborted) return
         setSchema(schemaData.fields || [])
 
         // Initialize form data
@@ -76,15 +76,23 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
         })
         setFormData(initialFormData)
       } catch (error: any) {
-        console.error('Error fetching record:', error)
-        setError(error.message)
+        if (error.name !== 'AbortError') {
+          console.error('Error fetching record:', error)
+          setError(error.message)
+        }
       } finally {
-        setLoading(false)
+        if (!signal.aborted) {
+          setLoading(false)
+        }
       }
     }
 
     if (collectionSlug && recordId) {
       fetchRecord()
+    }
+
+    return () => {
+      controller.abort()
     }
   }, [collectionSlug, recordId, locale])
 
@@ -102,17 +110,17 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
       setSaving(true)
       setError('')
 
-      const response = await fetch(`/api/authenticated/${collectionSlug}/${recordId}`, {
-        method: 'PATCH',
-        headers: {
-          ...getApiHeaders(!isInternalRequest()),
-          'Content-Type': 'application/json',
+      // Update the record using the correct custom-admin endpoint
+      const response = await fetch(
+        `/api/custom-admin/${collectionSlug}/${recordId}?locale=${locale}`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData),
         },
-        body: JSON.stringify({
-          ...formData,
-          locale,
-        }),
-      })
+      )
 
       if (!response.ok) {
         const errorData = await response.text()
@@ -183,7 +191,12 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
 
       <form
         onSubmit={handleSubmit}
-        style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '24px',
+          paddingBottom: '100px',
+        }}
       >
         {schema.map((field) => (
           <FieldRenderer
@@ -193,15 +206,18 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
             handleInputChange={handleInputChange}
           />
         ))}
-
         <div
           style={{
+            position: 'sticky',
+            bottom: 0,
+            backdropFilter: 'saturate(180%) blur(5px)',
+            WebkitBackdropFilter: 'saturate(180%) blur(5px)',
+            padding: '16px 24px',
             display: 'flex',
             justifyContent: 'flex-end',
             gap: '12px',
-            paddingTop: '24px',
-            borderTop: '1px solid #e5e7eb',
-            marginTop: '24px',
+            marginLeft: '-24px',
+            marginBottom: '-24px',
           }}
         >
           <button

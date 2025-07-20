@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import { getApiHeaders, isInternalRequest } from '@/utilities/apiKeyUtils'
 
 interface RelationshipFieldProps {
   value: any
@@ -32,70 +31,99 @@ export function RelationshipField({ value, onChange, field, placeholder }: Relat
       : [field.relationTo]
     : []
 
+  const collectionsKey = JSON.stringify(collections)
+
   useEffect(() => {
+    const controller = new AbortController()
+    const signal = controller.signal
+
+    const fetchOptions = async () => {
+      setLoading(true)
+      setError('')
+
+      try {
+        const allOptions: RelatedRecord[] = []
+
+        // Fetch options from each related collection
+        for (const collection of collections) {
+          const response = await fetch(`/api/custom-admin/${collection}?limit=100`, { signal })
+
+          if (!signal.aborted && !response.ok) {
+            throw new Error(`Failed to fetch ${collection}: ${response.statusText}`)
+          }
+
+          const data = await response.json()
+          if (signal.aborted) return
+
+          const records = data.docs || []
+
+          // Transform records to include collection info
+          const transformedRecords = records.map((record: any) => ({
+            ...record,
+            collection: collection,
+            displayTitle: record.title || record.name || `Record ${record.id}`,
+          }))
+
+          allOptions.push(...transformedRecords)
+        }
+        if (!signal.aborted) {
+          setOptions(allOptions)
+        }
+      } catch (error: any) {
+        if (error.name !== 'AbortError') {
+          console.error('Error fetching relationship options:', error)
+          setError(error.message)
+        }
+      } finally {
+        if (!signal.aborted) {
+          setLoading(false)
+        }
+      }
+    }
     if (collections.length > 0) {
       fetchOptions()
     }
-  }, [field.relationTo])
 
-  const fetchOptions = async () => {
-    setLoading(true)
-    setError('')
-
-    try {
-      const allOptions: RelatedRecord[] = []
-
-      // Fetch options from each related collection
-      for (const collection of collections) {
-        const response = await fetch(`/api/authenticated/${collection}?limit=100`, {
-          headers: getApiHeaders(!isInternalRequest()),
-        })
-
-        if (!response.ok) {
-          throw new Error(`Failed to fetch ${collection}: ${response.statusText}`)
-        }
-
-        const data = await response.json()
-        const records = data.docs || []
-
-        // Transform records to include collection info
-        const transformedRecords = records.map((record: any) => ({
-          ...record,
-          collection: collection,
-          displayTitle: record.title || record.name || `Record ${record.id}`,
-        }))
-
-        allOptions.push(...transformedRecords)
-      }
-
-      setOptions(allOptions)
-    } catch (error: any) {
-      console.error('Error fetching relationship options:', error)
-      setError(error.message)
-    } finally {
-      setLoading(false)
+    return () => {
+      controller.abort()
     }
-  }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [collectionsKey])
 
   const handleChange = (selectedValue: string) => {
+    if (!selectedValue) return
+
+    const [collection, id] = selectedValue.split(':')
+    const recordToToggle = { relationTo: collection, value: id }
+
     if (field.hasMany) {
-      // Handle multiple selection
       const currentValues = Array.isArray(value) ? value : []
-      const newValues = currentValues.includes(selectedValue)
-        ? currentValues.filter((v: string) => v !== selectedValue)
-        : [...currentValues, selectedValue]
+      const isSelected = currentValues.some(
+        (item) => item.relationTo === collection && item.value === id,
+      )
+
+      const newValues = isSelected
+        ? currentValues.filter((item) => !(item.relationTo === collection && item.value === id))
+        : [...currentValues, recordToToggle]
       onChange(newValues)
     } else {
-      // Handle single selection
-      onChange(selectedValue || null)
+      onChange(recordToToggle)
     }
   }
 
   const getSelectedRecords = () => {
     if (!value) return []
+    const selectedItems = field.hasMany ? (Array.isArray(value) ? value : []) : [value]
 
-    const selectedIds = field.hasMany ? value : [value]
-    return options.filter((option) => selectedIds.includes(option.id))
+    return selectedItems
+      .map((item) => {
+        if (!item || !item.value) return null
+        const foundOption = options.find(
+          (option) => option.id === item.value && option.collection === item.relationTo,
+        )
+        return foundOption || null
+      })
+      .filter(Boolean) as RelatedRecord[]
   }
 
   const selectedRecords = getSelectedRecords()
@@ -133,9 +161,9 @@ export function RelationshipField({ value, onChange, field, placeholder }: Relat
             Selected {field.label.toLowerCase()}:
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
-            {selectedRecords.map((record) => (
+            {selectedRecords.map((record, index) => (
               <div
-                key={record.id}
+                key={`${record.collection}:${record.id}:${index}`}
                 style={{
                   backgroundColor: '#f3f4f6',
                   border: '1px solid #d1d5db',
@@ -150,7 +178,7 @@ export function RelationshipField({ value, onChange, field, placeholder }: Relat
                 <span>{record.displayTitle}</span>
                 <button
                   type="button"
-                  onClick={() => handleChange(record.id)}
+                  onClick={() => handleChange(`${record.collection}:${record.id}`)}
                   style={{
                     background: 'none',
                     border: 'none',
@@ -193,8 +221,11 @@ export function RelationshipField({ value, onChange, field, placeholder }: Relat
         }}
       >
         <option value="">{placeholder || `Select ${field.label.toLowerCase()}...`}</option>
-        {options.map((option) => (
-          <option key={option.id} value={option.id}>
+        {options.map((option, index) => (
+          <option
+            key={`${option.collection}:${option.id}:${index}`}
+            value={`${option.collection}:${option.id}`}
+          >
             {option.displayTitle} ({option.collection})
           </option>
         ))}
