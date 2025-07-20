@@ -1,31 +1,34 @@
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
+import { NextRequest } from 'next/server'
 
 import type { User } from '../payload-types'
-import { getClientSideURL } from './getURL'
+import { getServerSideURL } from './getURL'
 
-export const getMeUser = async (args?: {
+type Args = {
   nullUserRedirect?: string
   validUserRedirect?: string
-}): Promise<{
+  cookieStore?: NextRequest['cookies']
+}
+
+export const getMeUser = async (
+  args?: Args,
+): Promise<{
   token: string
   user: User
 }> => {
-  const { nullUserRedirect, validUserRedirect } = args || {}
-  const cookieStore = await cookies()
+  const { nullUserRedirect, validUserRedirect, cookieStore: providedCookieStore } = args || {}
+  const cookieStore = providedCookieStore || (await cookies())
   const token = cookieStore.get('payload-token')?.value
 
-  const meUserReq = await fetch(`${getClientSideURL()}/api/users/me`, {
+  const meUserReq = await fetch(`${getServerSideURL()}/api/users/me`, {
     headers: {
       Authorization: `JWT ${token}`,
     },
   })
 
-  const {
-    user,
-  }: {
-    user: User
-  } = await meUserReq.json()
+  const body = meUserReq.ok ? await meUserReq.json() : null
+  const user = body?.user || null
 
   if (validUserRedirect && meUserReq.ok && user) {
     redirect(validUserRedirect)

@@ -1,12 +1,15 @@
+'use client'
+
+import React from 'react'
 import { ArrayField } from './ArrayField'
 import { CollapsibleField } from './CollapsibleField'
-import { ComboBox } from './ComboBox'
 import { GroupField } from './GroupField'
 import { ImageUpload } from './ImageUpload'
 import { RelationshipField } from './RelationshipField'
 import { RichTextEditor } from './RichTextEditor'
 import { RowField } from './RowField'
 import { TabsField } from './TabsField'
+import { ComboBox } from './ComboBox'
 
 interface FieldSchema {
   name: string
@@ -25,202 +28,187 @@ interface FieldRendererProps {
   field: FieldSchema
   formData: any
   handleInputChange: (fieldName: string, value: any) => void
+  parentName?: string
 }
 
-export function FieldRenderer({ field, formData, handleInputChange }: FieldRendererProps) {
-  const value = formData[field.name] || field.defaultValue || ''
-  const isRequired = field.required
+export function FieldRenderer({
+  field,
+  formData,
+  handleInputChange,
+  parentName = '',
+}: FieldRendererProps) {
+  const fieldKey = parentName ? `${parentName}.${field.name}` : field.name
 
-  return (
-    <div key={field.name} style={{ marginBottom: '24px' }}>
-      <label
-        style={{
-          display: 'block',
-          fontSize: '14px',
-          fontWeight: '600',
-          color: '#374151',
-          marginBottom: '8px',
-        }}
-      >
-        {field.label}
-        {isRequired && <span style={{ color: '#ef4444', marginLeft: '4px' }}>*</span>}
-      </label>
-
-      {field.type === 'richText' ? (
-        <RichTextEditor
-          value={value}
-          onChange={(newValue: any) => handleInputChange(field.name, newValue)}
-          placeholder={`Enter ${field?.label?.toLowerCase() || field.name?.toLowerCase()}...`}
-        />
-      ) : field.type === 'upload' || field.type === 'image' ? (
-        <ImageUpload
-          value={value}
-          onChange={(newValue: any) => handleInputChange(field.name, newValue)}
-          placeholder={`Upload ${field?.label?.toLowerCase() || field.name?.toLowerCase()}...`}
-        />
-      ) : field.type === 'comboBox' ? (
-        <ComboBox
-          value={value}
-          onChange={(newValue: any) => handleInputChange(field.name, newValue)}
-          options={field.options || []}
-          placeholder={`Type or select ${field?.label?.toLowerCase() || field.name?.toLowerCase()}...`}
-        />
-      ) : field.type === 'select' ? (
-        <select
-          value={value}
-          onChange={(e) => handleInputChange(field.name, e.target.value)}
-          style={{
-            width: '100%',
-            padding: '12px',
-            border: '1px solid #d1d5db',
-            borderRadius: '8px',
-            fontSize: '14px',
-            outline: 'none',
-            transition: 'all 0.2s ease',
-            backgroundColor: '#ffffff',
-          }}
-          onFocus={(e) => {
-            e.target.style.borderColor = '#3b82f6'
-            e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)'
-          }}
-          onBlur={(e) => {
-            e.target.style.borderColor = '#d1d5db'
-            e.target.style.boxShadow = 'none'
-          }}
-        >
-          <option value="">
-            Select {field?.label?.toLowerCase() || field.name?.toLowerCase()}...
-          </option>
-          {field.options?.map((option: any) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-      ) : field.type === 'checkbox' ? (
-        <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <input
-            type="checkbox"
-            checked={value || false}
-            onChange={(e) => handleInputChange(field.name, e.target.checked)}
-            style={{
-              width: '16px',
-              height: '16px',
-              accentColor: '#3b82f6',
-            }}
+  const renderField = () => {
+    switch (field.type) {
+      case 'text':
+      case 'email':
+      case 'password':
+      case 'textarea':
+      case 'select':
+      case 'date':
+      case 'number':
+        return (
+          <div key={fieldKey} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <label htmlFor={field.name} style={{ fontWeight: '500', color: '#374151' }}>
+              {field.label}
+            </label>
+            {field.type === 'textarea' ? (
+              <textarea
+                id={field.name}
+                name={field.name}
+                value={formData[field.name] || ''}
+                onChange={(e) => handleInputChange(field.name, e.target.value)}
+                rows={4}
+                style={{
+                  padding: '10px 12px',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '6px',
+                  outline: 'none',
+                }}
+              />
+            ) : field.type === 'select' ? (
+              <select
+                id={field.name}
+                name={field.name}
+                value={formData[field.name] || ''}
+                onChange={(e) => handleInputChange(field.name, e.target.value)}
+                style={{
+                  padding: '10px 12px',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '6px',
+                  outline: 'none',
+                  backgroundColor: 'white',
+                }}
+              >
+                {field.options?.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <input
+                type={field.type}
+                id={field.name}
+                name={field.name}
+                value={formData[field.name] || ''}
+                onChange={(e) => handleInputChange(field.name, e.target.value)}
+                style={{
+                  padding: '10px 12px',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '6px',
+                  outline: 'none',
+                }}
+              />
+            )}
+          </div>
+        )
+      case 'checkbox':
+        return (
+          <div key={fieldKey} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <input
+              type="checkbox"
+              id={field.name}
+              name={field.name}
+              checked={!!formData[field.name]}
+              onChange={(e) => handleInputChange(field.name, e.target.checked)}
+              style={{ width: '16px', height: '16px' }}
+            />
+            <label htmlFor={field.name} style={{ fontWeight: '500', color: '#374151' }}>
+              {field.label}
+            </label>
+          </div>
+        )
+      case 'comboBox':
+        return (
+          <ComboBox
+            value={formData[field.name]}
+            onChange={(newValue: any) => handleInputChange(field.name, newValue)}
+            options={field.options || []}
+            placeholder={`Type or select ${field?.label?.toLowerCase() || field.name?.toLowerCase()}...`}
           />
-          <span style={{ fontSize: '14px', color: '#374151' }}>{field?.label || field.name}</span>
-        </label>
-      ) : field.type === 'textarea' ? (
-        <textarea
-          value={value}
-          onChange={(e) => handleInputChange(field.name, e.target.value)}
-          style={{
-            width: '100%',
-            padding: '12px',
-            border: '1px solid #d1d5db',
-            borderRadius: '8px',
-            fontSize: '14px',
-            outline: 'none',
-            transition: 'all 0.2s ease',
-            resize: 'vertical',
-          }}
-          rows={4}
-          placeholder={`Enter ${field?.label?.toLowerCase() || field.name?.toLowerCase()}...`}
-          onFocus={(e) => {
-            e.target.style.borderColor = '#3b82f6'
-            e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)'
-          }}
-          onBlur={(e) => {
-            e.target.style.borderColor = '#d1d5db'
-            e.target.style.boxShadow = 'none'
-          }}
-        />
-      ) : field.type === 'date' ? (
-        <input
-          type="date"
-          value={value ? new Date(value).toISOString().split('T')[0] : ''}
-          onChange={(e) => handleInputChange(field.name, e.target.value)}
-          style={{
-            width: '100%',
-            padding: '12px',
-            border: '1px solid #d1d5db',
-            borderRadius: '8px',
-            fontSize: '14px',
-            outline: 'none',
-            transition: 'all 0.2s ease',
-          }}
-          onFocus={(e) => {
-            e.target.style.borderColor = '#3b82f6'
-            e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)'
-          }}
-          onBlur={(e) => {
-            e.target.style.borderColor = '#d1d5db'
-            e.target.style.boxShadow = 'none'
-          }}
-        />
-      ) : field.type === 'relationship' ? (
-        <RelationshipField
-          value={value}
-          onChange={(newValue: any) => handleInputChange(field.name, newValue)}
-          field={field}
-          placeholder={`Select ${field?.label?.toLowerCase() || field.name?.toLowerCase()}...`}
-        />
-      ) : field.type === 'array' ? (
-        <ArrayField
-          value={value}
-          onChange={(newValue: any) => handleInputChange(field.name, newValue)}
-          field={field}
-        />
-      ) : field.type === 'group' ? (
-        <GroupField
-          field={field}
-          value={value}
-          onChange={(newValue: any) => handleInputChange(field.name, newValue)}
-        />
-      ) : field.type === 'tabs' ? (
-        <TabsField
-          field={field}
-          value={value}
-          onChange={(newValue: any) => handleInputChange(field.name, newValue)}
-        />
-      ) : field.type === 'row' ? (
-        <RowField
-          field={field}
-          value={value}
-          onChange={(newValue: any) => handleInputChange(field.name, newValue)}
-        />
-      ) : field.type === 'collapsible' ? (
-        <CollapsibleField
-          field={field}
-          value={value}
-          onChange={(newValue: any) => handleInputChange(field.name, newValue)}
-        />
-      ) : (
-        <input
-          type={field.type === 'number' ? 'number' : 'text'}
-          value={value}
-          onChange={(e) => handleInputChange(field.name, e.target.value)}
-          style={{
-            width: '100%',
-            padding: '12px',
-            border: '1px solid #d1d5db',
-            borderRadius: '8px',
-            fontSize: '14px',
-            outline: 'none',
-            transition: 'all 0.2s ease',
-          }}
-          placeholder={`Enter ${field?.label?.toLowerCase() || field.name?.toLowerCase()}...`}
-          onFocus={(e) => {
-            e.target.style.borderColor = '#3b82f6'
-            e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)'
-          }}
-          onBlur={(e) => {
-            e.target.style.borderColor = '#d1d5db'
-            e.target.style.boxShadow = 'none'
-          }}
-        />
-      )}
-    </div>
-  )
+        )
+      case 'relationship':
+        return (
+          <RelationshipField
+            key={fieldKey}
+            field={field}
+            value={formData[field.name]}
+            onChange={(value) => handleInputChange(field.name, value)}
+          />
+        )
+      case 'upload':
+        return (
+          <ImageUpload
+            key={fieldKey}
+            value={formData[field.name]}
+            onChange={(value) => handleInputChange(field.name, value)}
+            placeholder={`Upload ${field?.label?.toLowerCase() || field.name?.toLowerCase()}...`}
+          />
+        )
+      case 'richText':
+        return (
+          <RichTextEditor
+            key={fieldKey}
+            value={formData[field.name]}
+            onChange={(value) => handleInputChange(field.name, value)}
+            placeholder={`Enter ${field?.label?.toLowerCase() || field.name?.toLowerCase()}...`}
+          />
+        )
+      case 'tabs':
+        return (
+          <TabsField
+            key={fieldKey}
+            field={field}
+            value={formData}
+            onChange={(newValue) => handleInputChange(field.name, newValue)}
+          />
+        )
+      case 'group':
+        return (
+          <GroupField
+            key={fieldKey}
+            field={field}
+            value={formData[field.name]}
+            onChange={(value) => handleInputChange(field.name, value)}
+          />
+        )
+      case 'array':
+        return (
+          <ArrayField
+            key={fieldKey}
+            field={field}
+            value={formData[field.name]}
+            onChange={(value) => handleInputChange(field.name, value)}
+          />
+        )
+      case 'row':
+        return (
+          <RowField
+            key={fieldKey}
+            field={field}
+            value={formData}
+            onChange={(newValue) => handleInputChange(field.name, newValue)}
+          />
+        )
+      case 'collapsible':
+        return (
+          <CollapsibleField
+            key={fieldKey}
+            field={field}
+            value={formData}
+            onChange={(newValue) => handleInputChange(field.name, newValue)}
+          />
+        )
+      default:
+        return (
+          <div key={fieldKey} style={{ padding: '16px', backgroundColor: '#f3f4f6' }}>
+            Unsupported field type: {field.type}
+          </div>
+        )
+    }
+  }
+
+  return renderField()
 }
