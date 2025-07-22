@@ -88,6 +88,9 @@
       "sharp",
       "esbuild",
       "unrs-resolver"
-    ]
+    ],
+    "overrides": {
+      "esbuild": ">=0.25.0"
+    }
   }
 }
