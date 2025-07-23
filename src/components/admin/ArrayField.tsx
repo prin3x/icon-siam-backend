@@ -92,11 +92,7 @@ export function ArrayField({ value, onChange, field }: ArrayFieldProps) {
             placeholder={`Enter ${subField?.label?.toLowerCase() || subField.name?.toLowerCase()}...`}
           />
         ) : subField.type === 'upload' || subField.type === 'image' ? (
-          <ImageUpload
-            value={value}
-            onChange={handleChange}
-            placeholder={`Upload ${subField?.label?.toLowerCase() || subField.name?.toLowerCase()}...`}
-          />
+          <ImageUpload value={value} onChange={handleChange} />
         ) : subField.type === 'relationship' ? (
           <RelationshipField
             value={value}
