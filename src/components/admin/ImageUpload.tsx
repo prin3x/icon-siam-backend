@@ -3,9 +3,11 @@ import React, { useState, useRef } from 'react'
 import { MediaModal } from './MediaModal'
 import { getApiHeaders } from '@/utilities/apiKeyUtils'
 
+type MediaObject = { id: string; url: string; filename?: string }
+
 interface ImageUploadProps {
-  value: string | null | { id: string; url: string; filename?: string }
-  onChange: (value: string | null) => void
+  value: string | null | MediaObject
+  onChange: (value: MediaObject | null) => void
   uploadOnly?: boolean
 }
 
@@ -48,10 +50,8 @@ export function ImageUpload({ value, onChange, uploadOnly = false }: ImageUpload
     }
   }, [value, uploadOnly])
 
-  const handleSelectMedia = (media: { id: string; url: string; filename: string }) => {
-    onChange(media.id)
-    setPreviewUrl(media.url)
-    setFileName(media.filename)
+  const handleSelectMedia = (media: MediaObject) => {
+    onChange(media)
     setIsMediaModalOpen(false)
   }
 
@@ -73,7 +73,7 @@ export function ImageUpload({ value, onChange, uploadOnly = false }: ImageUpload
       if (!response.ok) {
         throw new Error(data.error || 'Upload failed')
       }
-      onChange(data.doc.id)
+      onChange(data.doc)
     } catch (error) {
       console.error('Upload error:', error)
     } finally {
