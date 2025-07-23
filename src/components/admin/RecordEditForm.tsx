@@ -127,7 +127,13 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
 
       const processedFormData = Object.entries(formData).reduce((acc, [key, value]) => {
         if (value !== '') {
-          acc[key] = value
+          const anyValue = value as any
+          if (typeof anyValue === 'object' && anyValue !== null && anyValue.id) {
+            // Handle populated media object
+            acc[key] = anyValue.id
+          } else {
+            acc[key] = value
+          }
         }
         return acc
       }, {} as any)

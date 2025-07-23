@@ -2,15 +2,11 @@ import React, { useState, useEffect } from 'react'
 import { getApiHeaders, isInternalRequest } from '@/utilities/apiKeyUtils'
 import { ImageUpload } from './ImageUpload'
 
-interface Media {
-  id: string
-  url: string
-  filename: string
-}
+type MediaObject = { id: string; url: string; filename?: string }
 
 interface MediaModalProps {
   onClose: () => void
-  onSelect: (media: Media) => void
+  onSelect: (media: MediaObject) => void
 }
 
 interface Pagination {
@@ -22,7 +18,7 @@ interface Pagination {
 }
 
 export function MediaModal({ onClose, onSelect }: MediaModalProps) {
-  const [mediaItems, setMediaItems] = useState<Media[]>([])
+  const [mediaItems, setMediaItems] = useState<MediaObject[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string>('')
   const [activeTab, setActiveTab] = useState('select')
@@ -74,20 +70,9 @@ export function MediaModal({ onClose, onSelect }: MediaModalProps) {
     }
   }
 
-  const handleUploadComplete = async (mediaId: string | null) => {
-    if (!mediaId) return
-
-    try {
-      const response = await fetch(`/api/custom-admin/media/${mediaId}`, {
-        headers: getApiHeaders(!isInternalRequest()),
-      })
-      if (!response.ok) {
-        throw new Error('Failed to fetch media details')
-      }
-      const media = await response.json()
+  const handleUploadComplete = (media: MediaObject | null) => {
+    if (media) {
       onSelect(media)
-    } catch (err: any) {
-      setError(err.message)
     }
   }
 
@@ -193,7 +178,7 @@ export function MediaModal({ onClose, onSelect }: MediaModalProps) {
                   >
                     <img
                       src={item.url}
-                      alt={item.filename}
+                      alt={item.filename || ''}
                       style={{
                         width: '100%',
                         height: '120px',
@@ -210,7 +195,7 @@ export function MediaModal({ onClose, onSelect }: MediaModalProps) {
                         whiteSpace: 'nowrap',
                       }}
                     >
-                      {item.filename}
+                      {item.filename || 'No Name'}
                     </div>
                   </div>
                 ))}
