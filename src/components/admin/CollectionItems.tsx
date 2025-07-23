@@ -50,7 +50,6 @@ export function CollectionItems({ slug, onBack }: CollectionItemsProps) {
   // Modal state (only for preview)
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false)
   const [selectedRecordId, setSelectedRecordId] = useState<string>('')
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
 
   // Debounce search term
   useEffect(() => {
@@ -139,6 +138,10 @@ export function CollectionItems({ slug, onBack }: CollectionItemsProps) {
 
   const handleEdit = (id: string) => {
     router.push(`/custom-admin/collections/${slug}/edit/${id}`)
+  }
+
+  const handleCreate = () => {
+    router.push(`/custom-admin/collections/${slug}/create`)
   }
 
   const handlePreview = (id: string) => {
@@ -286,7 +289,7 @@ export function CollectionItems({ slug, onBack }: CollectionItemsProps) {
               {pagination.totalDocs} items
             </span>
             <button
-              onClick={() => setIsCreateModalOpen(true)}
+              onClick={handleCreate}
               style={{
                 padding: '10px 20px',
                 border: '1px solid #10b981',

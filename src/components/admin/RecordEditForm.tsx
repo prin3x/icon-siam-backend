@@ -7,7 +7,7 @@ import { FieldRenderer } from './FieldRenderer'
 
 interface RecordEditFormProps {
   collectionSlug: string
-  recordId: string
+  recordId?: string
 }
 
 interface FieldSchema {
@@ -31,29 +31,16 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string>('')
+  const isCreateMode = !recordId
 
   useEffect(() => {
     const controller = new AbortController()
     const signal = controller.signal
 
-    const fetchRecord = async () => {
+    const fetchRecordAndSchema = async () => {
       try {
         setLoading(true)
         setError('')
-
-        // Fetch record data from the correct custom-admin endpoint
-        const recordResponse = await fetch(
-          `/api/custom-admin/${collectionSlug}/${recordId}?locale=${locale}&depth=3`,
-          { signal },
-        )
-
-        if (!signal.aborted && !recordResponse.ok) {
-          throw new Error(`Failed to fetch record: ${recordResponse.statusText}`)
-        }
-
-        const recordData = await recordResponse.json()
-        if (signal.aborted) return
-        setRecord(recordData)
 
         // Fetch schema from the correct custom-admin endpoint
         const schemaResponse = await fetch(
@@ -69,15 +56,43 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
         if (signal.aborted) return
         setSchema(schemaData.fields || [])
 
-        // Initialize form data
-        const initialFormData: any = {}
-        schemaData.fields?.forEach((field: FieldSchema) => {
-          initialFormData[field.name] = recordData[field.name] || field.defaultValue || ''
-        })
-        setFormData(initialFormData)
+        if (isCreateMode) {
+          // Initialize form with default values for new record
+          const initialFormData: any = {}
+          schemaData.fields?.forEach((field: FieldSchema) => {
+            initialFormData[field.name] = field.defaultValue || ''
+          })
+          setFormData(initialFormData)
+        } else {
+          // Fetch existing record data for editing
+          const recordResponse = await fetch(
+            `/api/custom-admin/${collectionSlug}/${recordId}?locale=${locale}&depth=3`,
+            { signal },
+          )
+
+          if (!signal.aborted && !recordResponse.ok) {
+            throw new Error(`Failed to fetch record: ${recordResponse.statusText}`)
+          }
+
+          const recordData = await recordResponse.json()
+          if (signal.aborted) return
+          setRecord(recordData)
+
+          // Initialize form with existing data
+          const initialFormData: any = {}
+          schemaData.fields?.forEach((field: FieldSchema) => {
+            const value = recordData[field.name]
+            if (field.type === 'date' && value) {
+              initialFormData[field.name] = new Date(value).toISOString().split('T')[0]
+            } else {
+              initialFormData[field.name] = value || field.defaultValue || ''
+            }
+          })
+          setFormData(initialFormData)
+        }
       } catch (error: any) {
         if (error.name !== 'AbortError') {
-          console.error('Error fetching record:', error)
+          console.error('Error fetching data:', error)
           setError(error.message)
         }
       } finally {
@@ -87,14 +102,14 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
       }
     }
 
-    if (collectionSlug && recordId) {
-      fetchRecord()
+    if (collectionSlug) {
+      fetchRecordAndSchema()
     }
 
     return () => {
       controller.abort()
     }
-  }, [collectionSlug, recordId, locale])
+  }, [collectionSlug, recordId, locale, isCreateMode])
 
   const handleInputChange = (fieldName: string, value: any) => {
     setFormData((prev: any) => ({
@@ -110,27 +125,38 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
       setSaving(true)
       setError('')
 
+      const processedFormData = Object.entries(formData).reduce((acc, [key, value]) => {
+        if (value !== '') {
+          acc[key] = value
+        }
+        return acc
+      }, {} as any)
+
+      const url = isCreateMode
+        ? `/api/custom-admin/${collectionSlug}?locale=${locale}`
+        : `/api/custom-admin/${collectionSlug}/${recordId}?locale=${locale}`
+
+      const method = isCreateMode ? 'POST' : 'PATCH'
+
       // Update the record using the correct custom-admin endpoint
-      const response = await fetch(
-        `/api/custom-admin/${collectionSlug}/${recordId}?locale=${locale}`,
-        {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(formData),
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
         },
-      )
+        body: JSON.stringify(processedFormData),
+      })
 
       if (!response.ok) {
         const errorData = await response.text()
-        throw new Error(`Failed to update record: ${errorData}`)
+        const errorMessage = `Failed to ${isCreateMode ? 'create' : 'update'} record: ${errorData}`
+        throw new Error(errorMessage)
       }
 
       // Redirect back to collection page
       router.push(`/custom-admin/collections/${collectionSlug}`)
     } catch (error: any) {
-      console.error('Error updating record:', error)
+      console.error(`Error ${isCreateMode ? 'creating' : 'updating'} record:`, error)
       setError(error.message)
     } finally {
       setSaving(false)
@@ -182,11 +208,13 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
             margin: '0 0 8px 0',
           }}
         >
-          Edit {collectionSlug} Record
+          {isCreateMode ? `Create New ${collectionSlug}` : `Edit ${collectionSlug} Record`}
         </h1>
-        <p style={{ fontSize: '14px', color: '#6b7280', margin: '0' }}>
-          Record ID: {recordId} | Locale: {locale}
-        </p>
+        {!isCreateMode && (
+          <p style={{ fontSize: '14px', color: '#6b7280', margin: '0' }}>
+            Record ID: {recordId} | Locale: {locale}
+          </p>
+        )}
       </div>
 
       <form
@@ -270,7 +298,7 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
               }
             }}
           >
-            {saving ? 'Saving...' : 'Save Changes'}
+            {saving ? 'Saving...' : isCreateMode ? 'Create Record' : 'Save Changes'}
           </button>
         </div>
       </form>
