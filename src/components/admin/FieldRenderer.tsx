@@ -21,6 +21,39 @@ export function FieldRenderer({ field, formData, handleInputChange }: FieldRende
     handleInputChange(field.name, value)
   }
 
+  // ;[
+  //   {
+  //     name: 'cover_photo',
+  //     type: 'upload',
+  //     localized: true,
+  //     label: 'Cover Photo',
+  //     relationTo: 'media',
+  //     admin: { isSortable: true },
+  //     hooks: {},
+  //     access: {},
+  //   },
+  //   {
+  //     name: 'thumbnail',
+  //     type: 'upload',
+  //     localized: true,
+  //     label: 'Thumbnail',
+  //     relationTo: 'media',
+  //     admin: { isSortable: true },
+  //     hooks: {},
+  //     access: {},
+  //   },
+  //   {
+  //     name: 'facebook_image',
+  //     type: 'upload',
+  //     localized: true,
+  //     label: 'Facebook Image',
+  //     relationTo: 'media',
+  //     admin: { isSortable: true },
+  //     hooks: {},
+  //     access: {},
+  //   },
+  // ]
+
   switch (field.type) {
     case 'text':
     case 'textarea':
@@ -114,10 +147,13 @@ export function FieldRenderer({ field, formData, handleInputChange }: FieldRende
       return <RichTextEditor value={formData[field.name]} onChange={handleChange} />
     case 'upload':
       return (
-        <ImageUpload
-          value={formData[field.name]}
-          onChange={(value) => handleInputChange(field.name, value)}
-        />
+        <div>
+          <label>{field.label || field.name}</label>
+          <ImageUpload
+            value={formData[field.name]}
+            onChange={(value) => handleInputChange(field.name, value)}
+          />
+        </div>
       )
     case 'relationship':
       return (
