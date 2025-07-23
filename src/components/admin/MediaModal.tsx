@@ -74,7 +74,9 @@ export function MediaModal({ onClose, onSelect }: MediaModalProps) {
     }
   }
 
-  const handleUploadComplete = async (mediaId: string) => {
+  const handleUploadComplete = async (mediaId: string | null) => {
+    if (!mediaId) return
+
     try {
       const response = await fetch(`/api/custom-admin/media/${mediaId}`, {
         headers: getApiHeaders(!isInternalRequest()),
