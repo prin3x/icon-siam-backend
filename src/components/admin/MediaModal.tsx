@@ -13,25 +13,49 @@ interface MediaModalProps {
   onSelect: (media: Media) => void
 }
 
+interface Pagination {
+  page: number
+  limit: number
+  totalPages: number
+  hasNextPage: boolean
+  hasPrevPage: boolean
+}
+
 export function MediaModal({ onClose, onSelect }: MediaModalProps) {
   const [mediaItems, setMediaItems] = useState<Media[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string>('')
   const [activeTab, setActiveTab] = useState('select')
+  const [pagination, setPagination] = useState<Pagination>({
+    page: 1,
+    limit: 12,
+    totalPages: 1,
+    hasNextPage: false,
+    hasPrevPage: false,
+  })
 
   useEffect(() => {
     const fetchMedia = async () => {
       try {
         setLoading(true)
         setError('')
-        const response = await fetch('/api/custom-admin/media?limit=100', {
-          headers: getApiHeaders(!isInternalRequest()),
-        })
+        const response = await fetch(
+          `/api/custom-admin/media?limit=${pagination.limit}&page=${pagination.page}`,
+          {
+            headers: getApiHeaders(!isInternalRequest()),
+          },
+        )
         if (!response.ok) {
           throw new Error('Failed to fetch media')
         }
         const data = await response.json()
         setMediaItems(data.docs || [])
+        setPagination((prev) => ({
+          ...prev,
+          totalPages: data.totalPages,
+          hasNextPage: data.hasNextPage,
+          hasPrevPage: data.hasPrevPage,
+        }))
       } catch (err: any) {
         setError(err.message)
       } finally {
@@ -42,9 +66,17 @@ export function MediaModal({ onClose, onSelect }: MediaModalProps) {
     if (activeTab === 'select') {
       fetchMedia()
     }
-  }, [activeTab])
+  }, [activeTab, pagination.page, pagination.limit])
 
-  const handleUploadComplete = async (mediaId: string) => {
+  const handlePageChange = (newPage: number) => {
+    if (newPage > 0 && newPage <= pagination.totalPages) {
+      setPagination((prev) => ({ ...prev, page: newPage }))
+    }
+  }
+
+  const handleUploadComplete = async (mediaId: string | null) => {
+    if (!mediaId) return
+
     try {
       const response = await fetch(`/api/custom-admin/media/${mediaId}`, {
         headers: getApiHeaders(!isInternalRequest()),
@@ -96,6 +128,7 @@ export function MediaModal({ onClose, onSelect }: MediaModalProps) {
         >
           <h2 style={{ fontSize: '18px', fontWeight: '600' }}>Select or Upload Media</h2>
           <button
+            type="button"
             onClick={onClose}
             style={{
               background: 'none',
@@ -110,6 +143,7 @@ export function MediaModal({ onClose, onSelect }: MediaModalProps) {
         </div>
         <div style={{ borderBottom: '1px solid #e5e7eb', padding: '0 16px' }}>
           <button
+            type="button"
             onClick={() => setActiveTab('select')}
             style={{
               padding: '12px 16px',
@@ -124,6 +158,7 @@ export function MediaModal({ onClose, onSelect }: MediaModalProps) {
             Select from Library
           </button>
           <button
+            type="button"
             onClick={() => setActiveTab('upload')}
             style={{
               padding: '12px 16px',
@@ -180,11 +215,39 @@ export function MediaModal({ onClose, onSelect }: MediaModalProps) {
                   </div>
                 ))}
               </div>
+              {pagination.totalPages > 1 && (
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    marginTop: '16px',
+                  }}
+                >
+                  <button
+                    type="button"
+                    onClick={() => handlePageChange(pagination.page - 1)}
+                    disabled={!pagination.hasPrevPage}
+                  >
+                    Previous
+                  </button>
+                  <span style={{ margin: '0 16px' }}>
+                    Page {pagination.page} of {pagination.totalPages}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handlePageChange(pagination.page + 1)}
+                    disabled={!pagination.hasNextPage}
+                  >
+                    Next
+                  </button>
+                </div>
+              )}
             </>
           )}
           {activeTab === 'upload' && (
             <div style={{ maxWidth: '400px', margin: '0 auto' }}>
-              <ImageUpload value={null} onChange={handleUploadComplete} />
+              <ImageUpload value={null} onChange={handleUploadComplete} uploadOnly />
               <p style={{ marginTop: '12px', fontSize: '12px', color: '#6b7280' }}>
                 After uploading, the image will be automatically selected.
               </p>
@@ -193,6 +256,7 @@ export function MediaModal({ onClose, onSelect }: MediaModalProps) {
         </div>
         <div style={{ padding: '16px', borderTop: '1px solid #e5e7eb', textAlign: 'right' }}>
           <button
+            type="button"
             onClick={onClose}
             style={{
               padding: '8px 16px',

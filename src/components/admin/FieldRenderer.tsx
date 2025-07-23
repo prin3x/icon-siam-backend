@@ -1,214 +1,203 @@
 'use client'
 
 import React from 'react'
-import { ArrayField } from './ArrayField'
-import { CollapsibleField } from './CollapsibleField'
-import { GroupField } from './GroupField'
-import { ImageUpload } from './ImageUpload'
-import { RelationshipField } from './RelationshipField'
 import { RichTextEditor } from './RichTextEditor'
+import { RelationshipField } from './RelationshipField'
+import { ArrayField } from './ArrayField'
+import { GroupField } from './GroupField'
+import { CollapsibleField } from './CollapsibleField'
 import { RowField } from './RowField'
 import { TabsField } from './TabsField'
-import { ComboBox } from './ComboBox'
-
-interface FieldSchema {
-  name: string
-  type: string
-  label: string
-  required?: boolean
-  defaultValue?: any
-  options?: Array<{ label: string; value: string }>
-  relationTo?: string | string[]
-  hasMany?: boolean
-  fields?: FieldSchema[]
-  tabs?: { label: string; fields: FieldSchema[] }[]
-}
+import { ImageUpload } from './ImageUpload'
 
 interface FieldRendererProps {
-  field: FieldSchema
+  field: any
   formData: any
   handleInputChange: (fieldName: string, value: any) => void
-  parentName?: string
 }
 
-export function FieldRenderer({
-  field,
-  formData,
-  handleInputChange,
-  parentName = '',
-}: FieldRendererProps) {
-  const fieldKey = parentName ? `${parentName}.${field.name}` : field.name
-
-  const renderField = () => {
-    switch (field.type) {
-      case 'text':
-      case 'email':
-      case 'password':
-      case 'textarea':
-      case 'select':
-      case 'date':
-      case 'number':
-        return (
-          <div key={fieldKey} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <label htmlFor={field.name} style={{ fontWeight: '500', color: '#374151' }}>
-              {field.label}
-            </label>
-            {field.type === 'textarea' ? (
-              <textarea
-                id={field.name}
-                name={field.name}
-                value={formData[field.name] || ''}
-                onChange={(e) => handleInputChange(field.name, e.target.value)}
-                rows={4}
-                style={{
-                  padding: '10px 12px',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '6px',
-                  outline: 'none',
-                }}
-              />
-            ) : field.type === 'select' ? (
-              <select
-                id={field.name}
-                name={field.name}
-                value={formData[field.name] || ''}
-                onChange={(e) => handleInputChange(field.name, e.target.value)}
-                style={{
-                  padding: '10px 12px',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '6px',
-                  outline: 'none',
-                  backgroundColor: 'white',
-                }}
-              >
-                {field.options?.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            ) : (
-              <input
-                type={field.type}
-                id={field.name}
-                name={field.name}
-                value={formData[field.name] || ''}
-                onChange={(e) => handleInputChange(field.name, e.target.value)}
-                style={{
-                  padding: '10px 12px',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '6px',
-                  outline: 'none',
-                }}
-              />
-            )}
-          </div>
-        )
-      case 'checkbox':
-        return (
-          <div key={fieldKey} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <input
-              type="checkbox"
-              id={field.name}
-              name={field.name}
-              checked={!!formData[field.name]}
-              onChange={(e) => handleInputChange(field.name, e.target.checked)}
-              style={{ width: '16px', height: '16px' }}
-            />
-            <label htmlFor={field.name} style={{ fontWeight: '500', color: '#374151' }}>
-              {field.label}
-            </label>
-          </div>
-        )
-      case 'comboBox':
-        return (
-          <ComboBox
-            value={formData[field.name]}
-            onChange={(newValue: any) => handleInputChange(field.name, newValue)}
-            options={field.options || []}
-            placeholder={`Type or select ${field?.label?.toLowerCase() || field.name?.toLowerCase()}...`}
-          />
-        )
-      case 'relationship':
-        return (
-          <RelationshipField
-            key={fieldKey}
-            field={field}
-            value={formData[field.name]}
-            onChange={(value) => handleInputChange(field.name, value)}
-          />
-        )
-      case 'upload':
-        return (
-          <ImageUpload
-            key={fieldKey}
-            value={formData[field.name]}
-            onChange={(value) => handleInputChange(field.name, value)}
-            placeholder={`Upload ${field?.label?.toLowerCase() || field.name?.toLowerCase()}...`}
-          />
-        )
-      case 'richText':
-        return (
-          <RichTextEditor
-            key={fieldKey}
-            value={formData[field.name]}
-            onChange={(value) => handleInputChange(field.name, value)}
-            placeholder={`Enter ${field?.label?.toLowerCase() || field.name?.toLowerCase()}...`}
-          />
-        )
-      case 'tabs':
-        return (
-          <TabsField
-            key={fieldKey}
-            field={field}
-            value={formData}
-            onChange={(newValue) => handleInputChange(field.name, newValue)}
-          />
-        )
-      case 'group':
-        return (
-          <GroupField
-            key={fieldKey}
-            field={field}
-            value={formData[field.name]}
-            onChange={(value) => handleInputChange(field.name, value)}
-          />
-        )
-      case 'array':
-        return (
-          <ArrayField
-            key={fieldKey}
-            field={field}
-            value={formData[field.name]}
-            onChange={(value) => handleInputChange(field.name, value)}
-          />
-        )
-      case 'row':
-        return (
-          <RowField
-            key={fieldKey}
-            field={field}
-            value={formData}
-            onChange={(newValue) => handleInputChange(field.name, newValue)}
-          />
-        )
-      case 'collapsible':
-        return (
-          <CollapsibleField
-            key={fieldKey}
-            field={field}
-            value={formData}
-            onChange={(newValue) => handleInputChange(field.name, newValue)}
-          />
-        )
-      default:
-        return (
-          <div key={fieldKey} style={{ padding: '16px', backgroundColor: '#f3f4f6' }}>
-            Unsupported field type: {field.type}
-          </div>
-        )
-    }
+export function FieldRenderer({ field, formData, handleInputChange }: FieldRendererProps) {
+  const handleChange = (value: any) => {
+    handleInputChange(field.name, value)
   }
 
-  return renderField()
+  // ;[
+  //   {
+  //     name: 'cover_photo',
+  //     type: 'upload',
+  //     localized: true,
+  //     label: 'Cover Photo',
+  //     relationTo: 'media',
+  //     admin: { isSortable: true },
+  //     hooks: {},
+  //     access: {},
+  //   },
+  //   {
+  //     name: 'thumbnail',
+  //     type: 'upload',
+  //     localized: true,
+  //     label: 'Thumbnail',
+  //     relationTo: 'media',
+  //     admin: { isSortable: true },
+  //     hooks: {},
+  //     access: {},
+  //   },
+  //   {
+  //     name: 'facebook_image',
+  //     type: 'upload',
+  //     localized: true,
+  //     label: 'Facebook Image',
+  //     relationTo: 'media',
+  //     admin: { isSortable: true },
+  //     hooks: {},
+  //     access: {},
+  //   },
+  // ]
+
+  switch (field.type) {
+    case 'text':
+    case 'textarea':
+    case 'email':
+    case 'number':
+    case 'date':
+      return (
+        <div style={{ marginBottom: '16px' }}>
+          <label
+            style={{
+              display: 'block',
+              marginBottom: '8px',
+              fontSize: '14px',
+              fontWeight: '600',
+              color: '#374151',
+            }}
+          >
+            {field.label || field.name}
+          </label>
+          <input
+            type={field.type === 'textarea' ? 'text' : field.type}
+            value={formData[field.name] || ''}
+            onChange={(e) => handleChange(e.target.value)}
+            style={{
+              width: '100%',
+              padding: '12px',
+              border: '1px solid #d1d5db',
+              borderRadius: '8px',
+              fontSize: '14px',
+              outline: 'none',
+              transition: 'all 0.2s ease',
+              backgroundColor: '#ffffff',
+            }}
+          />
+        </div>
+      )
+    case 'checkbox':
+      return (
+        <div style={{ marginBottom: '16px', display: 'flex', alignItems: 'center' }}>
+          <input
+            type="checkbox"
+            checked={!!formData[field.name]}
+            onChange={(e) => handleChange(e.target.checked)}
+            style={{
+              marginRight: '8px',
+              width: '16px',
+              height: '16px',
+              accentColor: '#3b82f6',
+            }}
+          />
+          <label style={{ fontSize: '14px', color: '#374151' }}>{field.label || field.name}</label>
+        </div>
+      )
+    case 'select':
+      return (
+        <div style={{ marginBottom: '16px' }}>
+          <label
+            style={{
+              display: 'block',
+              marginBottom: '8px',
+              fontSize: '14px',
+              fontWeight: '600',
+              color: '#374151',
+            }}
+          >
+            {field.label || field.name}
+          </label>
+          <select
+            value={formData[field.name] || ''}
+            onChange={(e) => handleChange(e.target.value)}
+            style={{
+              width: '100%',
+              padding: '12px',
+              border: '1px solid #d1d5db',
+              borderRadius: '8px',
+              fontSize: '14px',
+              backgroundColor: '#ffffff',
+              cursor: 'pointer',
+              outline: 'none',
+            }}
+          >
+            {field.options?.map((option: { label: string; value: string }) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+      )
+    case 'richText':
+      return <RichTextEditor value={formData[field.name]} onChange={handleChange} />
+    case 'upload':
+      return (
+        <div>
+          <label>{field.label || field.name}</label>
+          <ImageUpload
+            value={formData[field.name]}
+            onChange={(value) => handleInputChange(field.name, value)}
+          />
+        </div>
+      )
+    case 'relationship':
+      return (
+        <RelationshipField
+          field={field}
+          value={formData[field.name]}
+          onChange={(value) => handleInputChange(field.name, value)}
+        />
+      )
+    case 'array':
+      return <ArrayField field={field} value={formData[field.name] || []} onChange={handleChange} />
+    case 'group':
+      return <GroupField field={field} value={formData[field.name] || {}} onChange={handleChange} />
+    case 'collapsible':
+      return (
+        <CollapsibleField
+          field={field}
+          value={formData}
+          onChange={(value) => handleInputChange(field.name, value)}
+        />
+      )
+    case 'row':
+      return (
+        <RowField
+          field={field}
+          value={formData}
+          onChange={(value) => handleInputChange(field.name, value)}
+        />
+      )
+    case 'tabs':
+      return (
+        <TabsField
+          field={field}
+          value={formData}
+          onChange={(value) => handleInputChange(field.name, value)}
+        />
+      )
+    default:
+      return (
+        <div style={{ padding: '16px', backgroundColor: '#f3f4f6', borderRadius: '8px' }}>
+          <p style={{ margin: 0, color: '#6b7280', fontSize: '14px' }}>
+            Unsupported field type: <strong>{field.type}</strong>
+          </p>
+        </div>
+      )
+  }
 }

@@ -79,9 +79,11 @@ export function checkRateLimit(
 }
 
 // Utility function to get headers for API requests
-export function getApiHeaders(includeApiKey = false): Record<string, string> {
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
+export function getApiHeaders(includeApiKey = false, isFormData = false): Record<string, string> {
+  const headers: Record<string, string> = {}
+
+  if (!isFormData) {
+    headers['Content-Type'] = 'application/json'
   }
 
   // Only include API key for external requests
