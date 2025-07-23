@@ -262,12 +262,12 @@ export function RichTextEditor({
     }
   }, [editor, value])
 
-  const handleImageSelection = (media: { id: string; url: string; filename: string }) => {
+  const handleImageSelection = (media: { id: string; url: string; filename?: string }) => {
     if (media.url) {
       editor
         ?.chain()
         .focus()
-        .setImage({ src: media.url, alt: media.filename, 'data-id': media.id } as any)
+        .setImage({ src: media.url, alt: media.filename || '', 'data-id': media.id } as any)
         .createParagraphNear()
         .run()
     }
