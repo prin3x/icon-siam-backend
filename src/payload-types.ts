@@ -1363,27 +1363,17 @@ export interface Facility {
   banner_image?: (number | null) | Media;
   bank_section?: {
     section_name?: string | null;
-    section_contents?:
-      | {
-          /**
-           * Select the shop to be displayed in the section
-           */
-          shop?: (number | Shop)[] | null;
-          id?: string | null;
-        }[]
-      | null;
+    /**
+     * Select the shop to be displayed in the section
+     */
+    section_contents?: (number | Shop)[] | null;
   };
   post_office_section?: {
     section_name?: string | null;
-    section_contents?:
-      | {
-          /**
-           * Select the shop to be displayed in the section
-           */
-          shop?: (number | Shop)[] | null;
-          id?: string | null;
-        }[]
-      | null;
+    /**
+     * Select the shop to be displayed in the section
+     */
+    section_contents?: (number | Shop)[] | null;
   };
   services?:
     | {
@@ -2475,23 +2465,13 @@ export interface FacilitiesSelect<T extends boolean = true> {
     | T
     | {
         section_name?: T;
-        section_contents?:
-          | T
-          | {
-              shop?: T;
-              id?: T;
-            };
+        section_contents?: T;
       };
   post_office_section?:
     | T
     | {
         section_name?: T;
-        section_contents?:
-          | T
-          | {
-              shop?: T;
-              id?: T;
-            };
+        section_contents?: T;
       };
   services?:
     | T

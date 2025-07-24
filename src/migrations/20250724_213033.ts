@@ -2,19 +2,7 @@ import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-postgres'
 
 export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   await db.execute(sql`
-   CREATE TABLE "facilities_bank_section_section_contents" (
-  	"_order" integer NOT NULL,
-  	"_parent_id" integer NOT NULL,
-  	"id" varchar PRIMARY KEY NOT NULL
-  );
-  
-  CREATE TABLE "facilities_post_office_section_section_contents" (
-  	"_order" integer NOT NULL,
-  	"_parent_id" integer NOT NULL,
-  	"id" varchar PRIMARY KEY NOT NULL
-  );
-  
-  CREATE TABLE "facilities_services" (
+   CREATE TABLE "facilities_services" (
   	"_order" integer NOT NULL,
   	"_parent_id" integer NOT NULL,
   	"id" varchar PRIMARY KEY NOT NULL,
@@ -73,8 +61,6 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   );
   
   ALTER TABLE "payload_locked_documents_rels" ADD COLUMN "facilities_id" integer;
-  ALTER TABLE "facilities_bank_section_section_contents" ADD CONSTRAINT "facilities_bank_section_section_contents_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."facilities"("id") ON DELETE cascade ON UPDATE no action;
-  ALTER TABLE "facilities_post_office_section_section_contents" ADD CONSTRAINT "facilities_post_office_section_section_contents_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."facilities"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "facilities_services" ADD CONSTRAINT "facilities_services_image_icon_id_media_id_fk" FOREIGN KEY ("image_icon_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "facilities_services" ADD CONSTRAINT "facilities_services_floor_id_floors_id_fk" FOREIGN KEY ("floor_id") REFERENCES "public"."floors"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "facilities_services" ADD CONSTRAINT "facilities_services_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."facilities"("id") ON DELETE cascade ON UPDATE no action;
@@ -87,10 +73,6 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   ALTER TABLE "facilities_locales" ADD CONSTRAINT "facilities_locales_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."facilities"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "facilities_rels" ADD CONSTRAINT "facilities_rels_parent_fk" FOREIGN KEY ("parent_id") REFERENCES "public"."facilities"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "facilities_rels" ADD CONSTRAINT "facilities_rels_shops_fk" FOREIGN KEY ("shops_id") REFERENCES "public"."shops"("id") ON DELETE cascade ON UPDATE no action;
-  CREATE INDEX "facilities_bank_section_section_contents_order_idx" ON "facilities_bank_section_section_contents" USING btree ("_order");
-  CREATE INDEX "facilities_bank_section_section_contents_parent_id_idx" ON "facilities_bank_section_section_contents" USING btree ("_parent_id");
-  CREATE INDEX "facilities_post_office_section_section_contents_order_idx" ON "facilities_post_office_section_section_contents" USING btree ("_order");
-  CREATE INDEX "facilities_post_office_section_section_contents_parent_id_idx" ON "facilities_post_office_section_section_contents" USING btree ("_parent_id");
   CREATE INDEX "facilities_services_order_idx" ON "facilities_services" USING btree ("_order");
   CREATE INDEX "facilities_services_parent_id_idx" ON "facilities_services" USING btree ("_parent_id");
   CREATE INDEX "facilities_services_image_icon_idx" ON "facilities_services" USING btree ("image_icon_id");
@@ -115,17 +97,13 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
 
 export async function down({ db, payload, req }: MigrateDownArgs): Promise<void> {
   await db.execute(sql`
-   ALTER TABLE "facilities_bank_section_section_contents" DISABLE ROW LEVEL SECURITY;
-  ALTER TABLE "facilities_post_office_section_section_contents" DISABLE ROW LEVEL SECURITY;
-  ALTER TABLE "facilities_services" DISABLE ROW LEVEL SECURITY;
+   ALTER TABLE "facilities_services" DISABLE ROW LEVEL SECURITY;
   ALTER TABLE "facilities_services_locales" DISABLE ROW LEVEL SECURITY;
   ALTER TABLE "facilities_facilities" DISABLE ROW LEVEL SECURITY;
   ALTER TABLE "facilities_facilities_locales" DISABLE ROW LEVEL SECURITY;
   ALTER TABLE "facilities" DISABLE ROW LEVEL SECURITY;
   ALTER TABLE "facilities_locales" DISABLE ROW LEVEL SECURITY;
   ALTER TABLE "facilities_rels" DISABLE ROW LEVEL SECURITY;
-  DROP TABLE "facilities_bank_section_section_contents" CASCADE;
-  DROP TABLE "facilities_post_office_section_section_contents" CASCADE;
   DROP TABLE "facilities_services" CASCADE;
   DROP TABLE "facilities_services_locales" CASCADE;
   DROP TABLE "facilities_facilities" CASCADE;
