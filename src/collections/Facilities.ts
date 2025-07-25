@@ -36,20 +36,13 @@ export const Facilities: CollectionConfig = {
         },
         {
           name: 'section_contents',
-          type: 'array',
+          type: 'relationship',
           label: 'Section Contents',
-          fields: [
-            {
-              name: 'shop',
-              type: 'relationship',
-              label: 'Shop',
-              relationTo: 'shops',
-              hasMany: true,
-              admin: {
-                description: 'Select the shop to be displayed in the section',
-              },
-            },
-          ],
+          relationTo: 'shops',
+          hasMany: true,
+          admin: {
+            description: 'Select the shop to be displayed in the section',
+          },
         },
       ],
     },
@@ -66,20 +59,13 @@ export const Facilities: CollectionConfig = {
         },
         {
           name: 'section_contents',
-          type: 'array',
+          type: 'relationship',
           label: 'Section Contents',
-          fields: [
-            {
-              name: 'shop',
-              type: 'relationship',
-              label: 'Shop',
-              relationTo: 'shops',
-              hasMany: true,
-              admin: {
-                description: 'Select the shop to be displayed in the section',
-              },
-            },
-          ],
+          relationTo: 'shops',
+          hasMany: true,
+          admin: {
+            description: 'Select the shop to be displayed in the section',
+          },
         },
       ],
     },
@@ -112,42 +98,17 @@ export const Facilities: CollectionConfig = {
           type: 'relationship',
           label: 'Floor',
           relationTo: 'floors',
+          hasMany: true,
         },
         {
           name: 'location_zone',
           type: 'text',
           label: 'Location Zone',
         },
-        {
-          name: 'location_shop_number',
-          type: 'text',
-          localized: true,
-          label: 'Location Shop Number',
-        },
-        {
-          name: 'location_coordinates',
-          type: 'group',
-          label: 'Location Coordinates',
-          fields: [
-            {
-              name: 'poi_x',
-              type: 'number',
-              label: 'POI X Coordinate',
-              defaultValue: 0,
-            },
-            {
-              name: 'poi_y',
-              type: 'number',
-              label: 'POI Y Coordinate',
-              defaultValue: 0,
-            },
-          ],
-        },
       ],
     },
-
     {
-      name: 'Facilities',
+      name: 'facilities',
       type: 'array',
       label: 'Facilities',
       fields: [
@@ -174,36 +135,12 @@ export const Facilities: CollectionConfig = {
           type: 'relationship',
           label: 'Floor',
           relationTo: 'floors',
+          hasMany: true,
         },
         {
           name: 'location_zone',
           type: 'text',
           label: 'Location Zone',
-        },
-        {
-          name: 'location_shop_number',
-          type: 'text',
-          localized: true,
-          label: 'Location Shop Number',
-        },
-        {
-          name: 'location_coordinates',
-          type: 'group',
-          label: 'Location Coordinates',
-          fields: [
-            {
-              name: 'poi_x',
-              type: 'number',
-              label: 'POI X Coordinate',
-              defaultValue: 0,
-            },
-            {
-              name: 'poi_y',
-              type: 'number',
-              label: 'POI Y Coordinate',
-              defaultValue: 0,
-            },
-          ],
         },
       ],
     },

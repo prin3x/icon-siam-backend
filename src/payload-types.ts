@@ -88,6 +88,7 @@ export interface Config {
     'news-press': NewsPress;
     stories: Story;
     'api-sync-logs': ApiSyncLog;
+    facilities: Facility;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -115,6 +116,7 @@ export interface Config {
     'news-press': NewsPressSelect<false> | NewsPressSelect<true>;
     stories: StoriesSelect<false> | StoriesSelect<true>;
     'api-sync-logs': ApiSyncLogsSelect<false> | ApiSyncLogsSelect<true>;
+    facilities: FacilitiesSelect<false> | FacilitiesSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -1353,6 +1355,51 @@ export interface ApiSyncLog {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "facilities".
+ */
+export interface Facility {
+  id: number;
+  title?: string | null;
+  banner_image?: (number | null) | Media;
+  bank_section?: {
+    section_name?: string | null;
+    /**
+     * Select the shop to be displayed in the section
+     */
+    section_contents?: (number | Shop)[] | null;
+  };
+  post_office_section?: {
+    section_name?: string | null;
+    /**
+     * Select the shop to be displayed in the section
+     */
+    section_contents?: (number | Shop)[] | null;
+  };
+  services?:
+    | {
+        image_icon?: (number | null) | Media;
+        service_name?: string | null;
+        description?: string | null;
+        floor?: (number | Floor)[] | null;
+        location_zone?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  facilities?:
+    | {
+        image_icon?: (number | null) | Media;
+        facility_name?: string | null;
+        description?: string | null;
+        floor?: (number | Floor)[] | null;
+        location_zone?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
@@ -1441,6 +1488,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'api-sync-logs';
         value: number | ApiSyncLog;
+      } | null)
+    | ({
+        relationTo: 'facilities';
+        value: number | Facility;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -2400,6 +2451,48 @@ export interface ApiSyncLogsSelect<T extends boolean = true> {
         api_response_time_avg?: T;
       };
   notes?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "facilities_select".
+ */
+export interface FacilitiesSelect<T extends boolean = true> {
+  title?: T;
+  banner_image?: T;
+  bank_section?:
+    | T
+    | {
+        section_name?: T;
+        section_contents?: T;
+      };
+  post_office_section?:
+    | T
+    | {
+        section_name?: T;
+        section_contents?: T;
+      };
+  services?:
+    | T
+    | {
+        image_icon?: T;
+        service_name?: T;
+        description?: T;
+        floor?: T;
+        location_zone?: T;
+        id?: T;
+      };
+  facilities?:
+    | T
+    | {
+        image_icon?: T;
+        facility_name?: T;
+        description?: T;
+        floor?: T;
+        location_zone?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
