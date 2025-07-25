@@ -98,6 +98,7 @@ export const Facilities: CollectionConfig = {
           type: 'relationship',
           label: 'Floor',
           relationTo: 'floors',
+          hasMany: true,
         },
         {
           name: 'location_zone',
@@ -134,6 +135,7 @@ export const Facilities: CollectionConfig = {
           type: 'relationship',
           label: 'Floor',
           relationTo: 'floors',
+          hasMany: true,
         },
         {
           name: 'location_zone',

@@ -1380,7 +1380,7 @@ export interface Facility {
         image_icon?: (number | null) | Media;
         service_name?: string | null;
         description?: string | null;
-        floor?: (number | null) | Floor;
+        floor?: (number | Floor)[] | null;
         location_zone?: string | null;
         id?: string | null;
       }[]
@@ -1390,7 +1390,7 @@ export interface Facility {
         image_icon?: (number | null) | Media;
         facility_name?: string | null;
         description?: string | null;
-        floor?: (number | null) | Floor;
+        floor?: (number | Floor)[] | null;
         location_zone?: string | null;
         id?: string | null;
       }[]
