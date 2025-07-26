@@ -29,6 +29,10 @@ import { Stickbar } from './collections/Stickbar'
 import { NewsPress } from './collections/NewsPress'
 import { Stories } from './collections/Stories'
 import { ApiSyncLogs } from './collections/ApiSyncLogs'
+import { BoardOfDirectors } from './collections/BoardOfDirectors'
+import { IconsiamAwards } from './collections/IconsiamAwards'
+import { VisionMission } from './collections/VisionMission'
+import { AboutIconsiam } from './collections/AboutICONSIAM'
 
 export const useLocal = process.env.UPLOAD_STRATEGY === 'local'
 export const isDev = process.env.NODE_ENV === 'development'
@@ -73,6 +77,10 @@ export default buildConfig({
     NewsPress,
     Stories,
     ApiSyncLogs,
+    AboutIconsiam,
+    BoardOfDirectors,
+    IconsiamAwards,
+    VisionMission,
   ],
 
   // CORS configuration for frontend access
