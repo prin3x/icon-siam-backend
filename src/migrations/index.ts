@@ -256,6 +256,11 @@ export const migrations = [
     name: '20250725_171246',
   },
   {
+    up: migration_20250726_070851.up,
+    down: migration_20250726_070851.down,
+    name: '20250726_070851',
+  },
+  {
     up: migration_20250727_090710.up,
     down: migration_20250727_090710.down,
     name: '20250727_090710',
@@ -264,10 +269,5 @@ export const migrations = [
     up: migration_20250727_102135.up,
     down: migration_20250727_102135.down,
     name: '20250727_102135',
-  },
-  {
-    up: migration_20250726_070851.up,
-    down: migration_20250726_070851.down,
-    name: '20250726_070851',
   },
 ]
