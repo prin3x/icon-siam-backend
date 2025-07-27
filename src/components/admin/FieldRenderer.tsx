@@ -21,42 +21,8 @@ export function FieldRenderer({ field, formData, handleInputChange }: FieldRende
     handleInputChange(field.name, value)
   }
 
-  // ;[
-  //   {
-  //     name: 'cover_photo',
-  //     type: 'upload',
-  //     localized: true,
-  //     label: 'Cover Photo',
-  //     relationTo: 'media',
-  //     admin: { isSortable: true },
-  //     hooks: {},
-  //     access: {},
-  //   },
-  //   {
-  //     name: 'thumbnail',
-  //     type: 'upload',
-  //     localized: true,
-  //     label: 'Thumbnail',
-  //     relationTo: 'media',
-  //     admin: { isSortable: true },
-  //     hooks: {},
-  //     access: {},
-  //   },
-  //   {
-  //     name: 'facebook_image',
-  //     type: 'upload',
-  //     localized: true,
-  //     label: 'Facebook Image',
-  //     relationTo: 'media',
-  //     admin: { isSortable: true },
-  //     hooks: {},
-  //     access: {},
-  //   },
-  // ]
-
   switch (field.type) {
     case 'text':
-    case 'textarea':
     case 'email':
     case 'number':
     case 'date':
@@ -74,11 +40,42 @@ export function FieldRenderer({ field, formData, handleInputChange }: FieldRende
             {field.label || field.name}
           </label>
           <input
-            type={field.type === 'textarea' ? 'text' : field.type}
+            type={field.type}
             value={formData[field.name] || ''}
             onChange={(e) => handleChange(e.target.value)}
             style={{
               width: '100%',
+              padding: '12px',
+              border: '1px solid #d1d5db',
+              borderRadius: '8px',
+              fontSize: '14px',
+              outline: 'none',
+              transition: 'all 0.2s ease',
+              backgroundColor: '#ffffff',
+            }}
+          />
+        </div>
+      )
+    case 'textarea':
+      return (
+        <div style={{ marginBottom: '16px' }}>
+          <label
+            style={{
+              display: 'block',
+              marginBottom: '8px',
+              fontSize: '14px',
+              fontWeight: '600',
+              color: '#374151',
+            }}
+          >
+            {field.label || field.name}
+          </label>
+          <textarea
+            value={formData[field.name] || ''}
+            onChange={(e) => handleChange(e.target.value)}
+            style={{
+              width: '100%',
+              minHeight: '120px',
               padding: '12px',
               border: '1px solid #d1d5db',
               borderRadius: '8px',

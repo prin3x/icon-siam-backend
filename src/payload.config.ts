@@ -34,6 +34,7 @@ import { BoardOfDirectors } from './collections/BoardOfDirectors'
 import { IconsiamAwards } from './collections/IconsiamAwards'
 import { VisionMission } from './collections/VisionMission'
 import { AboutIconsiam } from './collections/AboutICONSIAM'
+import { Residences } from './collections/Residences'
 
 export const useLocal = process.env.UPLOAD_STRATEGY === 'local'
 export const isDev = process.env.NODE_ENV === 'development'
@@ -83,6 +84,7 @@ export default buildConfig({
     BoardOfDirectors,
     IconsiamAwards,
     VisionMission,
+    Residences,
   ],
 
   // CORS configuration for frontend access
@@ -124,7 +126,7 @@ export default buildConfig({
       database: process.env.DATABASE_NAME,
       user: process.env.DATABASE_USER,
       password: process.env.DB_PASS,
-      ssl: process.env.DATABASE_SSL_MODE === 'true' ? { rejectUnauthorized: false } : undefined,
+      // ssl: process.env.DATABASE_SSL_MODE === 'true' ? { rejectUnauthorized: false } : undefined,
     },
   }),
   sharp,

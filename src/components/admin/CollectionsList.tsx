@@ -21,6 +21,7 @@ const COLLECTIONS = [
   'stickbar',
   'news-press',
   'stories',
+  'residences',
   'api-sync-logs',
   'media',
 ]
