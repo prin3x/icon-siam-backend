@@ -89,6 +89,10 @@ export interface Config {
     stories: Story;
     'api-sync-logs': ApiSyncLog;
     facilities: Facility;
+    'about-iconsiam': AboutIconsiam;
+    'board-of-directors': BoardOfDirector;
+    'iconsiam-awards': IconsiamAward;
+    'vision-mission': VisionMission;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -117,6 +121,10 @@ export interface Config {
     stories: StoriesSelect<false> | StoriesSelect<true>;
     'api-sync-logs': ApiSyncLogsSelect<false> | ApiSyncLogsSelect<true>;
     facilities: FacilitiesSelect<false> | FacilitiesSelect<true>;
+    'about-iconsiam': AboutIconsiamSelect<false> | AboutIconsiamSelect<true>;
+    'board-of-directors': BoardOfDirectorsSelect<false> | BoardOfDirectorsSelect<true>;
+    'iconsiam-awards': IconsiamAwardsSelect<false> | IconsiamAwardsSelect<true>;
+    'vision-mission': VisionMissionSelect<false> | VisionMissionSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -1400,6 +1408,196 @@ export interface Facility {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "about-iconsiam".
+ */
+export interface AboutIconsiam {
+  id: number;
+  banner_image?: (number | null) | Media;
+  title: string;
+  subtitle?: string | null;
+  status: 'ACTIVE' | 'INACTIVE';
+  about_iconsiam?: {
+    title?: string | null;
+    description?: string | null;
+    image?: (number | null) | Media;
+  };
+  development_partners?: {
+    image?: (number | null) | Media;
+    title?: string | null;
+    description?: string | null;
+    partners?:
+      | {
+          logo?: (number | null) | Media;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  board_of_directors?: {
+    title?: string | null;
+    description?: string | null;
+    image?: (number | null) | Media;
+  };
+  vision_mission?: {
+    title?: string | null;
+    image?: (number | null) | Media;
+    description?: string | null;
+  };
+  awards?: {
+    title?: string | null;
+    description?: string | null;
+    awards_list?:
+      | {
+          image?: (number | null) | Media;
+          title: string;
+          description?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  seo?: {
+    keywords?: string | null;
+    description?: string | null;
+  };
+  slug?: string | null;
+  slugLock?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "board-of-directors".
+ */
+export interface BoardOfDirector {
+  id: number;
+  banner_image?: (number | null) | Media;
+  title: string;
+  subtitle?: string | null;
+  description?: string | null;
+  status: 'ACTIVE' | 'INACTIVE';
+  directors?:
+    | {
+        profile_image: number | Media;
+        full_name: string;
+        title: string;
+        /**
+         * The order in which the board members will be displayed
+         */
+        order?: number | null;
+        id?: string | null;
+      }[]
+    | null;
+  seo?: {
+    keywords?: string | null;
+    description?: string | null;
+  };
+  slug?: string | null;
+  slugLock?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "iconsiam-awards".
+ */
+export interface IconsiamAward {
+  id: number;
+  banner_image?: (number | null) | Media;
+  title: string;
+  subtitle?: string | null;
+  description?: string | null;
+  status: 'ACTIVE' | 'INACTIVE';
+  featured_awards?:
+    | {
+        award_image: number | Media;
+        award_title: string;
+        award_description?: string | null;
+        year?: string | null;
+        category?: string | null;
+        order?: number | null;
+        id?: string | null;
+      }[]
+    | null;
+  awards_by_year?:
+    | {
+        year: string;
+        content?: {
+          root: {
+            type: string;
+            children: {
+              type: string;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        id?: string | null;
+      }[]
+    | null;
+  call_to_action?: {
+    text?: string | null;
+    link?: string | null;
+  };
+  seo?: {
+    keywords?: string | null;
+    description?: string | null;
+  };
+  slug?: string | null;
+  slugLock?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "vision-mission".
+ */
+export interface VisionMission {
+  id: number;
+  banner_image?: (number | null) | Media;
+  title: string;
+  subtitle?: string | null;
+  status: 'ACTIVE' | 'INACTIVE';
+  /**
+   * The main introduction text that appears below the banner
+   */
+  intro_text?: string | null;
+  content_sections?:
+    | {
+        title?: string | null;
+        description?: {
+          root: {
+            type: string;
+            children: {
+              type: string;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        image?: (number | null) | Media;
+        id?: string | null;
+      }[]
+    | null;
+  seo?: {
+    keywords?: string | null;
+    description?: string | null;
+  };
+  slug?: string | null;
+  slugLock?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
@@ -1492,6 +1690,22 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'facilities';
         value: number | Facility;
+      } | null)
+    | ({
+        relationTo: 'about-iconsiam';
+        value: number | AboutIconsiam;
+      } | null)
+    | ({
+        relationTo: 'board-of-directors';
+        value: number | BoardOfDirector;
+      } | null)
+    | ({
+        relationTo: 'iconsiam-awards';
+        value: number | IconsiamAward;
+      } | null)
+    | ({
+        relationTo: 'vision-mission';
+        value: number | VisionMission;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -2493,6 +2707,178 @@ export interface FacilitiesSelect<T extends boolean = true> {
         location_zone?: T;
         id?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "about-iconsiam_select".
+ */
+export interface AboutIconsiamSelect<T extends boolean = true> {
+  banner_image?: T;
+  title?: T;
+  subtitle?: T;
+  status?: T;
+  about_iconsiam?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+      };
+  development_partners?:
+    | T
+    | {
+        image?: T;
+        title?: T;
+        description?: T;
+        partners?:
+          | T
+          | {
+              logo?: T;
+              id?: T;
+            };
+      };
+  board_of_directors?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+      };
+  vision_mission?:
+    | T
+    | {
+        title?: T;
+        image?: T;
+        description?: T;
+      };
+  awards?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        awards_list?:
+          | T
+          | {
+              image?: T;
+              title?: T;
+              description?: T;
+              id?: T;
+            };
+      };
+  seo?:
+    | T
+    | {
+        keywords?: T;
+        description?: T;
+      };
+  slug?: T;
+  slugLock?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "board-of-directors_select".
+ */
+export interface BoardOfDirectorsSelect<T extends boolean = true> {
+  banner_image?: T;
+  title?: T;
+  subtitle?: T;
+  description?: T;
+  status?: T;
+  directors?:
+    | T
+    | {
+        profile_image?: T;
+        full_name?: T;
+        title?: T;
+        order?: T;
+        id?: T;
+      };
+  seo?:
+    | T
+    | {
+        keywords?: T;
+        description?: T;
+      };
+  slug?: T;
+  slugLock?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "iconsiam-awards_select".
+ */
+export interface IconsiamAwardsSelect<T extends boolean = true> {
+  banner_image?: T;
+  title?: T;
+  subtitle?: T;
+  description?: T;
+  status?: T;
+  featured_awards?:
+    | T
+    | {
+        award_image?: T;
+        award_title?: T;
+        award_description?: T;
+        year?: T;
+        category?: T;
+        order?: T;
+        id?: T;
+      };
+  awards_by_year?:
+    | T
+    | {
+        year?: T;
+        content?: T;
+        id?: T;
+      };
+  call_to_action?:
+    | T
+    | {
+        text?: T;
+        link?: T;
+      };
+  seo?:
+    | T
+    | {
+        keywords?: T;
+        description?: T;
+      };
+  slug?: T;
+  slugLock?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "vision-mission_select".
+ */
+export interface VisionMissionSelect<T extends boolean = true> {
+  banner_image?: T;
+  title?: T;
+  subtitle?: T;
+  status?: T;
+  intro_text?: T;
+  content_sections?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+        id?: T;
+      };
+  seo?:
+    | T
+    | {
+        keywords?: T;
+        description?: T;
+      };
+  slug?: T;
+  slugLock?: T;
   updatedAt?: T;
   createdAt?: T;
 }

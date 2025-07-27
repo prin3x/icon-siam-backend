@@ -6,7 +6,6 @@ export const VisionMission: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'status', 'sort_order'],
-    hidden: true,
   },
   access: {
     read: () => true,
