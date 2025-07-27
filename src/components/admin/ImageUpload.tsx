@@ -26,7 +26,9 @@ export function ImageUpload({ value, onChange, uploadOnly = false }: ImageUpload
     }
 
     if (typeof value === 'string') {
-      fetch(`/api/media/${value}`)
+      fetch(`/api/media/${value}`, {
+        headers: getApiHeaders(),
+      })
         .then((res) => res.json())
         .then((data) => {
           if (data && data.url) {

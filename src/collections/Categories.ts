@@ -45,6 +45,8 @@ export const Categories: CollectionConfig = {
         { label: 'Promotion', value: 'promotions' },
         { label: 'Event', value: 'events' },
         { label: 'Directory', value: 'directory' },
+        { label: 'News&Press', value: 'news_press' },
+        { label: 'The Stories', value: 'stories' },
       ],
     },
     {

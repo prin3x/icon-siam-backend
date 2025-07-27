@@ -26,7 +26,6 @@ export function GroupField({ field, value, onChange }: GroupFieldProps) {
       [fieldName]: fieldValue,
     })
   }
-  console.log('field.fields', field.fields)
 
   return (
     <div style={{ border: '1px solid #e5e7eb', padding: '16px', borderRadius: '8px' }}>

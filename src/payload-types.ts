@@ -93,6 +93,7 @@ export interface Config {
     'board-of-directors': BoardOfDirector;
     'iconsiam-awards': IconsiamAward;
     'vision-mission': VisionMission;
+    residences: Residence;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -125,6 +126,7 @@ export interface Config {
     'board-of-directors': BoardOfDirectorsSelect<false> | BoardOfDirectorsSelect<true>;
     'iconsiam-awards': IconsiamAwardsSelect<false> | IconsiamAwardsSelect<true>;
     'vision-mission': VisionMissionSelect<false> | VisionMissionSelect<true>;
+    residences: ResidencesSelect<false> | ResidencesSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -357,7 +359,7 @@ export interface Category {
   display_name?: string | null;
   description?: string | null;
   image?: (number | null) | Media;
-  type: 'shops' | 'dinings' | 'promotions' | 'events' | 'directory';
+  type: 'shops' | 'dinings' | 'promotions' | 'events' | 'directory' | 'news_press' | 'stories';
   order?: number | null;
   status: 'ACTIVE' | 'INACTIVE';
   slug: string;
@@ -1587,6 +1589,37 @@ export interface VisionMission {
         id?: string | null;
       }[]
     | null;
+ * via the `definition` "residences".
+ */
+export interface Residence {
+  id: number;
+  title: string;
+  status: 'ACTIVE' | 'INACTIVE';
+  residence_sections?:
+    | {
+        logo?: (number | null) | Media;
+        title: string;
+        description?: string | null;
+        image?: (number | null) | Media;
+        sort_order?: number | null;
+        call_to_action?: {
+          text?: string | null;
+          link?: string | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  gallery?: {
+    title?: string | null;
+    description?: string | null;
+    images?:
+      | {
+          image: number | Media;
+          alt_text?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
   seo?: {
     keywords?: string | null;
     description?: string | null;
@@ -1706,6 +1739,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'vision-mission';
         value: number | VisionMission;
+      } | null)
+    | ({
+        relationTo: 'residences';
+        value: number | Residence;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -2740,43 +2777,71 @@ export interface AboutIconsiamSelect<T extends boolean = true> {
             };
       };
   board_of_directors?:
+ * via the `definition` "residences_select".
+ */
+export interface ResidencesSelect<T extends boolean = true> {
+  title?: T;
+  status?: T;
+  residence_sections?:
+  | T
+  | {
+    logo?: T;
+    title?: T;
+    description?: T;
+    image?: T;
+    sort_order?: T;
+    call_to_action?:
     | T
     | {
-        title?: T;
-        description?: T;
-        image?: T;
-      };
+      text?: T;
+      link?: T;
+    };
+    id?: T;
+  };
+  gallery?:
+  | T
+  | {
+    title?: T;
+    description?: T;
+    image?: T;
+  };
   vision_mission?:
-    | T
-    | {
-        title?: T;
-        image?: T;
-        description?: T;
-      };
+  | T
+  | {
+    title?: T;
+    image?: T;
+    description?: T;
+  };
   awards?:
+  | T
+  | {
+    title?: T;
+    description?: T;
+    awards_list?:
     | T
     | {
-        title?: T;
-        description?: T;
-        awards_list?:
-          | T
-          | {
-              image?: T;
-              title?: T;
-              description?: T;
-              id?: T;
-            };
+      image?: T;
+      title?: T;
+      description?: T;
+      images?:
+      | T
+      | {
+        image?: T;
+        alt_text?: T;
+        id?: T;
       };
-  seo?:
+    };
+    seo?:
     | T
     | {
-        keywords?: T;
-        description?: T;
-      };
-  slug?: T;
-  slugLock?: T;
-  updatedAt?: T;
-  createdAt?: T;
+      keywords?: T;
+      description?: T;
+    };
+    slug?: T;
+    slugLock?: T;
+    updatedAt?: T;
+    createdAt?: T;
+  }
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
