@@ -1589,6 +1589,17 @@ export interface VisionMission {
         id?: string | null;
       }[]
     | null;
+  seo?: {
+    keywords?: string | null;
+    description?: string | null;
+  };
+  slug?: string | null;
+  slugLock?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "residences".
  */
 export interface Residence {
@@ -2777,71 +2788,43 @@ export interface AboutIconsiamSelect<T extends boolean = true> {
             };
       };
   board_of_directors?:
- * via the `definition` "residences_select".
- */
-export interface ResidencesSelect<T extends boolean = true> {
-  title?: T;
-  status?: T;
-  residence_sections?:
-  | T
-  | {
-    logo?: T;
-    title?: T;
-    description?: T;
-    image?: T;
-    sort_order?: T;
-    call_to_action?:
     | T
     | {
-      text?: T;
-      link?: T;
-    };
-    id?: T;
-  };
-  gallery?:
-  | T
-  | {
-    title?: T;
-    description?: T;
-    image?: T;
-  };
-  vision_mission?:
-  | T
-  | {
-    title?: T;
-    image?: T;
-    description?: T;
-  };
-  awards?:
-  | T
-  | {
-    title?: T;
-    description?: T;
-    awards_list?:
-    | T
-    | {
-      image?: T;
-      title?: T;
-      description?: T;
-      images?:
-      | T
-      | {
+        title?: T;
+        description?: T;
         image?: T;
-        alt_text?: T;
-        id?: T;
       };
-    };
-    seo?:
+  vision_mission?:
     | T
     | {
-      keywords?: T;
-      description?: T;
-    };
-    slug?: T;
-    slugLock?: T;
-    updatedAt?: T;
-    createdAt?: T;
-  }
+        title?: T;
+        image?: T;
+        description?: T;
+      };
+  awards?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        awards_list?:
+          | T
+          | {
+              image?: T;
+              title?: T;
+              description?: T;
+              id?: T;
+            };
+      };
+  seo?:
+    | T
+    | {
+        keywords?: T;
+        description?: T;
+      };
+  slug?: T;
+  slugLock?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2935,6 +2918,53 @@ export interface VisionMissionSelect<T extends boolean = true> {
         description?: T;
         image?: T;
         id?: T;
+      };
+  seo?:
+    | T
+    | {
+        keywords?: T;
+        description?: T;
+      };
+  slug?: T;
+  slugLock?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "residences_select".
+ */
+export interface ResidencesSelect<T extends boolean = true> {
+  title?: T;
+  status?: T;
+  residence_sections?:
+    | T
+    | {
+        logo?: T;
+        title?: T;
+        description?: T;
+        image?: T;
+        sort_order?: T;
+        call_to_action?:
+          | T
+          | {
+              text?: T;
+              link?: T;
+            };
+        id?: T;
+      };
+  gallery?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        images?:
+          | T
+          | {
+              image?: T;
+              alt_text?: T;
+              id?: T;
+            };
       };
   seo?:
     | T

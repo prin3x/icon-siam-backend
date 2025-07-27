@@ -30,6 +30,11 @@ import { NewsPress } from './collections/NewsPress'
 import { Stories } from './collections/Stories'
 import { ApiSyncLogs } from './collections/ApiSyncLogs'
 import { Facilities } from './collections/Facilities'
+import { BoardOfDirectors } from './collections/BoardOfDirectors'
+import { IconsiamAwards } from './collections/IconsiamAwards'
+import { VisionMission } from './collections/VisionMission'
+import { AboutIconsiam } from './collections/AboutICONSIAM'
+import { Residences } from './collections/Residences'
 
 export const useLocal = process.env.UPLOAD_STRATEGY === 'local'
 export const isDev = process.env.NODE_ENV === 'development'
@@ -75,6 +80,11 @@ export default buildConfig({
     Stories,
     ApiSyncLogs,
     Facilities,
+    AboutIconsiam,
+    BoardOfDirectors,
+    IconsiamAwards,
+    VisionMission,
+    Residences,
   ],
 
   // CORS configuration for frontend access
