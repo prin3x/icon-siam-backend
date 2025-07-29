@@ -134,8 +134,12 @@ export interface Config {
   db: {
     defaultIDType: number;
   };
-  globals: {};
-  globalsSelect: {};
+  globals: {
+    'dining-landing': DiningLanding;
+  };
+  globalsSelect: {
+    'dining-landing': DiningLandingSelect<false> | DiningLandingSelect<true>;
+  };
   locale: 'th' | 'en' | 'zh';
   user: User & {
     collection: 'users';
@@ -3008,6 +3012,49 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "dining-landing".
+ */
+export interface DiningLanding {
+  id: number;
+  title: string;
+  banner: number | PageBanner;
+  introduction?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Select one or more restaurants to feature on the dining landing page.
+   */
+  featuredDinings?: (number | Dining)[] | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "dining-landing_select".
+ */
+export interface DiningLandingSelect<T extends boolean = true> {
+  title?: T;
+  banner?: T;
+  introduction?: T;
+  featuredDinings?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

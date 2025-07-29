@@ -6,7 +6,8 @@ import { useLocale } from './LocaleContext'
 import { FieldRenderer } from './FieldRenderer'
 
 interface RecordEditFormProps {
-  collectionSlug: string
+  collectionSlug?: string
+  globalSlug?: string
   recordId?: string
 }
 
@@ -22,7 +23,7 @@ interface FieldSchema {
   fields?: FieldSchema[]
 }
 
-export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps) {
+export function RecordEditForm({ collectionSlug, globalSlug, recordId }: RecordEditFormProps) {
   const router = useRouter()
   const { locale } = useLocale()
   const [record, setRecord] = useState<any>(null)
@@ -31,7 +32,10 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string>('')
-  const isCreateMode = !recordId
+
+  const isGlobalMode = Boolean(globalSlug)
+  const isCreateMode = !recordId && !isGlobalMode
+  const slug = globalSlug || collectionSlug
 
   useEffect(() => {
     const controller = new AbortController()
@@ -42,11 +46,14 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
         setLoading(true)
         setError('')
 
-        // Fetch schema from the correct custom-admin endpoint
-        const schemaResponse = await fetch(
-          `/api/admin/${collectionSlug}?schema=true&locale=${locale}`,
-          { signal },
-        )
+        const schemaUrl = isGlobalMode
+          ? `/api/admin/globals/${globalSlug}?schema=true&locale=${locale}`
+          : `/api/admin/${collectionSlug}?schema=true&locale=${locale}`
+
+        console.log(schemaUrl, 'schemaUrl')
+
+        const schemaResponse = await fetch(schemaUrl, { signal })
+        console.log('schemaResponse', schemaResponse)
 
         if (!signal.aborted && !schemaResponse.ok) {
           throw new Error(`Failed to fetch schema: ${schemaResponse.statusText}`)
@@ -57,18 +64,17 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
         setSchema(schemaData.fields || [])
 
         if (isCreateMode) {
-          // Initialize form with default values for new record
           const initialFormData: any = {}
           schemaData.fields?.forEach((field: FieldSchema) => {
             initialFormData[field.name] = field.defaultValue || ''
           })
           setFormData(initialFormData)
         } else {
-          // Fetch existing record data for editing
-          const recordResponse = await fetch(
-            `/api/custom-admin/${collectionSlug}/${recordId}?locale=${locale}&depth=3`,
-            { signal },
-          )
+          const dataUrl = isGlobalMode
+            ? `/api/custom-admin/${globalSlug}?locale=${locale}&depth=3`
+            : `/api/custom-admin/${collectionSlug}/${recordId}?locale=${locale}&depth=3`
+
+          const recordResponse = await fetch(dataUrl, { signal })
 
           if (!signal.aborted && !recordResponse.ok) {
             throw new Error(`Failed to fetch record: ${recordResponse.statusText}`)
@@ -78,7 +84,6 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
           if (signal.aborted) return
           setRecord(recordData)
 
-          // Initialize form with existing data
           const initialFormData: any = {}
           schemaData.fields?.forEach((field: FieldSchema) => {
             const value = recordData[field.name]
@@ -102,14 +107,14 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
       }
     }
 
-    if (collectionSlug) {
+    if (slug) {
       fetchRecordAndSchema()
     }
 
     return () => {
       controller.abort()
     }
-  }, [collectionSlug, recordId, locale, isCreateMode])
+  }, [slug, recordId, locale, isCreateMode, isGlobalMode, collectionSlug, globalSlug])
 
   const handleInputChange = (fieldName: string, value: any) => {
     setFormData((prev: any) => ({
@@ -129,7 +134,6 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
         if (value !== '') {
           const anyValue = value as any
           if (typeof anyValue === 'object' && anyValue !== null && anyValue.id) {
-            // Handle populated media object
             acc[key] = anyValue.id
           } else {
             acc[key] = value
@@ -138,13 +142,19 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
         return acc
       }, {} as any)
 
-      const url = isCreateMode
-        ? `/api/custom-admin/${collectionSlug}?locale=${locale}`
-        : `/api/custom-admin/${collectionSlug}/${recordId}?locale=${locale}`
+      let url: string
+      let method: 'POST' | 'PATCH'
 
-      const method = isCreateMode ? 'POST' : 'PATCH'
+      if (isGlobalMode) {
+        url = `/api/custom-admin/${globalSlug}?locale=${locale}`
+        method = 'POST' // Globals are always a POST/update
+      } else {
+        url = isCreateMode
+          ? `/api/custom-admin/${collectionSlug}?locale=${locale}`
+          : `/api/custom-admin/${collectionSlug}/${recordId}?locale=${locale}`
+        method = isCreateMode ? 'POST' : 'PATCH'
+      }
 
-      // Update the record using the correct custom-admin endpoint
       const response = await fetch(url, {
         method,
         headers: {
@@ -159,8 +169,10 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
         throw new Error(errorMessage)
       }
 
-      // Redirect back to collection page
-      router.push(`/custom-admin/collections/${collectionSlug}`)
+      const redirectUrl = isGlobalMode
+        ? '/custom-admin'
+        : `/custom-admin/collections/${collectionSlug}`
+      router.push(redirectUrl)
     } catch (error: any) {
       console.error(`Error ${isCreateMode ? 'creating' : 'updating'} record:`, error)
       setError(error.message)
@@ -203,6 +215,12 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
     )
   }
 
+  const title = isGlobalMode
+    ? `Edit ${globalSlug}`
+    : isCreateMode
+      ? `Create New ${collectionSlug}`
+      : `Edit ${collectionSlug} Record`
+
   return (
     <div style={{ padding: '24px' }}>
       <div style={{ marginBottom: '24px' }}>
@@ -214,12 +232,15 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
             margin: '0 0 8px 0',
           }}
         >
-          {isCreateMode ? `Create New ${collectionSlug}` : `Edit ${collectionSlug} Record`}
+          {title}
         </h1>
-        {!isCreateMode && (
+        {!isCreateMode && !isGlobalMode && (
           <p style={{ fontSize: '14px', color: '#6b7280', margin: '0' }}>
             Record ID: {recordId} | Locale: {locale}
           </p>
+        )}
+        {isGlobalMode && (
+          <p style={{ fontSize: '14px', color: '#6b7280', margin: '0' }}>Locale: {locale}</p>
         )}
       </div>
 
@@ -256,7 +277,11 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
         >
           <button
             type="button"
-            onClick={() => router.push(`/custom-admin/collections/${collectionSlug}`)}
+            onClick={() =>
+              router.push(
+                isGlobalMode ? '/custom-admin' : `/custom-admin/collections/${collectionSlug}`,
+              )
+            }
             style={{
               padding: '12px 24px',
               border: '1px solid #d1d5db',
@@ -304,7 +329,7 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
               }
             }}
           >
-            {saving ? 'Saving...' : isCreateMode ? 'Create Record' : 'Save Changes'}
+            {saving ? 'Saving...' : 'Save Changes'}
           </button>
         </div>
       </form>

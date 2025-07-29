@@ -1,5 +1,7 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { useRouter } from 'next/navigation'
+
+const GLOBALS = [{ slug: 'dining-landing', label: 'Dining Landing Page' }]
 
 const COLLECTIONS = [
   'homepage',
@@ -30,6 +32,64 @@ interface CollectionsListProps {
   onSelect?: (slug: string) => void
 }
 
+const ItemButton = ({ label, onClick }: { label: string; onClick: () => void }) => (
+  <button
+    onClick={onClick}
+    style={{
+      padding: '16px 20px',
+      border: '1px solid #e5e7eb',
+      borderRadius: '12px',
+      backgroundColor: '#ffffff',
+      cursor: 'pointer',
+      width: '100%',
+      textAlign: 'left',
+      fontSize: '15px',
+      fontWeight: '500',
+      color: '#374151',
+      transition: 'all 0.2s ease',
+      boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+      position: 'relative',
+      overflow: 'hidden',
+    }}
+    onMouseEnter={(e) => {
+      e.currentTarget.style.transform = 'translateY(-2px)'
+      e.currentTarget.style.boxShadow = '0 8px 25px rgba(0, 0, 0, 0.15)'
+      e.currentTarget.style.borderColor = '#3b82f6'
+    }}
+    onMouseLeave={(e) => {
+      e.currentTarget.style.transform = 'translateY(0)'
+      e.currentTarget.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)'
+      e.currentTarget.style.borderColor = '#e5e7eb'
+    }}
+  >
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '12px',
+      }}
+    >
+      <div
+        style={{
+          width: '8px',
+          height: '8px',
+          borderRadius: '50%',
+          backgroundColor: '#10b981',
+          flexShrink: 0,
+        }}
+      />
+      <span
+        style={{
+          textTransform: 'capitalize',
+          letterSpacing: '0.025em',
+        }}
+      >
+        {label}
+      </span>
+    </div>
+  </button>
+)
+
 export function CollectionsList({ onSelect }: CollectionsListProps) {
   const router = useRouter()
 
@@ -43,6 +103,7 @@ export function CollectionsList({ onSelect }: CollectionsListProps) {
         border: '1px solid #e5e7eb',
       }}
     >
+      {/* Globals Section */}
       <h2
         style={{
           fontSize: '24px',
@@ -50,6 +111,34 @@ export function CollectionsList({ onSelect }: CollectionsListProps) {
           color: '#111827',
           marginBottom: '20px',
           marginTop: '0',
+        }}
+      >
+        Globals
+      </h2>
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+          gap: '12px',
+          marginBottom: '40px',
+        }}
+      >
+        {GLOBALS.map((global) => (
+          <ItemButton
+            key={global.slug}
+            label={global.label}
+            onClick={() => router.push(`/custom-admin/globals/${global.slug}`)}
+          />
+        ))}
+      </div>
+
+      {/* Collections Section */}
+      <h2
+        style={{
+          fontSize: '24px',
+          fontWeight: '700',
+          color: '#111827',
+          marginBottom: '20px',
         }}
       >
         Collections
@@ -62,8 +151,9 @@ export function CollectionsList({ onSelect }: CollectionsListProps) {
         }}
       >
         {COLLECTIONS.map((slug) => (
-          <button
+          <ItemButton
             key={slug}
+            label={slug.replace(/-/g, ' ')}
             onClick={() => {
               if (onSelect) {
                 onSelect(slug)
@@ -71,59 +161,7 @@ export function CollectionsList({ onSelect }: CollectionsListProps) {
                 router.push(`/custom-admin/collections/${slug}`)
               }
             }}
-            style={{
-              padding: '16px 20px',
-              border: '1px solid #e5e7eb',
-              borderRadius: '12px',
-              backgroundColor: '#ffffff',
-              cursor: 'pointer',
-              width: '100%',
-              textAlign: 'left',
-              fontSize: '15px',
-              fontWeight: '500',
-              color: '#374151',
-              transition: 'all 0.2s ease',
-              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
-              position: 'relative',
-              overflow: 'hidden',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-2px)'
-              e.currentTarget.style.boxShadow = '0 8px 25px rgba(0, 0, 0, 0.15)'
-              e.currentTarget.style.borderColor = '#3b82f6'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)'
-              e.currentTarget.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)'
-              e.currentTarget.style.borderColor = '#e5e7eb'
-            }}
-          >
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px',
-              }}
-            >
-              <div
-                style={{
-                  width: '8px',
-                  height: '8px',
-                  borderRadius: '50%',
-                  backgroundColor: '#10b981',
-                  flexShrink: 0,
-                }}
-              />
-              <span
-                style={{
-                  textTransform: 'capitalize',
-                  letterSpacing: '0.025em',
-                }}
-              >
-                {slug.replace('-', ' ')}
-              </span>
-            </div>
-          </button>
+          />
         ))}
       </div>
     </div>

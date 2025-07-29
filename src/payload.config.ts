@@ -35,6 +35,7 @@ import { IconsiamAwards } from './collections/IconsiamAwards'
 import { VisionMission } from './collections/VisionMission'
 import { AboutIconsiam } from './collections/AboutICONSIAM'
 import { Residences } from './collections/Residences'
+import { DiningLanding } from './globals/DiningLanding'
 
 export const useLocal = process.env.UPLOAD_STRATEGY === 'local'
 export const isDev = process.env.NODE_ENV === 'development'
@@ -56,6 +57,8 @@ export default buildConfig({
 
   // Server URL for both admin and API
   serverURL: process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3001',
+
+  globals: [DiningLanding],
 
   collections: [
     Homepage,
@@ -126,7 +129,7 @@ export default buildConfig({
       database: process.env.DATABASE_NAME,
       user: process.env.DATABASE_USER,
       password: process.env.DB_PASS,
-      ssl: process.env.DATABASE_SSL_MODE === 'true' ? { rejectUnauthorized: false } : undefined,
+      // ssl: process.env.DATABASE_SSL_MODE === 'true' ? { rejectUnauthorized: false } : undefined,
     },
   }),
   sharp,
