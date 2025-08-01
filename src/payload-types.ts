@@ -525,7 +525,7 @@ export interface Shop {
  */
 export interface Promotion {
   id: number;
-  title: string;
+  title?: string | null;
   subtitle?: string | null;
   description?: string | null;
   content?: {
@@ -662,7 +662,7 @@ export interface Attraction {
  */
 export interface Event {
   id: number;
-  title: string;
+  title?: string | null;
   subtitle?: string | null;
   description?: string | null;
   content?: {

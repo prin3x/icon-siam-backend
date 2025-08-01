@@ -17,7 +17,6 @@ export const Promotions: CollectionConfig = {
       localized: true,
       type: 'textarea',
       label: 'Title',
-      required: true,
     },
     {
       name: 'subtitle',

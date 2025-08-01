@@ -17,7 +17,6 @@ export const Events: CollectionConfig = {
       localized: true,
       type: 'textarea',
       label: 'Title',
-      required: true,
     },
     {
       name: 'subtitle',
