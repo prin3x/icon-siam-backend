@@ -126,7 +126,7 @@ export default buildConfig({
       database: process.env.DATABASE_NAME,
       user: process.env.DATABASE_USER,
       password: process.env.DB_PASS,
-      // ssl: process.env.DATABASE_SSL_MODE === 'true' ? { rejectUnauthorized: false } : undefined,
+      ssl: process.env.DATABASE_SSL_MODE === 'true' ? { rejectUnauthorized: false } : undefined,
     },
   }),
   sharp,
