@@ -126,7 +126,7 @@ export default buildConfig({
       database: process.env.DATABASE_NAME,
       user: process.env.DATABASE_USER,
       password: process.env.DB_PASS,
-      ssl: process.env.DATABASE_SSL_MODE === 'true' ? { rejectUnauthorized: false } : undefined,
+      // ssl: process.env.DATABASE_SSL_MODE === 'true' ? { rejectUnauthorized: false } : undefined,
     },
   }),
   sharp,
@@ -138,6 +138,11 @@ export default buildConfig({
         media: {
           prefix: 'media',
           generateFileURL: ({ filename }) => {
+            if (
+              filename.includes('https://iconsiam-s3-prod.s3.ap-southeast-1.amazonaws.com/assets/')
+            ) {
+              return filename
+            }
             const cloudFrontDomain =
               process.env.CLOUDFRONT_DOMAIN || 'https://your-cloudfront-domain.cloudfront.net'
             return `${cloudFrontDomain}/media/${filename}`
