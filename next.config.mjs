@@ -54,7 +54,7 @@ const nextConfig = {
         headers: [{ key: 'Cache-Control', value: 'public, max-age=60, s-maxage=300' }],
       },
       {
-        source: '/(.*)',
+        source: '/((?!api).*)',
         headers: [{ key: 'Cache-Control', value: 'public, max-age=3600, s-maxage=86400' }],
       },
     ]
