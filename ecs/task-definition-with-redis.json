@@ -1,0 +1,150 @@
+{
+  "family": "payloadcms-cache",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "1024",
+  "memory": "2048",
+  "executionRoleArn": "arn:aws:iam::YOUR_ACCOUNT_ID:role/ecsTaskExecutionRole",
+  "taskRoleArn": "arn:aws:iam::YOUR_ACCOUNT_ID:role/ecsTaskRole",
+  "containerDefinitions": [
+    {
+      "name": "payloadcms",
+      "image": "YOUR_ECR_REPO/payloadcms:latest",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 3000,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        {
+          "name": "NODE_ENV",
+          "value": "production"
+        },
+        {
+          "name": "REDIS_HOST",
+          "value": "YOUR_ELASTICACHE_ENDPOINT.cache.amazonaws.com"
+        },
+        {
+          "name": "REDIS_PORT",
+          "value": "6379"
+        },
+        {
+          "name": "REDIS_PASSWORD",
+          "value": "YOUR_REDIS_AUTH_TOKEN"
+        },
+        {
+          "name": "REDIS_DB",
+          "value": "0"
+        },
+        {
+          "name": "CACHE_STRATEGY",
+          "value": "redis"
+        },
+        {
+          "name": "DATABASE_URL",
+          "value": "YOUR_RDS_ENDPOINT"
+        },
+        {
+          "name": "DATABASE_PORT",
+          "value": "5432"
+        },
+        {
+          "name": "DATABASE_NAME",
+          "value": "iconsiam_web_prod"
+        },
+        {
+          "name": "DATABASE_USER",
+          "value": "iconsiamWebDB"
+        },
+        {
+          "name": "DB_PASS",
+          "value": "YOUR_DB_PASSWORD"
+        },
+        {
+          "name": "DATABASE_SSL_MODE",
+          "value": "true"
+        },
+        {
+          "name": "PAYLOAD_SECRET",
+          "value": "YOUR_PAYLOAD_SECRET"
+        },
+        {
+          "name": "S3_BUCKET",
+          "value": "YOUR_S3_BUCKET"
+        },
+        {
+          "name": "S3_ACCESS_KEY_ID",
+          "value": "YOUR_S3_ACCESS_KEY"
+        },
+        {
+          "name": "S3_SECRET_ACCESS_KEY",
+          "value": "YOUR_S3_SECRET_KEY"
+        },
+        {
+          "name": "S3_REGION",
+          "value": "ap-southeast-1"
+        },
+        {
+          "name": "CLOUDFRONT_DOMAIN",
+          "value": "YOUR_CLOUDFRONT_DOMAIN"
+        }
+      ],
+      "secrets": [
+        {
+          "name": "REDIS_PASSWORD",
+          "valueFrom": "arn:aws:secretsmanager:ap-southeast-1:YOUR_ACCOUNT_ID:secret:redis/auth:password::"
+        },
+        {
+          "name": "DB_PASS",
+          "valueFrom": "arn:aws:secretsmanager:ap-southeast-1:YOUR_ACCOUNT_ID:secret:database/password:password::"
+        },
+        {
+          "name": "PAYLOAD_SECRET",
+          "valueFrom": "arn:aws:secretsmanager:ap-southeast-1:YOUR_ACCOUNT_ID:secret:payload/secret:secret::"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/payloadcms-cache",
+          "awslogs-region": "ap-southeast-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "healthCheck": {
+        "command": [
+          "CMD-SHELL",
+          "curl -f http://localhost:3000/api/health || exit 1"
+        ],
+        "interval": 30,
+        "timeout": 5,
+        "retries": 3,
+        "startPeriod": 60
+      },
+      "ulimits": [
+        {
+          "name": "nofile",
+          "softLimit": 65536,
+          "hardLimit": 65536
+        }
+      ]
+    }
+  ],
+  "placementConstraints": [],
+  "tags": [
+    {
+      "key": "Environment",
+      "value": "production"
+    },
+    {
+      "key": "Service",
+      "value": "payloadcms"
+    },
+    {
+      "key": "Cache",
+      "value": "redis"
+    }
+  ]
+} 

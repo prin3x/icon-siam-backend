@@ -27,32 +27,57 @@ const nextConfig = {
   reactStrictMode: true,
   // Disable error message obfuscation
   productionBrowserSourceMaps: true,
-  // Add headers for video streaming
+  // Enhanced caching headers
   async headers() {
     return [
+      // Media files - very long cache
       {
         source: '/api/media/:path*',
         headers: [
           { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
           { key: 'Accept-Ranges', value: 'bytes' },
-          {
-            key: 'Access-Control-Allow-Origin',
-            value: '*',
-          },
-          {
-            key: 'Access-Control-Allow-Methods',
-            value: 'GET, HEAD, OPTIONS',
-          },
-          {
-            key: 'Access-Control-Allow-Headers',
-            value: 'Range',
-          },
+          { key: 'Access-Control-Allow-Origin', value: '*' },
+          { key: 'Access-Control-Allow-Methods', value: 'GET, HEAD, OPTIONS' },
+          { key: 'Access-Control-Allow-Headers', value: 'Range' },
         ],
       },
+      // Static assets
+      {
+        source: '/_next/static/:path*',
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],
+      },
+      // API routes - short cache for dynamic data
+      {
+        source: '/api/events/:path*',
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=300, s-maxage=600' }],
+      },
+      {
+        source: '/api/promotions/:path*',
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=300, s-maxage=600' }],
+      },
+      {
+        source: '/api/newsPress/:path*',
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=300, s-maxage=600' }],
+      },
+      // Static content - longer cache
+      {
+        source: '/api/shops/:path*',
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=3600, s-maxage=7200' }],
+      },
+      {
+        source: '/api/dinings/:path*',
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=3600, s-maxage=7200' }],
+      },
+      {
+        source: '/api/attractions/:path*',
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=3600, s-maxage=7200' }],
+      },
+      // Default API cache
       {
         source: '/api/(.*)',
         headers: [{ key: 'Cache-Control', value: 'public, max-age=60, s-maxage=300' }],
       },
+      // Default page cache
       {
         source: '/(.*)',
         headers: [{ key: 'Cache-Control', value: 'public, max-age=3600, s-maxage=86400' }],

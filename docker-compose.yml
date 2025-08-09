@@ -28,6 +28,28 @@ services:
     logging:
       driver: none
 
+  # Database dump service for external PostgreSQL
+  db-dump:
+    image: postgres:17-alpine
+    volumes:
+      - ./exports:/exports
+    environment:
+      - PGHOST=icon-siam-db.cygygwebj53j.ap-southeast-1.rds.amazonaws.com
+      - PGPORT=5432
+      - PGDATABASE=iconsiam_web_dev
+      - PGUSER=iconsiamWebDB
+      - PGPASSWORD=iconsiamDocDB888!
+      - PGSSLMODE=require
+    command: >
+      sh -c "
+        echo 'Database dump service ready. Use:'
+        echo 'docker-compose run --rm db-dump pg_dump -h icon-siam-db.cygygwebj53j.ap-southeast-1.rds.amazonaws.com -p 5432 -U iconsiamWebDB -d iconsiam_web_dev --table=table_name --data-only > /exports/dump.sql'
+        echo 'Or for specific tables:'
+        echo 'docker-compose run --rm db-dump pg_dump -h icon-siam-db.cygygwebj53j.ap-southeast-1.rds.amazonaws.com -p 5432 -U iconsiamWebDB -d iconsiam_web_dev --table=table1 --table=table2 --data-only > /exports/dump.sql'
+        echo 'Waiting for commands...'
+        tail -f /dev/null
+      "
+
   # Uncomment the following to use postgres
   # postgres:
   #   restart: always
