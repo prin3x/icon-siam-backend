@@ -1,5 +1,12 @@
 @import 'tailwindcss';
 
+:root {
+  --brand-sidebar: #6b5526; /* deep brown */
+  --brand-sidebar-contrast: #f3e8c7; /* light sand */
+  --brand-gold: #c9a227; /* gold border */
+  --brand-gold-soft: #e7d8a6; /* subtle hover */
+}
+
 @keyframes spin {
   from {
     transform: rotate(0deg);
@@ -32,4 +39,56 @@
 
 .admin-label {
   @apply block text-sm font-medium text-gray-700 mb-2;
+}
+
+/* Sidebar styles for custom admin */
+.custom-admin-shell {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  min-height: 100vh;
+}
+
+.custom-admin-aside {
+  background-color: var(--brand-sidebar);
+  color: white;
+}
+
+.custom-admin-aside .group-title {
+  color: var(--brand-sidebar-contrast);
+}
+
+.custom-admin-link {
+  display: block;
+  padding: 10px 14px;
+  border-radius: 8px;
+  color: white;
+}
+
+.custom-admin-link:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Gold card look */
+.gold-card {
+  border: 1px solid var(--brand-gold);
+  border-radius: 14px;
+  background: white;
+  transition:
+    box-shadow 150ms ease,
+    transform 150ms ease,
+    border-color 150ms ease;
+}
+
+.gold-card:hover {
+  border-color: var(--brand-gold);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+.gold-plus {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  color: var(--brand-gold);
+  font-weight: 600;
 }

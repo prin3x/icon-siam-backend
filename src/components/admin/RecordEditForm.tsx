@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useLocale } from './LocaleContext'
 import { FieldRenderer } from './FieldRenderer'
+import { FORM_LAYOUTS, type CollectionFormLayout } from './formLayouts'
 
 interface RecordEditFormProps {
   collectionSlug: string
@@ -203,6 +204,44 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
     )
   }
 
+  const layout: CollectionFormLayout | undefined = FORM_LAYOUTS[collectionSlug]
+
+  const renderSection = (title: string, fieldsList: string[], description?: string) => {
+    const sectionFields = fields.filter((f) => fieldsList.includes(f.name))
+    if (sectionFields.length === 0) return null
+    return (
+      <section style={{ marginBottom: 16 }}>
+        <div
+          style={{
+            backgroundColor: '#ffffff',
+            border: '1px solid #e5e7eb',
+            borderRadius: 12,
+            boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
+            padding: 16,
+          }}
+        >
+          <div style={{ fontSize: 20, fontWeight: 700, marginBottom: 12 }}>{title}</div>
+          {description && (
+            <div style={{ fontSize: 12, color: '#6b7280', marginBottom: 12 }}>{description}</div>
+          )}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {sectionFields.map((field) => (
+              <FieldRenderer
+                key={field.name}
+                field={field}
+                formData={formData}
+                handleInputChange={handleInputChange}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  // Keep all fetched schema fields accessible
+  const fields = schema
+
   return (
     <div style={{ padding: '24px' }}>
       <div style={{ marginBottom: '24px' }}>
@@ -223,23 +262,51 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
         )}
       </div>
 
-      <form
-        onSubmit={handleSubmit}
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '24px',
-          paddingBottom: '100px',
-        }}
-      >
-        {schema.map((field) => (
-          <FieldRenderer
-            key={field.name}
-            field={field}
-            formData={formData}
-            handleInputChange={handleInputChange}
-          />
-        ))}
+      <form onSubmit={handleSubmit} style={{ paddingBottom: '100px' }}>
+        {layout ? (
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: layout.right ? 'minmax(0,1fr) 320px' : '1fr',
+              gap: 16,
+              alignItems: 'start',
+            }}
+          >
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              {layout.left.map((section) =>
+                renderSection(section.title, section.fields, section.description),
+              )}
+            </div>
+            {layout.right && (
+              <aside
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 16,
+                  position: 'sticky',
+                  top: 16,
+                }}
+              >
+                {layout.right.map((section) =>
+                  renderSection(section.title, section.fields, section.description),
+                )}
+              </aside>
+            )}
+          </div>
+        ) : (
+          // Fallback: render fields in natural order
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            {fields.map((field) => (
+              <FieldRenderer
+                key={field.name}
+                field={field}
+                formData={formData}
+                handleInputChange={handleInputChange}
+              />
+            ))}
+          </div>
+        )}
+
         <div
           style={{
             position: 'sticky',

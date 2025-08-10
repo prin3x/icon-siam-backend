@@ -1,7 +1,7 @@
 'use client'
 
 import { CollectionItems } from '@/components/admin/CollectionItems'
-import { LocaleProvider } from '@/components/admin/LocaleContext'
+import { LocaleSwitcher } from '@/components/admin/LocaleSwitcher'
 import { useRouter } from 'next/navigation'
 import React from 'react'
 
@@ -27,20 +27,50 @@ export default function CollectionPage({ params }: CollectionPageProps) {
     return <div>Loading...</div>
   }
 
-  const handleBack = () => {
-    // This will be handled by the browser back button or Link navigation
-    router.push('/custom-admin')
-  }
+  const handleBack = () => router.push('/custom-admin')
+
+  const goCreate = () =>
+    router.push(`/custom-admin/collections/${resolvedParams.collection}/create`)
 
   return (
-    <LocaleProvider>
-      <div className="min-h-screen bg-gray-50">
-        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-          <div className="bg-white shadow rounded-lg">
-            <CollectionItems slug={resolvedParams.collection} onBack={handleBack} />
-          </div>
+    <div className="max-w-screen-2xl mx-auto">
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <div className="text-sm text-slate-500 mb-1">/ {resolvedParams.collection}</div>
+          <h1 className="text-2xl font-semibold text-slate-800">
+            {resolvedParams.collection
+              .split('-')
+              .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+              .join(' ')}
+            <a
+              href="#"
+              className="ml-3 text-sm font-medium text-blue-600 hover:underline align-middle"
+              onClick={(e) => e.preventDefault()}
+            >
+              Preview
+            </a>
+          </h1>
+        </div>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={goCreate}
+            style={{
+              padding: '10px 16px',
+              borderRadius: 12,
+              border: '1px solid var(--brand-gold)',
+              background: '#fff',
+              color: 'var(--brand-gold)',
+              fontWeight: 600,
+            }}
+          >
+            Create new
+          </button>
         </div>
       </div>
-    </LocaleProvider>
+
+      <div className="bg-white rounded-xl shadow border border-gray-200">
+        <CollectionItems slug={resolvedParams.collection} onBack={handleBack} hideHeaderControls />
+      </div>
+    </div>
   )
 }

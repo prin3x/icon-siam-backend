@@ -1,3 +1,5 @@
+'use client'
+
 // src/components/admin/LocaleContext.tsx
 import React, { createContext, useContext, useEffect, useState } from 'react'
 
@@ -50,6 +52,12 @@ export const LocaleProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const setLocale = (newLocale: string) => {
     setLocaleState(newLocale)
     // Persistence is handled by useEffect
+    // Force a re-render across app/router boundaries by replacing the URL without navigation
+    if (typeof window !== 'undefined') {
+      const url = new URL(window.location.href)
+      url.searchParams.set('locale', newLocale)
+      window.history.replaceState(null, '', url.toString())
+    }
   }
 
   return (

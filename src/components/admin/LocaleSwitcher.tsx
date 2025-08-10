@@ -1,8 +1,45 @@
 import React from 'react'
 import { useLocale } from './LocaleContext'
 
-export function LocaleSwitcher() {
+type SwitcherProps = {
+  variant?: 'pills' | 'links'
+  align?: 'left' | 'right'
+}
+
+export function LocaleSwitcher({ variant = 'pills', align = 'left' }: SwitcherProps = {}) {
   const { locale, setLocale, supported } = useLocale()
+
+  if (variant === 'links') {
+    return (
+      <div
+        style={{
+          display: 'flex',
+          gap: 12,
+          justifyContent: align === 'right' ? 'flex-end' : 'flex-start',
+        }}
+      >
+        {supported.map((l, index) => (
+          <button
+            key={l.code}
+            onClick={(e) => {
+              e.preventDefault()
+              setLocale(l.code)
+            }}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              padding: 0,
+              cursor: 'pointer',
+              color: locale === l.code ? '#c9a227' : '#525252',
+              fontWeight: locale === l.code ? 700 : 500,
+            }}
+          >
+            {l.label}
+          </button>
+        ))}
+      </div>
+    )
+  }
 
   return (
     <div

@@ -3,19 +3,18 @@
 import React, { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useLocale } from './LocaleContext'
-import { ViewModeToggle } from './ViewModeToggle'
 import { ListView } from './ListView'
 import { GridView } from './GridView'
 import { TableView } from './TableView'
 import { RecordDetailModal } from './RecordDetailModal'
 import { getApiHeaders, isInternalRequest } from '@/utilities/apiKeyUtils'
-import { LocaleSwitcher } from './LocaleSwitcher'
 
 const API_URL = '/api'
 
 interface CollectionItemsProps {
   slug: string
   onBack: () => void
+  hideHeaderControls?: boolean
 }
 
 interface PaginationInfo {
@@ -27,13 +26,17 @@ interface PaginationInfo {
   hasPrevPage: boolean
 }
 
-export function CollectionItems({ slug, onBack }: CollectionItemsProps) {
+export function CollectionItems({
+  slug,
+  onBack,
+  hideHeaderControls = false,
+}: CollectionItemsProps) {
   const router = useRouter()
   const { locale } = useLocale()
   const [items, setItems] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string>('')
-  const [viewMode, setViewMode] = useState<'list' | 'grid' | 'table'>('list')
+  const [viewMode, setViewMode] = useState<'list' | 'grid' | 'table'>('table')
 
   // Search and pagination state
   const [searchTerm, setSearchTerm] = useState('')
@@ -237,101 +240,88 @@ export function CollectionItems({ slug, onBack }: CollectionItemsProps) {
           backgroundColor: '#ffffff',
           borderRadius: '16px',
           padding: '24px',
-          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
           border: '1px solid #e5e7eb',
+          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
         }}
       >
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: '24px',
-            paddingBottom: '20px',
-            borderBottom: '1px solid #f3f4f6',
-          }}
-        >
-          <button
-            onClick={onBack}
+        {!hideHeaderControls && (
+          <div
             style={{
-              padding: '10px 20px',
-              border: '1px solid #d1d5db',
-              borderRadius: '10px',
-              backgroundColor: '#ffffff',
-              color: '#374151',
-              cursor: 'pointer',
-              fontSize: '14px',
-              fontWeight: '500',
-              transition: 'all 0.2s ease',
               display: 'flex',
+              justifyContent: 'space-between',
               alignItems: 'center',
-              gap: '8px',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#f9fafb'
-              e.currentTarget.style.borderColor = '#9ca3af'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = '#ffffff'
-              e.currentTarget.style.borderColor = '#d1d5db'
+              marginBottom: '24px',
+              paddingBottom: '20px',
+              borderBottom: '1px solid #f3f4f6',
             }}
           >
-            ← Back
-          </button>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <span
-              style={{
-                fontSize: '14px',
-                color: '#6b7280',
-                fontWeight: '500',
-              }}
-            >
-              {pagination.totalDocs} items
-            </span>
             <button
-              onClick={handleCreate}
+              onClick={onBack}
               style={{
                 padding: '10px 20px',
-                border: '1px solid #10b981',
+                border: '1px solid #d1d5db',
                 borderRadius: '10px',
                 backgroundColor: '#ffffff',
-                color: '#10b981',
+                color: '#374151',
                 cursor: 'pointer',
                 fontSize: '14px',
                 fontWeight: '500',
                 transition: 'all 0.2s ease',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '6px',
+                gap: '8px',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#10b981'
-                e.currentTarget.style.color = '#ffffff'
+                e.currentTarget.style.backgroundColor = '#f9fafb'
+                e.currentTarget.style.borderColor = '#9ca3af'
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.backgroundColor = '#ffffff'
-                e.currentTarget.style.color = '#10b981'
+                e.currentTarget.style.borderColor = '#d1d5db'
               }}
             >
-              + Add New
+              ← Back
             </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <span
+                style={{
+                  fontSize: '14px',
+                  color: '#6b7280',
+                  fontWeight: '500',
+                }}
+              >
+                {pagination.totalDocs} items
+              </span>
+              <button
+                onClick={handleCreate}
+                style={{
+                  padding: '10px 20px',
+                  border: '1px solid #10b981',
+                  borderRadius: '10px',
+                  backgroundColor: '#ffffff',
+                  color: '#10b981',
+                  cursor: 'pointer',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  transition: 'all 0.2s ease',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#10b981'
+                  e.currentTarget.style.color = '#ffffff'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = '#ffffff'
+                  e.currentTarget.style.color = '#10b981'
+                }}
+              >
+                + Add New
+              </button>
+            </div>
           </div>
-        </div>
-
-        <div className="mb-6">
-          <LocaleSwitcher />
-        </div>
-
-        <h3
-          style={{
-            marginBottom: '24px',
-            fontSize: '20px',
-            fontWeight: '600',
-            color: '#111827',
-          }}
-        >
-          {slug.replace('-', ' ').replace(/\b\w/g, (l) => l.toUpperCase())} (locale: {locale})
-        </h3>
+        )}
 
         {/* Search Bar */}
         <div
@@ -359,7 +349,7 @@ export function CollectionItems({ slug, onBack }: CollectionItemsProps) {
                 style={{
                   width: '100%',
                   padding: '12px 16px 12px 44px',
-                  border: '1px solid #d1d5db',
+                  border: '1px solid var(--brand-gold)',
                   borderRadius: '10px',
                   fontSize: '14px',
                   outline: 'none',
@@ -367,11 +357,11 @@ export function CollectionItems({ slug, onBack }: CollectionItemsProps) {
                   backgroundColor: '#ffffff',
                 }}
                 onFocus={(e) => {
-                  e.target.style.borderColor = '#3b82f6'
-                  e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)'
+                  e.target.style.borderColor = 'var(--brand-gold)'
+                  e.target.style.boxShadow = '0 0 0 3px rgba(201, 162, 39, 0.12)'
                 }}
                 onBlur={(e) => {
-                  e.target.style.borderColor = '#d1d5db'
+                  e.target.style.borderColor = 'var(--brand-gold)'
                   e.target.style.boxShadow = 'none'
                 }}
               />
@@ -379,7 +369,7 @@ export function CollectionItems({ slug, onBack }: CollectionItemsProps) {
                 style={{
                   position: 'absolute',
                   left: '16px',
-                  color: '#9ca3af',
+                  color: 'var(--brand-gold)',
                   fontSize: '16px',
                 }}
               >
@@ -402,6 +392,32 @@ export function CollectionItems({ slug, onBack }: CollectionItemsProps) {
             </div>
           </div>
 
+          {/* Column and Filter buttons */}
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button
+              style={{
+                padding: '10px 14px',
+                border: '1px solid #e5e7eb',
+                borderRadius: 10,
+                background: '#fff',
+                color: '#374151',
+              }}
+            >
+              Column ▾
+            </button>
+            <button
+              style={{
+                padding: '10px 14px',
+                border: '1px solid #e5e7eb',
+                borderRadius: 10,
+                background: '#fff',
+                color: '#374151',
+              }}
+            >
+              Filter ▾
+            </button>
+          </div>
+
           {/* Items per page selector */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span style={{ fontSize: '14px', color: '#6b7280' }}>Show:</span>
@@ -410,7 +426,7 @@ export function CollectionItems({ slug, onBack }: CollectionItemsProps) {
               onChange={(e) => handleLimitChange(Number(e.target.value))}
               style={{
                 padding: '8px 12px',
-                border: '1px solid #d1d5db',
+                border: '1px solid var(--brand-gold)',
                 borderRadius: '8px',
                 fontSize: '14px',
                 backgroundColor: '#ffffff',
@@ -426,7 +442,50 @@ export function CollectionItems({ slug, onBack }: CollectionItemsProps) {
           </div>
         </div>
 
-        <ViewModeToggle viewMode={viewMode} setViewMode={setViewMode} />
+        {/* Chips row (visual only for now) */}
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: 8,
+            marginBottom: 16,
+          }}
+        >
+          {['Title', 'Status', 'Subtitle', 'Description', 'Created at'].map((label) => (
+            <span
+              key={label}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                padding: '6px 10px',
+                border: '1px solid var(--brand-gold)',
+                background: '#fff',
+                color: '#6b5b2a',
+                borderRadius: 8,
+                fontSize: 12,
+                textTransform: 'none',
+              }}
+            >
+              × {label}
+            </span>
+          ))}
+          <button
+            style={{
+              padding: '6px 10px',
+              border: '1px solid #e5e7eb',
+              borderRadius: 8,
+              background: '#fff',
+              color: '#374151',
+              fontSize: 12,
+            }}
+          >
+            + Description
+          </button>
+        </div>
+
+        {/* Hide view toggle for the table-like look */}
+        {/* <ViewModeToggle viewMode={viewMode} setViewMode={setViewMode} /> */}
 
         {/* Results Section with Search Loading */}
         <div style={{ position: 'relative' }}>

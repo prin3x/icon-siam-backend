@@ -29,7 +29,25 @@ const nextConfig = {
   productionBrowserSourceMaps: true,
   // Add headers for video streaming
   async headers() {
+    const isProd = process.env.NODE_ENV === 'production'
     return [
+      // Never cache custom admin UI or its APIs
+      {
+        source: '/custom-admin/:path*',
+        headers: [
+          { key: 'Cache-Control', value: 'no-store, no-cache, must-revalidate, max-age=0' },
+          { key: 'Pragma', value: 'no-cache' },
+          { key: 'Expires', value: '0' },
+        ],
+      },
+      {
+        source: '/api/custom-admin/:path*',
+        headers: [
+          { key: 'Cache-Control', value: 'no-store, no-cache, must-revalidate, max-age=0' },
+          { key: 'Pragma', value: 'no-cache' },
+          { key: 'Expires', value: '0' },
+        ],
+      },
       {
         source: '/api/media/:path*',
         headers: [
@@ -51,11 +69,21 @@ const nextConfig = {
       },
       {
         source: '/api/(.*)',
-        headers: [{ key: 'Cache-Control', value: 'public, max-age=60, s-maxage=300' }],
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: isProd ? 'public, max-age=60, s-maxage=300' : 'no-store',
+          },
+        ],
       },
       {
         source: '/((?!api).*)',
-        headers: [{ key: 'Cache-Control', value: 'public, max-age=3600, s-maxage=86400' }],
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: isProd ? 'public, max-age=3600, s-maxage=86400' : 'no-store',
+          },
+        ],
       },
     ]
   },

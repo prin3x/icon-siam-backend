@@ -1210,7 +1210,7 @@ export interface NewsPress {
  */
 export interface Story {
   id: number;
-  title: string;
+  title?: string | null;
   subtitle?: string | null;
   content?: {
     root: {
