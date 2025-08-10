@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useLocale } from './LocaleContext'
 import { navigateWithLocale } from '@/utilities/navigation'
 import { FieldRenderer } from './FieldRenderer'
-import { FORM_LAYOUTS, type CollectionFormLayout } from './formLayouts'
+import { FORM_LAYOUTS, getLayoutForCollection, type CollectionFormLayout } from './formLayouts'
 
 interface RecordEditFormProps {
   collectionSlug: string
@@ -205,11 +205,35 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
     )
   }
 
-  const layout: CollectionFormLayout | undefined = FORM_LAYOUTS[collectionSlug]
+  const layout: CollectionFormLayout | undefined = getLayoutForCollection(
+    collectionSlug,
+    schema as any,
+  )
 
-  const renderSection = (title: string, fieldsList: string[], description?: string) => {
+  const renderSection = (
+    title: string,
+    fieldsList: string[],
+    description?: string,
+    wrap: boolean = true,
+  ) => {
     const sectionFields = fields.filter((f) => fieldsList.includes(f.name))
     if (sectionFields.length === 0) return null
+    if (!wrap) {
+      return (
+        <section style={{ marginBottom: 16 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {sectionFields.map((field) => (
+              <FieldRenderer
+                key={field.name}
+                field={field}
+                formData={formData}
+                handleInputChange={handleInputChange}
+              />
+            ))}
+          </div>
+        </section>
+      )
+    }
     return (
       <section style={{ marginBottom: 16 }}>
         <div
@@ -242,6 +266,7 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
 
   // Keep all fetched schema fields accessible
   const fields = schema
+  console.log(fields, 'fields')
 
   return (
     <div style={{ padding: '24px' }}>
@@ -275,7 +300,7 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
           >
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               {layout.left.map((section) =>
-                renderSection(section.title, section.fields, section.description),
+                renderSection(section.title, section.fields, section.description, section.wrap),
               )}
             </div>
             {layout.right && (
@@ -289,7 +314,7 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
                 }}
               >
                 {layout.right.map((section) =>
-                  renderSection(section.title, section.fields, section.description),
+                  renderSection(section.title, section.fields, section.description, section.wrap),
                 )}
               </aside>
             )}

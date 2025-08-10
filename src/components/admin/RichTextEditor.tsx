@@ -31,6 +31,13 @@ import { MediaModal } from './MediaModal'
  * - Images are handled gracefully (with placeholders if no ID)
  * - Content is saved back in PayloadCMS-compatible format
  *
+ * IMAGE HANDLING STRATEGY:
+ * - Images with PayloadCMS media IDs are preserved as uploads
+ * - Images from HTML conversion (without IDs) are converted to informative placeholders
+ * - Placeholders show both alt text and source URL for easy identification
+ * - Users can manually replace placeholders with proper media uploads or use URL upload
+ * - URL upload allows direct pasting of image URLs for quick image replacement
+ *
  * This allows seamless editing of legacy HTML content while maintaining
  * the modern TipTap editing experience.
  */
@@ -295,7 +302,8 @@ const convertHtmlToTiptap = (html: string): any => {
                 attrs: {
                   src,
                   alt,
-                  'data-id': null,
+                  'data-id': null, // Will be handled in convertTiptapToPayload
+                  'original-src': src, // Preserve original source for reference
                 },
               })
             }
@@ -449,18 +457,35 @@ const convertTiptapToPayload = (tiptapValue: any): any => {
     .map((node: any) => {
       if (node.type === 'image') {
         const id = node.attrs['data-id']
+        const src = node.attrs.src
+        const alt = node.attrs.alt || 'Image'
+
         if (id) {
+          // Image already has a PayloadCMS media ID
           return {
             type: 'upload',
-            value: { id, url: node.attrs.src, filename: node.attrs.alt },
+            value: { id, url: src, filename: alt },
             relationTo: 'media',
             children: [{ text: '' }],
           }
+        } else if (src) {
+          // Image from HTML conversion or URL upload - create informative placeholder
+          // This helps users understand what the image was and where it came from
+          // Users can manually replace these placeholders with proper media uploads or use URL upload
+          return {
+            type: 'paragraph',
+            children: [
+              {
+                text: `[Image: ${alt}] - Source: ${src}`,
+              },
+            ],
+          }
         }
-        // For images without ID (from HTML conversion), create a placeholder
+
+        // Fallback for images without src
         return {
           type: 'paragraph',
-          children: [{ text: `[Image: ${node.attrs.alt || 'No alt text'}]` }],
+          children: [{ text: `[Image: ${alt || 'No alt text'}]` }],
         }
       }
 
@@ -661,12 +686,18 @@ export function RichTextEditor({
     }
   }, [editor, value])
 
-  const handleImageSelection = (media: { id: string; url: string; filename?: string }) => {
+  const handleImageSelection = (media: { id: string | number; url: string; filename?: string }) => {
     if (media.url) {
+      const resolvedId = media.id === undefined || media.id === null ? null : String(media.id)
+
       editor
         ?.chain()
         .focus()
-        .setImage({ src: media.url, alt: media.filename || '', 'data-id': media.id } as any)
+        .setImage({
+          src: media.url,
+          alt: media.filename || '',
+          'data-id': resolvedId,
+        } as any)
         .createParagraphNear()
         .run()
     }

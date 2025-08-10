@@ -1,13 +1,32 @@
 import React from 'react'
 
+type ColumnDef = {
+  key: string
+  label: string
+  type?: 'text' | 'status' | 'date'
+}
+
 interface TableViewProps {
   items: any[]
   onEdit: (id: string) => void
   onDelete: (id: string) => void
   onPreview: (id: string) => void
+  columns?: ColumnDef[]
 }
 
-export function TableView({ items, onEdit, onDelete, onPreview }: TableViewProps) {
+const defaultColumns: ColumnDef[] = [
+  { key: 'title', label: 'Title', type: 'text' },
+  { key: 'status', label: 'Status', type: 'status' },
+  { key: 'createdAt', label: 'Created', type: 'date' },
+]
+
+export function TableView({
+  items,
+  onEdit,
+  onDelete,
+  onPreview,
+  columns = defaultColumns,
+}: TableViewProps) {
   return (
     <div
       style={{
@@ -34,42 +53,21 @@ export function TableView({ items, onEdit, onDelete, onPreview }: TableViewProps
               borderBottom: '2px solid #e5e7eb',
             }}
           >
-            <th
-              style={{
-                padding: '16px 20px',
-                textAlign: 'left',
-                fontSize: '14px',
-                fontWeight: '600',
-                color: '#374151',
-                letterSpacing: '0.05em',
-              }}
-            >
-              Title
-            </th>
-            <th
-              style={{
-                padding: '16px 20px',
-                textAlign: 'left',
-                fontSize: '14px',
-                fontWeight: '600',
-                color: '#374151',
-                letterSpacing: '0.05em',
-              }}
-            >
-              Status
-            </th>
-            <th
-              style={{
-                padding: '16px 20px',
-                textAlign: 'left',
-                fontSize: '14px',
-                fontWeight: '600',
-                color: '#374151',
-                letterSpacing: '0.05em',
-              }}
-            >
-              Created
-            </th>
+            {columns.map((col) => (
+              <th
+                key={col.key}
+                style={{
+                  padding: '16px 20px',
+                  textAlign: 'left',
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  color: '#374151',
+                  letterSpacing: '0.05em',
+                }}
+              >
+                {col.label}
+              </th>
+            ))}
             <th
               style={{
                 padding: '16px 20px',
@@ -100,59 +98,50 @@ export function TableView({ items, onEdit, onDelete, onPreview }: TableViewProps
                 e.currentTarget.style.backgroundColor = index % 2 === 0 ? '#ffffff' : '#f9fafb'
               }}
             >
-              <td style={{ padding: '16px 20px' }}>
-                <div>
-                  <div
-                    style={{
-                      fontWeight: '600',
-                      fontSize: '15px',
-                      color: '#111827',
-                      marginBottom: '4px',
-                    }}
-                  >
-                    {item.title || item.name || item.id}
-                  </div>
-                  {item.description && (
-                    <div
-                      style={{
-                        fontSize: '13px',
-                        color: '#6b7280',
-                        lineHeight: '1.4',
-                      }}
-                    >
-                      {item.description}
+              {columns.map((col) => (
+                <td key={col.key} style={{ padding: '16px 20px' }}>
+                  {col.type === 'status' ? (
+                    item[col.key] ? (
+                      <span
+                        style={{
+                          padding: '6px 12px',
+                          borderRadius: '20px',
+                          fontSize: '12px',
+                          fontWeight: '600',
+                          backgroundColor: item[col.key] === 'ACTIVE' ? '#dcfce7' : '#fef2f2',
+                          color: item[col.key] === 'ACTIVE' ? '#166534' : '#dc2626',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.05em',
+                        }}
+                      >
+                        {String(item[col.key])}
+                      </span>
+                    ) : (
+                      'N/A'
+                    )
+                  ) : col.type === 'date' ? (
+                    item[col.key] ? (
+                      new Date(item[col.key]).toLocaleDateString()
+                    ) : (
+                      'N/A'
+                    )
+                  ) : (
+                    // text/default
+                    <div>
+                      <div
+                        style={{
+                          fontWeight: '600',
+                          fontSize: '15px',
+                          color: '#111827',
+                          marginBottom: '4px',
+                        }}
+                      >
+                        {item[col.key] ?? 'N/A'}
+                      </div>
                     </div>
                   )}
-                </div>
-              </td>
-              <td style={{ padding: '16px 20px' }}>
-                {item.status && (
-                  <span
-                    style={{
-                      padding: '6px 12px',
-                      borderRadius: '20px',
-                      fontSize: '12px',
-                      fontWeight: '600',
-                      backgroundColor: item.status === 'ACTIVE' ? '#dcfce7' : '#fef2f2',
-                      color: item.status === 'ACTIVE' ? '#166534' : '#dc2626',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.05em',
-                    }}
-                  >
-                    {item.status}
-                  </span>
-                )}
-              </td>
-              <td
-                style={{
-                  padding: '16px 20px',
-                  fontSize: '14px',
-                  color: '#6b7280',
-                  fontWeight: '500',
-                }}
-              >
-                {item.createdAt ? new Date(item.createdAt).toLocaleDateString() : 'N/A'}
-              </td>
+                </td>
+              ))}
               <td style={{ padding: '16px 20px' }}>
                 <div style={{ display: 'flex', gap: '8px' }}>
                   <button

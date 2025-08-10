@@ -78,7 +78,93 @@ async function handleMediaUpload(request: NextRequest) {
   try {
     const payload = await getPayload({ config })
 
-    // Parse the form data
+    const contentType = request.headers.get('content-type') || ''
+
+    // Branch: JSON body means URL-based upload
+    if (contentType.includes('application/json')) {
+      const body = await request.json().catch(() => ({}))
+      const inputUrl = (body?.url || '').toString().trim()
+      const providedFilename = (body?.filename || '').toString().trim()
+      const providedAlt = (body?.alt || '').toString().trim()
+
+      if (!inputUrl) {
+        return NextResponse.json({ error: 'Missing url' }, { status: 400 })
+      }
+
+      let remote: Response
+      try {
+        remote = await fetch(inputUrl)
+      } catch (e: any) {
+        return NextResponse.json(
+          { error: `Failed to fetch remote URL: ${e?.message || 'unknown error'}` },
+          { status: 400 },
+        )
+      }
+
+      if (!remote.ok) {
+        return NextResponse.json(
+          { error: `Remote URL responded with status ${remote.status}` },
+          { status: 400 },
+        )
+      }
+
+      const arrayBuffer = await remote.arrayBuffer()
+      const buffer = Buffer.from(arrayBuffer)
+      const mimeType = remote.headers.get('content-type') || 'application/octet-stream'
+
+      // Derive filename from provided value, URL path or fallback
+      let filename = providedFilename
+      if (!filename) {
+        try {
+          const parsed = new URL(inputUrl)
+          filename = parsed.pathname.split('/').pop() || 'image-from-url'
+        } catch {
+          filename = 'image-from-url'
+        }
+      }
+
+      // Ensure filename has an extension if possible
+      if (!/\.[a-zA-Z0-9]{2,5}$/.test(filename)) {
+        const extFromMime = mimeType.split('/')[1] || 'bin'
+        filename = `${filename}.${extFromMime}`
+      }
+
+      try {
+        const result = await payload.create({
+          collection: 'media' as any,
+          data: {
+            alt: providedAlt || filename,
+          },
+          file: {
+            // Provide multiple properties for compatibility across Payload versions
+            data: buffer,
+            buffer,
+            filename,
+            name: filename,
+            mimeType,
+            mimetype: mimeType,
+            size: buffer.length,
+          } as any,
+        })
+
+        return NextResponse.json({
+          id: result.id,
+          filename: result.filename,
+          url: result.url,
+          alt: result.alt,
+          width: result.width,
+          height: result.height,
+        })
+      } catch (error: any) {
+        console.error('Error creating media from URL:', error)
+        return NextResponse.json(
+          { error: `Failed to create media: ${error?.message || 'Unknown error'}` },
+          { status: 400 },
+        )
+      }
+    }
+
+    // Default branch: multipart/form-data upload
     const formData = await request.formData()
     const files = formData.getAll('file') as File[]
 
@@ -86,7 +172,7 @@ async function handleMediaUpload(request: NextRequest) {
       return NextResponse.json({ error: 'No files provided' }, { status: 400 })
     }
 
-    const uploadedFiles = []
+    const uploadedFiles = [] as any[]
 
     for (const file of files) {
       try {

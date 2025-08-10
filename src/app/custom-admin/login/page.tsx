@@ -47,19 +47,24 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Admin Login</h1>
-          <p className="text-lg text-gray-600">Access your dashboard</p>
+          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Admin Console</h1>
+          <p className="text-sm text-slate-600 mt-1">Sign in to continue</p>
         </div>
 
-        <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-8">
-          <form onSubmit={handleLogin}>
-            {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+        <div className="admin-card gold-card relative p-8">
+          <div className="gold-plus">★</div>
+          <form onSubmit={handleLogin} className="space-y-5">
+            {error && (
+              <div className="text-red-600 text-sm bg-red-50 border border-red-200 rounded-md p-3 text-center">
+                {error}
+              </div>
+            )}
 
-            <div className="mb-4">
-              <label htmlFor="email" className="block text-gray-700 font-bold mb-2">
+            <div>
+              <label htmlFor="email" className="admin-label">
                 Email Address
               </label>
               <input
@@ -67,14 +72,14 @@ export default function LoginPage() {
                 id="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="admin-input"
                 placeholder="you@example.com"
                 required
               />
             </div>
 
-            <div className="mb-6">
-              <label htmlFor="password" className="block text-gray-700 font-bold mb-2">
+            <div>
+              <label htmlFor="password" className="admin-label">
                 Password
               </label>
               <input
@@ -82,20 +87,20 @@ export default function LoginPage() {
                 id="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="admin-input"
                 placeholder="••••••••"
                 required
               />
             </div>
 
-            <button
-              type="submit"
-              className="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50"
-              disabled={isLoading}
-            >
-              {isLoading ? 'Logging in...' : 'Log In'}
+            <button type="submit" className="admin-button-gold w-full py-3" disabled={isLoading}>
+              {isLoading ? 'Signing in...' : 'Sign in'}
             </button>
           </form>
+        </div>
+
+        <div className="text-center text-xs text-slate-500 mt-4">
+          © {new Date().getFullYear()} Admin
         </div>
       </div>
     </div>

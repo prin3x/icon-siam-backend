@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState, useCallback } from 'react'
+import React, { useEffect, useState, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { useLocale } from './LocaleContext'
 import { navigateWithLocale } from '@/utilities/navigation'
@@ -38,6 +38,12 @@ export function CollectionItems({
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string>('')
   const [viewMode, setViewMode] = useState<'list' | 'grid' | 'table'>('table')
+  const [visibleColumns, setVisibleColumns] = useState<string[]>(['title', 'status', 'createdAt'])
+  const [filters, setFilters] = useState<Record<string, string | null>>({})
+  const [showColumnsDropdown, setShowColumnsDropdown] = useState(false)
+  const [showFiltersDropdown, setShowFiltersDropdown] = useState(false)
+  const columnsRef = useRef<HTMLDivElement | null>(null)
+  const filtersRef = useRef<HTMLDivElement | null>(null)
 
   // Search and pagination state
   const [searchTerm, setSearchTerm] = useState('')
@@ -69,6 +75,21 @@ export function CollectionItems({
     setPagination((prev) => ({ ...prev, page: 1 }))
   }, [debouncedSearchTerm])
 
+  // Close dropdowns on outside click
+  useEffect(() => {
+    const handleDocClick = (e: MouseEvent) => {
+      const target = e.target as Node
+      if (showColumnsDropdown && columnsRef.current && !columnsRef.current.contains(target)) {
+        setShowColumnsDropdown(false)
+      }
+      if (showFiltersDropdown && filtersRef.current && !filtersRef.current.contains(target)) {
+        setShowFiltersDropdown(false)
+      }
+    }
+    document.addEventListener('mousedown', handleDocClick)
+    return () => document.removeEventListener('mousedown', handleDocClick)
+  }, [showColumnsDropdown, showFiltersDropdown])
+
   const fetchItems = useCallback(
     async (signal: AbortSignal) => {
       if (!slug || slug === '') {
@@ -86,8 +107,21 @@ export function CollectionItems({
         limit: pagination.limit.toString(),
       })
 
+      // Text search across common fields using where[or]
       if (debouncedSearchTerm) {
-        params.append('search', debouncedSearchTerm)
+        params.append('where[or][0][title][like]', debouncedSearchTerm)
+        params.append('where[or][1][subtitle][like]', debouncedSearchTerm)
+        params.append('where[or][2][description][like]', debouncedSearchTerm)
+      }
+
+      // Status filter (Payload expects uppercase values in our collections)
+      if (filters.status) {
+        params.append('where[status][equals]', String(filters.status).toUpperCase())
+      }
+
+      // Created date filter (created after)
+      if (filters.createdAt) {
+        params.append('where[createdAt][greater_than]', String(filters.createdAt))
       }
 
       try {
@@ -110,7 +144,6 @@ export function CollectionItems({
         }
 
         const data = await response.json()
-        console.log('Success response:', data)
 
         setItems(data.docs || [])
         setPagination((prev) => ({
@@ -129,7 +162,7 @@ export function CollectionItems({
         setLoading(false)
       }
     },
-    [slug, locale, debouncedSearchTerm, pagination.page, pagination.limit],
+    [slug, locale, debouncedSearchTerm, pagination.page, pagination.limit, filters],
   )
 
   // Combined effect for all data fetching
@@ -394,28 +427,145 @@ export function CollectionItems({
 
           {/* Column and Filter buttons */}
           <div style={{ display: 'flex', gap: '8px' }}>
-            <button
-              style={{
-                padding: '10px 14px',
-                border: '1px solid #e5e7eb',
-                borderRadius: 10,
-                background: '#fff',
-                color: '#374151',
-              }}
-            >
-              Column ▾
-            </button>
-            <button
-              style={{
-                padding: '10px 14px',
-                border: '1px solid #e5e7eb',
-                borderRadius: 10,
-                background: '#fff',
-                color: '#374151',
-              }}
-            >
-              Filter ▾
-            </button>
+            {/* Columns dropdown */}
+            <div style={{ position: 'relative' }} ref={columnsRef}>
+              <button
+                type="button"
+                onClick={() => setShowColumnsDropdown((v) => !v)}
+                style={{
+                  padding: '10px 14px',
+                  border: '1px solid #e5e7eb',
+                  borderRadius: 10,
+                  background: '#fff',
+                  color: '#374151',
+                  cursor: 'pointer',
+                }}
+              >
+                Column ▾
+              </button>
+              {showColumnsDropdown && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    right: 0,
+                    marginTop: 8,
+                    background: '#fff',
+                    border: '1px solid #e5e7eb',
+                    borderRadius: 10,
+                    padding: 12,
+                    minWidth: 220,
+                    zIndex: 20,
+                  }}
+                >
+                  {[
+                    { key: 'title', label: 'Title' },
+                    { key: 'status', label: 'Status' },
+                    { key: 'subtitle', label: 'Subtitle' },
+                    { key: 'description', label: 'Description' },
+                    { key: 'createdAt', label: 'Created' },
+                  ].map((col) => (
+                    <label key={col.key} style={{ display: 'flex', gap: 8, padding: '6px 0' }}>
+                      <input
+                        type="checkbox"
+                        checked={visibleColumns.includes(col.key)}
+                        onChange={(e) => {
+                          setVisibleColumns((prev) =>
+                            e.target.checked
+                              ? Array.from(new Set([...prev, col.key]))
+                              : prev.filter((k) => k !== col.key),
+                          )
+                        }}
+                      />
+                      {col.label}
+                    </label>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Filters dropdown */}
+            <div style={{ position: 'relative' }} ref={filtersRef}>
+              <button
+                type="button"
+                onClick={() => setShowFiltersDropdown((v) => !v)}
+                style={{
+                  padding: '10px 14px',
+                  border: '1px solid #e5e7eb',
+                  borderRadius: 10,
+                  background: '#fff',
+                  color: '#374151',
+                  cursor: 'pointer',
+                }}
+              >
+                Filter ▾
+              </button>
+              {showFiltersDropdown && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    right: 0,
+                    marginTop: 8,
+                    background: '#fff',
+                    border: '1px solid #e5e7eb',
+                    borderRadius: 10,
+                    padding: 12,
+                    minWidth: 260,
+                    zIndex: 20,
+                    display: 'grid',
+                    gap: 10,
+                  }}
+                >
+                  <div>
+                    <label style={{ fontSize: 12, color: '#6b7280' }}>Status</label>
+                    <select
+                      value={(filters.status as string) || ''}
+                      onChange={(e) => {
+                        setFilters((f) => ({ ...f, status: e.target.value || null }))
+                      }}
+                      style={{
+                        width: '100%',
+                        padding: '8px 10px',
+                        border: '1px solid #e5e7eb',
+                        borderRadius: 8,
+                      }}
+                    >
+                      <option value="">All</option>
+                      <option value="active">Active</option>
+                      <option value="inactive">Inactive</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label style={{ fontSize: 12, color: '#6b7280' }}>Created after</label>
+                    <input
+                      type="date"
+                      value={(filters.createdAt as string) || ''}
+                      onChange={(e) =>
+                        setFilters((f) => ({ ...f, createdAt: e.target.value || null }))
+                      }
+                      style={{
+                        width: '100%',
+                        padding: '8px 10px',
+                        border: '1px solid #e5e7eb',
+                        borderRadius: 8,
+                      }}
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setFilters({})}
+                    style={{
+                      padding: '8px 12px',
+                      border: '1px solid #e5e7eb',
+                      borderRadius: 8,
+                      background: '#fff',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Clear filters
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Items per page selector */}
@@ -451,9 +601,9 @@ export function CollectionItems({
             marginBottom: 16,
           }}
         >
-          {['Title', 'Status', 'Subtitle', 'Description', 'Created at'].map((label) => (
+          {visibleColumns.map((key) => (
             <span
-              key={label}
+              key={key}
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -467,21 +617,9 @@ export function CollectionItems({
                 textTransform: 'none',
               }}
             >
-              × {label}
+              × {key}
             </span>
           ))}
-          <button
-            style={{
-              padding: '6px 10px',
-              border: '1px solid #e5e7eb',
-              borderRadius: 8,
-              background: '#fff',
-              color: '#374151',
-              fontSize: 12,
-            }}
-          >
-            + Description
-          </button>
         </div>
 
         {/* Hide view toggle for the table-like look */}
@@ -552,6 +690,11 @@ export function CollectionItems({
               onEdit={handleEdit}
               onDelete={handleDelete}
               onPreview={handlePreview}
+              columns={visibleColumns.map((k) => ({
+                key: k,
+                label: k === 'createdAt' ? 'Created' : k[0].toUpperCase() + k.slice(1),
+                type: k === 'status' ? 'status' : k === 'createdAt' ? 'date' : 'text',
+              }))}
             />
           )}
         </div>

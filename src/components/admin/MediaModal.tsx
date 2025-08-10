@@ -22,6 +22,9 @@ export function MediaModal({ onClose, onSelect }: MediaModalProps) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string>('')
   const [activeTab, setActiveTab] = useState('select')
+  const [urlInput, setUrlInput] = useState('')
+  const [urlError, setUrlError] = useState('')
+  const [urlLoading, setUrlLoading] = useState(false)
   const [pagination, setPagination] = useState<Pagination>({
     page: 1,
     limit: 12,
@@ -73,6 +76,49 @@ export function MediaModal({ onClose, onSelect }: MediaModalProps) {
   const handleUploadComplete = (media: MediaObject | null) => {
     if (media) {
       onSelect(media)
+    }
+  }
+
+  const handleUrlUpload = async () => {
+    if (!urlInput.trim()) {
+      setUrlError('Please enter an image URL')
+      return
+    }
+
+    try {
+      setUrlLoading(true)
+      setUrlError('')
+
+      // Validate URL format
+      const url = new URL(urlInput.trim())
+      if (!url.protocol.startsWith('http')) {
+        throw new Error('URL must start with http:// or https://')
+      }
+
+      // Call server to fetch-and-upload the image; returns normal media object
+      const res = await fetch('/api/admin/media', {
+        method: 'POST',
+        headers: {
+          ...getApiHeaders(true, false), // includes x-api-key; json
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          url: urlInput.trim(),
+          filename: url.pathname.split('/').pop() || 'Image from URL',
+        }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        throw new Error(data?.error || 'Failed to upload image from URL')
+      }
+
+      // Select the created media; coerce id to string|number type
+      onSelect({ id: data.id, url: data.url, filename: data.filename })
+    } catch (err: any) {
+      console.log(err, 'err')
+      setUrlError(err.message || 'Invalid URL format')
+    } finally {
+      setUrlLoading(false)
     }
   }
 
@@ -157,6 +203,21 @@ export function MediaModal({ onClose, onSelect }: MediaModalProps) {
           >
             Upload New
           </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('url')}
+            style={{
+              padding: '12px 16px',
+              border: 'none',
+              backgroundColor: 'transparent',
+              borderBottom: activeTab === 'url' ? '2px solid #3b82f6' : 'none',
+              fontWeight: activeTab === 'url' ? '600' : '500',
+              color: activeTab === 'url' ? '#3b82f6' : '#6b7280',
+              cursor: 'pointer',
+            }}
+          >
+            URL Upload
+          </button>
         </div>
         <div style={{ flex: 1, overflowY: 'auto', padding: '16px' }}>
           {error && <div style={{ color: '#dc2626' }}>Error: {error}</div>}
@@ -236,6 +297,100 @@ export function MediaModal({ onClose, onSelect }: MediaModalProps) {
               <p style={{ marginTop: '12px', fontSize: '12px', color: '#6b7280' }}>
                 After uploading, the image will be automatically selected.
               </p>
+            </div>
+          )}
+          {activeTab === 'url' && (
+            <div style={{ maxWidth: '500px', margin: '0 auto' }}>
+              <div style={{ marginBottom: '16px' }}>
+                <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '8px' }}>
+                  Add Image from URL
+                </h3>
+                <p style={{ fontSize: '14px', color: '#6b7280', marginBottom: '16px' }}>
+                  Paste an image URL to add it directly to your content. This is useful for
+                  replacing image placeholders from legacy content.
+                </p>
+              </div>
+
+              <div style={{ marginBottom: '16px' }}>
+                <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>
+                  Image URL
+                </label>
+                <input
+                  type="url"
+                  value={urlInput}
+                  onChange={(e) => setUrlInput(e.target.value)}
+                  placeholder="https://example.com/image.jpg"
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '6px',
+                    fontSize: '14px',
+                  }}
+                  onKeyPress={(e) => e.key === 'Enter' && handleUrlUpload()}
+                />
+                {urlError && (
+                  <div style={{ color: '#dc2626', fontSize: '12px', marginTop: '4px' }}>
+                    {urlError}
+                  </div>
+                )}
+              </div>
+
+              <div style={{ display: 'flex', gap: '12px' }}>
+                <button
+                  type="button"
+                  onClick={handleUrlUpload}
+                  disabled={urlLoading || !urlInput.trim()}
+                  style={{
+                    padding: '12px 24px',
+                    backgroundColor: '#3b82f6',
+                    color: '#ffffff',
+                    border: 'none',
+                    borderRadius: '6px',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    cursor: urlLoading || !urlInput.trim() ? 'not-allowed' : 'pointer',
+                    opacity: urlLoading || !urlInput.trim() ? 0.6 : 1,
+                  }}
+                >
+                  {urlLoading ? 'Adding...' : 'Add Image'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setUrlInput('')
+                    setUrlError('')
+                  }}
+                  style={{
+                    padding: '12px 24px',
+                    backgroundColor: '#f3f4f6',
+                    color: '#374151',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '6px',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Clear
+                </button>
+              </div>
+
+              <div
+                style={{
+                  marginTop: '16px',
+                  padding: '12px',
+                  backgroundColor: '#f0f9ff',
+                  borderRadius: '6px',
+                  border: '1px solid #bae6fd',
+                }}
+              >
+                <p style={{ fontSize: '12px', color: '#0369a1', margin: 0 }}>
+                  <strong>Tip:</strong> This is perfect for replacing image placeholders like
+                  &quot;[Image: Image] - Source: https://...&quot; from your legacy HTML content.
+                  Just copy the URL from the placeholder and paste it here.
+                </p>
+              </div>
             </div>
           )}
         </div>

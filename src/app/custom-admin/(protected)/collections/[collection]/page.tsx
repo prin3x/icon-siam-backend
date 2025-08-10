@@ -48,13 +48,6 @@ export default function CollectionPage({ params }: CollectionPageProps) {
               .split('-')
               .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
               .join(' ')}
-            <a
-              href="#"
-              className="ml-3 text-sm font-medium text-blue-600 hover:underline align-middle"
-              onClick={(e) => e.preventDefault()}
-            >
-              Preview
-            </a>
           </h1>
         </div>
         <div className="flex items-center gap-3">
