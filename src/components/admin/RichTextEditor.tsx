@@ -16,6 +16,25 @@ import TaskList from '@tiptap/extension-task-list'
 import TaskItem from '@tiptap/extension-task-item'
 import { MediaModal } from './MediaModal'
 
+/**
+ * Enhanced RichTextEditor with HTML-to-TipTap Conversion
+ *
+ * This component solves the content migration challenge by:
+ * 1. Detecting content format (HTML, TipTap, Lexical, or unknown)
+ * 2. Converting HTML content from the old platform to TipTap format
+ * 3. Maintaining compatibility with PayloadCMS collections
+ * 4. Providing visual feedback about content format
+ *
+ * When editing HTML content:
+ * - HTML is parsed and converted to TipTap JSON structure
+ * - All formatting (bold, italic, lists, headings) is preserved
+ * - Images are handled gracefully (with placeholders if no ID)
+ * - Content is saved back in PayloadCMS-compatible format
+ *
+ * This allows seamless editing of legacy HTML content while maintaining
+ * the modern TipTap editing experience.
+ */
+
 // Create a custom image extension to store media ID
 const Image = TiptapImage.extend({
   addAttributes() {
@@ -35,11 +54,69 @@ interface RichTextEditorProps {
   readOnly?: boolean
 }
 
+// Detect content format
+const detectContentFormat = (value: any): 'html' | 'tiptap' | 'lexical' | 'unknown' => {
+  if (!value) return 'unknown'
+
+  if (typeof value === 'string') {
+    if (value.includes('<') && value.includes('>')) {
+      return 'html'
+    }
+    return 'unknown'
+  }
+
+  if (Array.isArray(value)) {
+    // Check if it's PayloadCMS format
+    if (value.some((node: any) => node.type === 'paragraph' && node.children)) {
+      return 'lexical'
+    }
+    return 'unknown'
+  }
+
+  if (value.type === 'doc' && Array.isArray(value.content)) {
+    // Check if it's Tiptap format
+    if (
+      value.content.some(
+        (node: any) =>
+          node.type === 'paragraph' || node.type === 'heading' || node.type === 'bulletList',
+      )
+    ) {
+      return 'tiptap'
+    }
+  }
+
+  return 'unknown'
+}
+
+// Debug utility to log content format and conversion
+const debugContentConversion = (value: any, format: string) => {
+  if (process.env.NODE_ENV === 'development') {
+    console.group('RichTextEditor Content Conversion')
+    console.log('Input value:', value)
+    console.log('Detected format:', format)
+    console.log('Input type:', typeof value)
+    if (Array.isArray(value)) {
+      console.log('Array length:', value.length)
+      console.log('First few items:', value.slice(0, 3))
+    }
+    console.groupEnd()
+  }
+}
+
 // Convert PayloadCMS rich text format to Tiptap JSON
 const convertPayloadToTiptap = (payloadValue: any): any => {
   if (!payloadValue) return { type: 'doc', content: [] }
 
+  // Handle HTML strings (from old platform data)
   if (typeof payloadValue === 'string') {
+    // Check if it's HTML content
+    if (payloadValue.includes('<') && payloadValue.includes('>')) {
+      debugContentConversion(payloadValue, 'html')
+      return convertHtmlToTiptap(payloadValue)
+    }
+
+    debugContentConversion(payloadValue, 'plain-text')
+    // Plain text fallback
     return {
       type: 'doc',
       content: [
@@ -52,6 +129,7 @@ const convertPayloadToTiptap = (payloadValue: any): any => {
   }
 
   if (Array.isArray(payloadValue)) {
+    debugContentConversion(payloadValue, 'lexical')
     const content = payloadValue.map((node: any) => {
       if (node.type === 'upload' && node.value?.url) {
         return {
@@ -110,6 +188,259 @@ const convertPayloadToTiptap = (payloadValue: any): any => {
   return { type: 'doc', content: [] }
 }
 
+// Convert HTML to Tiptap JSON format
+const convertHtmlToTiptap = (html: string): any => {
+  try {
+    // Handle edge cases
+    if (!html || typeof html !== 'string') {
+      return { type: 'doc', content: [] }
+    }
+
+    // Clean up common HTML issues
+    const cleanHtml = html
+      .replace(/\s+/g, ' ') // Normalize whitespace
+      .replace(/<br\s*\/?>/gi, '<br>') // Normalize br tags
+      .trim()
+
+    // Create a temporary DOM element to parse HTML
+    const tempDiv = document.createElement('div')
+    tempDiv.innerHTML = cleanHtml
+
+    const content: any[] = []
+
+    // Process each child node
+    Array.from(tempDiv.childNodes).forEach((node) => {
+      if (node.nodeType === Node.TEXT_NODE) {
+        const text = node.textContent?.trim()
+        if (text) {
+          content.push({
+            type: 'paragraph',
+            content: [{ type: 'text', text }],
+          })
+        }
+      } else if (node.nodeType === Node.ELEMENT_NODE) {
+        const element = node as Element
+        const tagName = element.tagName.toLowerCase()
+
+        switch (tagName) {
+          case 'p':
+            const paragraphContent = processInlineElements(element)
+            if (paragraphContent.length > 0) {
+              content.push({
+                type: 'paragraph',
+                content: paragraphContent,
+              })
+            } else {
+              content.push({ type: 'paragraph' })
+            }
+            break
+
+          case 'h1':
+          case 'h2':
+          case 'h3':
+          case 'h4':
+          case 'h5':
+          case 'h6':
+            const level = parseInt(tagName.charAt(1))
+            const headingContent = processInlineElements(element)
+            if (headingContent.length > 0) {
+              content.push({
+                type: 'heading',
+                attrs: { level },
+                content: headingContent,
+              })
+            }
+            break
+
+          case 'ul':
+            const ulContent = processListItems(element, 'bulletList')
+            if (ulContent.length > 0) {
+              content.push({
+                type: 'bulletList',
+                content: ulContent,
+              })
+            }
+            break
+
+          case 'ol':
+            const olContent = processListItems(element, 'orderedList')
+            if (olContent.length > 0) {
+              content.push({
+                type: 'orderedList',
+                content: olContent,
+              })
+            }
+            break
+
+          case 'blockquote':
+            const quoteContent = processInlineElements(element)
+            if (quoteContent.length > 0) {
+              content.push({
+                type: 'blockquote',
+                content: quoteContent,
+              })
+            }
+            break
+
+          case 'hr':
+            content.push({ type: 'horizontalRule' })
+            break
+
+          case 'img':
+            const src = element.getAttribute('src')
+            const alt = element.getAttribute('alt') || ''
+            if (src) {
+              content.push({
+                type: 'image',
+                attrs: {
+                  src,
+                  alt,
+                  'data-id': null,
+                },
+              })
+            }
+            break
+
+          case 'br':
+            // Handle line breaks by adding empty paragraph
+            content.push({ type: 'paragraph' })
+            break
+
+          case 'div':
+          case 'span':
+            // Handle generic containers by processing their content
+            const containerContent = processInlineElements(element)
+            if (containerContent.length > 0) {
+              content.push({
+                type: 'paragraph',
+                content: containerContent,
+              })
+            }
+            break
+
+          default:
+            // For unknown tags, try to process as inline content
+            const inlineContent = processInlineElements(element)
+            if (inlineContent.length > 0) {
+              content.push({
+                type: 'paragraph',
+                content: inlineContent,
+              })
+            }
+        }
+      }
+    })
+
+    // Ensure we always have at least one paragraph
+    if (content.length === 0) {
+      content.push({ type: 'paragraph' })
+    }
+
+    return { type: 'doc', content }
+  } catch (error) {
+    console.warn('Error converting HTML to Tiptap:', error)
+    // Fallback to plain text
+    return {
+      type: 'doc',
+      content: [
+        {
+          type: 'paragraph',
+          content: [{ type: 'text', text: html }],
+        },
+      ],
+    }
+  }
+}
+
+// Process inline elements (spans, strong, em, etc.)
+const processInlineElements = (element: Element): any[] => {
+  const content: any[] = []
+
+  Array.from(element.childNodes).forEach((node) => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      const text = node.textContent?.trim()
+      if (text) {
+        content.push({ type: 'text', text })
+      }
+    } else if (node.nodeType === Node.ELEMENT_NODE) {
+      const childElement = node as Element
+      const tagName = childElement.tagName.toLowerCase()
+      const childContent = processInlineElements(childElement)
+
+      if (childContent.length > 0) {
+        const marks: any[] = []
+
+        // Apply text formatting
+        if (tagName === 'strong' || tagName === 'b') {
+          marks.push({ type: 'bold' })
+        }
+        if (tagName === 'em' || tagName === 'i') {
+          marks.push({ type: 'italic' })
+        }
+        if (tagName === 'u') {
+          marks.push({ type: 'underline' })
+        }
+        if (tagName === 's' || tagName === 'strike') {
+          marks.push({ type: 'strike' })
+        }
+        if (tagName === 'code') {
+          marks.push({ type: 'code' })
+        }
+        if (tagName === 'a') {
+          const href = childElement.getAttribute('href')
+          if (href) {
+            marks.push({ type: 'link', attrs: { href } })
+          }
+        }
+
+        // Apply marks to all text nodes
+        childContent.forEach((item) => {
+          if (item.type === 'text' && marks.length > 0) {
+            item.marks = marks
+          }
+        })
+
+        content.push(...childContent)
+      }
+    }
+  })
+
+  return content
+}
+
+// Process list items
+const processListItems = (listElement: Element, listType: string): any[] => {
+  const content: any[] = []
+
+  Array.from(listElement.children).forEach((item) => {
+    if (item.tagName.toLowerCase() === 'li') {
+      const itemContent = processInlineElements(item)
+      if (itemContent.length > 0) {
+        content.push({
+          type: listType === 'bulletList' ? 'listItem' : 'listItem',
+          content: [
+            {
+              type: 'paragraph',
+              content: itemContent,
+            },
+          ],
+        })
+      } else {
+        content.push({
+          type: listType === 'bulletList' ? 'listItem' : 'listItem',
+          content: [
+            {
+              type: 'paragraph',
+            },
+          ],
+        })
+      }
+    }
+  })
+
+  return content
+}
+
 // Convert Tiptap JSON to PayloadCMS format
 const convertTiptapToPayload = (tiptapValue: any): any => {
   if (!tiptapValue || !tiptapValue.content) return []
@@ -126,7 +457,11 @@ const convertTiptapToPayload = (tiptapValue: any): any => {
             children: [{ text: '' }],
           }
         }
-        return null // Don't save images without an ID
+        // For images without ID (from HTML conversion), create a placeholder
+        return {
+          type: 'paragraph',
+          children: [{ text: `[Image: ${node.attrs.alt || 'No alt text'}]` }],
+        }
       }
 
       if (node.type === 'paragraph') {
@@ -172,10 +507,65 @@ const convertTiptapToPayload = (tiptapValue: any): any => {
             }) || [],
         }
       }
+
+      // Handle headings
+      if (node.type === 'heading') {
+        return {
+          type: 'paragraph',
+          children: [
+            {
+              text: node.content?.[0]?.text || '',
+              bold: true,
+            },
+          ],
+        }
+      }
+
+      // Handle lists
+      if (node.type === 'bulletList' || node.type === 'orderedList') {
+        const listItems =
+          node.content
+            ?.map((item: any) => {
+              if (item.type === 'listItem' && item.content?.[0]?.type === 'paragraph') {
+                return {
+                  type: 'paragraph',
+                  children: item.content[0].content?.map((child: any) => ({
+                    text: child.text || '',
+                    ...(child.marks?.some((m: any) => m.type === 'bold') && { bold: true }),
+                    ...(child.marks?.some((m: any) => m.type === 'italic') && { italic: true }),
+                    ...(child.marks?.some((m: any) => m.type === 'underline') && {
+                      underline: true,
+                    }),
+                    ...(child.marks?.some((m: any) => m.type === 'strike') && { strike: true }),
+                    ...(child.marks?.some((m: any) => m.type === 'code') && { code: true }),
+                  })) || [{ text: '' }],
+                }
+              }
+              return null
+            })
+            .filter(Boolean) || []
+
+        return listItems
+      }
+
+      // Handle blockquotes
+      if (node.type === 'blockquote') {
+        return {
+          type: 'paragraph',
+          children: [
+            {
+              text: node.content?.[0]?.content?.[0]?.text || '',
+              italic: true,
+            },
+          ],
+        }
+      }
+
       // Handle other Tiptap nodes if necessary, otherwise they are ignored
       return null
     })
     .filter(Boolean) // Remove null values
+    .flat() // Flatten arrays from lists
 }
 
 export function RichTextEditor({
@@ -186,6 +576,15 @@ export function RichTextEditor({
 }: RichTextEditorProps) {
   const [isMediaModalOpen, setIsMediaModalOpen] = useState(false)
   const isInternallyUpdating = useRef(false)
+  const [showFormatInfo, setShowFormatInfo] = useState(false)
+
+  const contentFormat = detectContentFormat(value)
+  const formatLabel = {
+    html: 'HTML (Legacy)',
+    tiptap: 'TipTap',
+    lexical: 'Lexical',
+    unknown: 'Unknown',
+  }[contentFormat]
 
   const editor = useEditor({
     extensions: [
@@ -306,8 +705,32 @@ export function RichTextEditor({
             display: 'flex',
             flexWrap: 'wrap',
             gap: '8px',
+            alignItems: 'center',
           }}
         >
+          {/* Format Indicator */}
+          <div
+            style={{
+              padding: '6px 12px',
+              borderRadius: '6px',
+              fontSize: '12px',
+              fontWeight: '500',
+              backgroundColor: contentFormat === 'html' ? '#fef3c7' : '#dbeafe',
+              color: contentFormat === 'html' ? '#92400e' : '#1e40af',
+              border: '1px solid',
+              borderColor: contentFormat === 'html' ? '#f59e0b' : '#3b82f6',
+              cursor: 'help',
+              userSelect: 'none',
+            }}
+            title={`Content format: ${formatLabel}. ${
+              contentFormat === 'html'
+                ? 'This content was imported from the old platform and will be converted to TipTap format when edited.'
+                : 'This content is in the current format and can be edited normally.'
+            }`}
+          >
+            {formatLabel}
+          </div>
+
           <button
             onClick={() => editor?.chain().focus().toggleBold().run()}
             style={{

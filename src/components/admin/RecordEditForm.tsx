@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useLocale } from './LocaleContext'
+import { navigateWithLocale } from '@/utilities/navigation'
 import { FieldRenderer } from './FieldRenderer'
 import { FORM_LAYOUTS, type CollectionFormLayout } from './formLayouts'
 
@@ -161,7 +162,7 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
       }
 
       // Redirect back to collection page
-      router.push(`/custom-admin/collections/${collectionSlug}`)
+      navigateWithLocale(router, `/custom-admin/collections/${collectionSlug}`, locale)
     } catch (error: any) {
       console.error(`Error ${isCreateMode ? 'creating' : 'updating'} record:`, error)
       setError(error.message)
@@ -323,7 +324,9 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
         >
           <button
             type="button"
-            onClick={() => router.push(`/custom-admin/collections/${collectionSlug}`)}
+            onClick={() =>
+              navigateWithLocale(router, `/custom-admin/collections/${collectionSlug}`, locale)
+            }
             style={{
               padding: '12px 24px',
               border: '1px solid #d1d5db',

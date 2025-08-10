@@ -1,6 +1,9 @@
 'use client'
 
 import React from 'react'
+import { useRouter } from 'next/navigation'
+import { useLocale } from './LocaleContext'
+import { navigateWithLocale } from '@/utilities/navigation'
 import { GROUPS } from './CollectionsList'
 import { LocaleSwitcher } from './LocaleSwitcher'
 
@@ -9,10 +12,23 @@ type AdminShellProps = {
 }
 
 export function AdminShell({ children }: AdminShellProps) {
+  const router = useRouter()
+  const { locale } = useLocale()
+
+  const handleBackClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    navigateWithLocale(router, '/custom-admin', locale)
+  }
+
+  const handleCollectionClick = (e: React.MouseEvent, slug: string) => {
+    e.preventDefault()
+    navigateWithLocale(router, `/custom-admin/collections/${slug}`, locale)
+  }
+
   return (
     <div className="custom-admin-shell">
       <aside className="custom-admin-aside p-5">
-        <a href="/custom-admin" className="custom-admin-link">
+        <a href="/custom-admin" className="custom-admin-link" onClick={handleBackClick}>
           ← Back
         </a>
         {Object.entries(GROUPS).map(([group, slugs]) => (
@@ -26,6 +42,7 @@ export function AdminShell({ children }: AdminShellProps) {
                   key={slug}
                   className="custom-admin-link"
                   href={`/custom-admin/collections/${slug}`}
+                  onClick={(e) => handleCollectionClick(e, slug)}
                 >
                   {slug
                     .split('-')

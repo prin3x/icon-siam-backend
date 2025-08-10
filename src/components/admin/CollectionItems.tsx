@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useLocale } from './LocaleContext'
+import { navigateWithLocale } from '@/utilities/navigation'
 import { ListView } from './ListView'
 import { GridView } from './GridView'
 import { TableView } from './TableView'
@@ -80,6 +81,7 @@ export function CollectionItems({
 
       const params = new URLSearchParams({
         locale,
+        sort: '-updatedAt',
         page: pagination.page.toString(),
         limit: pagination.limit.toString(),
       })
@@ -93,8 +95,6 @@ export function CollectionItems({
           signal,
           headers: getApiHeaders(!isInternalRequest()),
         })
-
-        console.log('Response status:', response.status)
 
         if (!response.ok) {
           const errorText = await response.text()
@@ -140,11 +140,11 @@ export function CollectionItems({
   }, [fetchItems])
 
   const handleEdit = (id: string) => {
-    router.push(`/custom-admin/collections/${slug}/edit/${id}`)
+    navigateWithLocale(router, `/custom-admin/collections/${slug}/edit/${id}`, locale)
   }
 
   const handleCreate = () => {
-    router.push(`/custom-admin/collections/${slug}/create`)
+    navigateWithLocale(router, `/custom-admin/collections/${slug}/create`, locale)
   }
 
   const handlePreview = (id: string) => {

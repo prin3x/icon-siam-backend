@@ -1,7 +1,8 @@
 'use client'
 
 import { CollectionItems } from '@/components/admin/CollectionItems'
-import { LocaleSwitcher } from '@/components/admin/LocaleSwitcher'
+import { useLocale } from '@/components/admin/LocaleContext'
+import { navigateWithLocale } from '@/utilities/navigation'
 import { useRouter } from 'next/navigation'
 import React from 'react'
 
@@ -15,6 +16,7 @@ interface CollectionPageProps {
 
 export default function CollectionPage({ params }: CollectionPageProps) {
   const router = useRouter()
+  const { locale } = useLocale()
   const [resolvedParams, setResolvedParams] = React.useState<{
     collection: string
   } | null>(null)
@@ -27,10 +29,14 @@ export default function CollectionPage({ params }: CollectionPageProps) {
     return <div>Loading...</div>
   }
 
-  const handleBack = () => router.push('/custom-admin')
+  const handleBack = () => navigateWithLocale(router, '/custom-admin', locale)
 
   const goCreate = () =>
-    router.push(`/custom-admin/collections/${resolvedParams.collection}/create`)
+    navigateWithLocale(
+      router,
+      `/custom-admin/collections/${resolvedParams.collection}/create`,
+      locale,
+    )
 
   return (
     <div className="max-w-screen-2xl mx-auto">

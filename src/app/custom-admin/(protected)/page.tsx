@@ -1,7 +1,6 @@
 'use client'
 
 import React from 'react'
-import { LocaleProvider } from '@/components/admin/LocaleContext'
 import { CollectionsList } from '@/components/admin/CollectionsList'
 
 export default function AdminPage() {

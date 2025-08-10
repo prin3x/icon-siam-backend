@@ -2,6 +2,7 @@
 
 // src/components/admin/LocaleContext.tsx
 import React, { createContext, useContext, useEffect, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 const supportedLocales = [
   { code: 'en', label: 'English' },
@@ -37,7 +38,24 @@ function getInitialLocale() {
 }
 
 export const LocaleProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [locale, setLocaleState] = useState(getInitialLocale)
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const [locale, setLocaleState] = useState(() => {
+    // First try to get from URL search params
+    const urlLocale = searchParams.get('locale')
+    if (urlLocale && supportedLocales.some((l) => l.code === urlLocale)) {
+      return urlLocale
+    }
+    return getInitialLocale()
+  })
+
+  // Update locale when URL search params change
+  useEffect(() => {
+    const urlLocale = searchParams.get('locale')
+    if (urlLocale && supportedLocales.some((l) => l.code === urlLocale) && urlLocale !== locale) {
+      setLocaleState(urlLocale)
+    }
+  }, [searchParams, locale])
 
   // Persist to localStorage and cookie on change
   useEffect(() => {
@@ -51,13 +69,10 @@ export const LocaleProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const setLocale = (newLocale: string) => {
     setLocaleState(newLocale)
-    // Persistence is handled by useEffect
-    // Force a re-render across app/router boundaries by replacing the URL without navigation
-    if (typeof window !== 'undefined') {
-      const url = new URL(window.location.href)
-      url.searchParams.set('locale', newLocale)
-      window.history.replaceState(null, '', url.toString())
-    }
+    // Update URL with new locale
+    const url = new URL(window.location.href)
+    url.searchParams.set('locale', newLocale)
+    router.replace(url.pathname + url.search)
   }
 
   return (

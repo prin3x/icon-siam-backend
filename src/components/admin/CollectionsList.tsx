@@ -1,5 +1,7 @@
 import React from 'react'
 import { useRouter } from 'next/navigation'
+import { useLocale } from './LocaleContext'
+import { navigateWithLocale } from '@/utilities/navigation'
 
 export const GROUPS: Record<string, string[]> = {
   'ICONSIAM Collection': [
@@ -27,6 +29,7 @@ export const GROUPS: Record<string, string[]> = {
     'iconsiam-awards',
     'vision-mission',
     'residences',
+    'stories',
   ],
   'Images & Videos': ['media'],
 }
@@ -37,13 +40,14 @@ interface CollectionsListProps {
 
 export function CollectionsList({ onSelect }: CollectionsListProps) {
   const router = useRouter()
+  const { locale } = useLocale()
 
   const renderCard = (slug: string) => (
     <button
       key={slug}
       onClick={() => {
         if (onSelect) onSelect(slug)
-        else router.push(`/custom-admin/collections/${slug}`)
+        else navigateWithLocale(router, `/custom-admin/collections/${slug}`, locale)
       }}
       className="gold-card"
       style={{

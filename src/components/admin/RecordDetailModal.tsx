@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react'
 import { getApiHeaders, isInternalRequest } from '@/utilities/apiKeyUtils'
 import { useRouter } from 'next/navigation'
+import { navigateWithLocale } from '@/utilities/navigation'
 import { FieldRenderer } from './FieldRenderer'
 
 interface RecordDetailModalProps {
@@ -61,7 +62,7 @@ export function RecordDetailModal({
 
   const router = useRouter()
   const goToEdit = (path: string) => {
-    router.push(path)
+    navigateWithLocale(router, path, locale)
   }
 
   useEffect(() => {
