@@ -245,7 +245,12 @@ async function handleSchemaRequest(request: NextRequest, collectionSlug: string)
       }
     })
 
-    return NextResponse.json({ fields })
+    const adminDefaultColumns =
+      (collection.config?.admin && Array.isArray(collection.config.admin.defaultColumns)
+        ? collection.config.admin.defaultColumns
+        : []) || []
+
+    return NextResponse.json({ fields, admin: { defaultColumns: adminDefaultColumns } })
   } catch (error) {
     console.error('Error fetching schema:', error)
     return NextResponse.json({ error: 'Failed to fetch schema' }, { status: 500 })

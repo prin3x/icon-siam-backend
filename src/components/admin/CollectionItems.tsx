@@ -39,6 +39,11 @@ export function CollectionItems({
   const [error, setError] = useState<string>('')
   const [viewMode, setViewMode] = useState<'list' | 'grid' | 'table'>('table')
   const [visibleColumns, setVisibleColumns] = useState<string[]>(['title', 'status', 'createdAt'])
+  const [availableColumns, setAvailableColumns] = useState<Array<{ key: string; label: string }>>([
+    { key: 'title', label: 'Title' },
+    { key: 'status', label: 'Status' },
+    { key: 'createdAt', label: 'Created' },
+  ])
   const [filters, setFilters] = useState<Record<string, string | null>>({})
   const [showColumnsDropdown, setShowColumnsDropdown] = useState(false)
   const [showFiltersDropdown, setShowFiltersDropdown] = useState(false)
@@ -74,6 +79,11 @@ export function CollectionItems({
   useEffect(() => {
     setPagination((prev) => ({ ...prev, page: 1 }))
   }, [debouncedSearchTerm])
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setPagination((prev) => ({ ...prev, page: 1 }))
+  }, [filters])
 
   // Close dropdowns on outside click
   useEffect(() => {
@@ -153,6 +163,40 @@ export function CollectionItems({
           hasNextPage: data.hasNextPage || false,
           hasPrevPage: data.hasPrevPage || false,
         }))
+        // Derive available columns from payload response if present
+        const docSample = (data.docs && data.docs[0]) || {}
+        const inferredKeys = Object.keys(docSample)
+          .filter((k) => !['id', 'updatedAt', '_status'].includes(k))
+          .slice(0, 10)
+        const inferred = inferredKeys.map((k) => ({
+          key: k,
+          label: k === 'createdAt' ? 'Created' : k.charAt(0).toUpperCase() + k.slice(1),
+        }))
+        // Fallback to admin defaultColumns from schema endpoint
+        try {
+          const schemaRes = await fetch(`/api/admin/${slug}?schema=true&locale=${locale}`, {
+            signal,
+          })
+          if (schemaRes.ok) {
+            const schemaJson = await schemaRes.json()
+            const defaults: string[] = schemaJson?.admin?.defaultColumns || []
+            const fromDefaults = defaults.map((k: string) => ({
+              key: k,
+              label: k.charAt(0).toUpperCase() + k.slice(1),
+            }))
+            const merged = Array.from(
+              new Map([...fromDefaults, ...inferred].map((o) => [o.key, o])).values(),
+            )
+            if (merged.length > 0) setAvailableColumns(merged)
+            if (defaults.length > 0) {
+              setVisibleColumns((prev) => (prev.length ? prev : defaults))
+            }
+          } else if (inferred.length > 0) {
+            setAvailableColumns(inferred)
+          }
+        } catch (_) {
+          if (inferred.length > 0) setAvailableColumns(inferred)
+        }
       } catch (error: any) {
         if (error.name !== 'AbortError') {
           console.error('Error fetching items:', error)
@@ -457,13 +501,7 @@ export function CollectionItems({
                     zIndex: 20,
                   }}
                 >
-                  {[
-                    { key: 'title', label: 'Title' },
-                    { key: 'status', label: 'Status' },
-                    { key: 'subtitle', label: 'Subtitle' },
-                    { key: 'description', label: 'Description' },
-                    { key: 'createdAt', label: 'Created' },
-                  ].map((col) => (
+                  {availableColumns.map((col) => (
                     <label key={col.key} style={{ display: 'flex', gap: 8, padding: '6px 0' }}>
                       <input
                         type="checkbox"
@@ -592,7 +630,7 @@ export function CollectionItems({
           </div>
         </div>
 
-        {/* Chips row (visual only for now) */}
+        {/* Chips row (click to remove column) */}
         <div
           style={{
             display: 'flex',
@@ -602,8 +640,17 @@ export function CollectionItems({
           }}
         >
           {visibleColumns.map((key) => (
-            <span
+            <button
               key={key}
+              type="button"
+              onClick={() => setVisibleColumns((prev) => prev.filter((k) => k !== key))}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  setVisibleColumns((prev) => prev.filter((k) => k !== key))
+                }
+              }}
+              title={`Remove column ${key}`}
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -615,10 +662,11 @@ export function CollectionItems({
                 borderRadius: 8,
                 fontSize: 12,
                 textTransform: 'none',
+                cursor: 'pointer',
               }}
             >
               × {key}
-            </span>
+            </button>
           ))}
         </div>
 
@@ -749,43 +797,50 @@ export function CollectionItems({
               </button>
 
               <div style={{ display: 'flex', gap: '4px' }}>
-                {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
-                  const pageNum = i + 1
-                  const isCurrentPage = pageNum === pagination.page
-
-                  return (
-                    <button
-                      key={pageNum}
-                      onClick={() => handlePageChange(pageNum)}
-                      style={{
-                        padding: '8px 12px',
-                        border: '1px solid #d1d5db',
-                        borderRadius: '8px',
-                        backgroundColor: isCurrentPage ? '#3b82f6' : '#ffffff',
-                        color: isCurrentPage ? '#ffffff' : '#374151',
-                        cursor: 'pointer',
-                        fontSize: '14px',
-                        fontWeight: '500',
-                        transition: 'all 0.2s ease',
-                        minWidth: '40px',
-                      }}
-                      onMouseEnter={(e) => {
-                        if (!isCurrentPage) {
-                          e.currentTarget.style.backgroundColor = '#f3f4f6'
-                          e.currentTarget.style.borderColor = '#9ca3af'
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        if (!isCurrentPage) {
-                          e.currentTarget.style.backgroundColor = '#ffffff'
-                          e.currentTarget.style.borderColor = '#d1d5db'
-                        }
-                      }}
-                    >
-                      {pageNum}
-                    </button>
-                  )
-                })}
+                {(() => {
+                  const windowSize = 5
+                  const half = Math.floor(windowSize / 2)
+                  const total = Math.max(1, pagination.totalPages)
+                  let start = Math.max(1, pagination.page - half)
+                  let end = Math.min(total, start + windowSize - 1)
+                  start = Math.max(1, end - windowSize + 1)
+                  const pages = Array.from({ length: end - start + 1 }, (_, i) => start + i)
+                  return pages.map((pageNum) => {
+                    const isCurrentPage = pageNum === pagination.page
+                    return (
+                      <button
+                        key={pageNum}
+                        onClick={() => handlePageChange(pageNum)}
+                        style={{
+                          padding: '8px 12px',
+                          border: '1px solid #d1d5db',
+                          borderRadius: '8px',
+                          backgroundColor: isCurrentPage ? '#3b82f6' : '#ffffff',
+                          color: isCurrentPage ? '#ffffff' : '#374151',
+                          cursor: 'pointer',
+                          fontSize: '14px',
+                          fontWeight: '500',
+                          transition: 'all 0.2s ease',
+                          minWidth: '40px',
+                        }}
+                        onMouseEnter={(e) => {
+                          if (!isCurrentPage) {
+                            e.currentTarget.style.backgroundColor = '#f3f4f6'
+                            e.currentTarget.style.borderColor = '#9ca3af'
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          if (!isCurrentPage) {
+                            e.currentTarget.style.backgroundColor = '#ffffff'
+                            e.currentTarget.style.borderColor = '#d1d5db'
+                          }
+                        }}
+                      >
+                        {pageNum}
+                      </button>
+                    )
+                  })
+                })()}
               </div>
 
               <button

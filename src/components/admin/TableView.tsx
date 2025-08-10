@@ -27,6 +27,53 @@ export function TableView({
   onPreview,
   columns = defaultColumns,
 }: TableViewProps) {
+  const toDisplayString = (value: any): string => {
+    if (value === null || value === undefined) return 'N/A'
+    if (Array.isArray(value)) {
+      if (value.length === 0) return '—'
+      const mapItem = (v: any) => {
+        if (v === null || v === undefined) return ''
+        if (typeof v === 'string' || typeof v === 'number' || typeof v === 'boolean')
+          return String(v)
+        if (typeof v === 'object') {
+          const candidate =
+            v.title ||
+            v.name ||
+            v.display_name ||
+            v.filename ||
+            v.fileName ||
+            v.slug ||
+            v.id ||
+            v.value
+          return candidate ? String(candidate) : ''
+        }
+        return ''
+      }
+      const parts = value.map(mapItem).filter(Boolean)
+      if (parts.length === 0) return `${value.length} items`
+      const shown = parts.slice(0, 3).join(', ')
+      return parts.length > 3 ? `${shown} +${parts.length - 3} more` : shown
+    }
+    if (typeof value === 'object') {
+      const candidate =
+        value.title ||
+        value.name ||
+        value.display_name ||
+        value.filename ||
+        value.fileName ||
+        value.slug ||
+        value.id
+      if (candidate) return String(candidate)
+      try {
+        const str = JSON.stringify(value)
+        return str.length > 60 ? `${str.slice(0, 57)}...` : str
+      } catch {
+        return '[Object]'
+      }
+    }
+    return String(value)
+  }
+
   return (
     <div
       style={{
@@ -126,7 +173,7 @@ export function TableView({
                       'N/A'
                     )
                   ) : (
-                    // text/default
+                    // text/default (handles arrays/objects safely)
                     <div>
                       <div
                         style={{
@@ -136,7 +183,7 @@ export function TableView({
                           marginBottom: '4px',
                         }}
                       >
-                        {item[col.key] ?? 'N/A'}
+                        {toDisplayString(item[col.key])}
                       </div>
                     </div>
                   )}
