@@ -106,8 +106,9 @@ async function handleSchemaRequest(request: NextRequest, collectionSlug: string)
       if (field.type === 'checkbox') formType = 'checkbox'
       if (field.type === 'select') formType = 'select'
       if (field.type === 'radioGroup') formType = 'select'
-      if (field.type === 'upload') formType = 'image'
-      if (field.type === 'media') formType = 'image'
+      // Keep as 'upload' so the FieldRenderer can render ImageUpload correctly
+      if (field.type === 'upload') formType = 'upload'
+      if (field.type === 'media') formType = 'upload'
       if (field.type === 'relationship') formType = 'relationship'
       if (field.type === 'array') formType = 'array'
       if (field.type === 'group') formType = 'group'
@@ -204,13 +205,36 @@ async function handleSchemaRequest(request: NextRequest, collectionSlug: string)
         }
       }
 
+      // Normalize any options array to {label, value}
+      const normalizeOptions = (input: any): Array<{ label: string; value: string }> => {
+        if (!input) return []
+        const arr = Array.isArray(input) ? input : []
+        const toTitle = (s: string) =>
+          s.replace(/[-_]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
+        return arr.map((opt: any) => {
+          if (typeof opt === 'string') {
+            return { label: toTitle(opt), value: opt }
+          }
+          if (opt && typeof opt === 'object') {
+            const value = String('value' in opt ? opt.value : (opt.id ?? opt.key ?? ''))
+            const label = String(opt.label ?? (value ? toTitle(value) : ''))
+            return { label, value }
+          }
+          const str = String(opt)
+          return { label: toTitle(str), value: str }
+        })
+      }
+
       return {
         name: field.name,
         type: formType,
         label: field.label || field.name,
         required: field.required || false,
         localized: field.localized || false,
-        options: field.options || field.choices || generatedOptions,
+        options:
+          formType === 'select'
+            ? normalizeOptions(field.options || field.choices)
+            : generatedOptions,
         defaultValue: field.defaultValue,
         admin: field.admin || {},
         // Add relationship-specific properties
@@ -221,7 +245,6 @@ async function handleSchemaRequest(request: NextRequest, collectionSlug: string)
       }
     })
 
-    console.log('Processed fields:', fields)
     return NextResponse.json({ fields })
   } catch (error) {
     console.error('Error fetching schema:', error)
