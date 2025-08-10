@@ -65,6 +65,10 @@ export function CollectionItems({
   // Modal state (only for preview)
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false)
   const [selectedRecordId, setSelectedRecordId] = useState<string>('')
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [deletingId, setDeletingId] = useState<string>('')
+  const [deleteError, setDeleteError] = useState<string>('')
+  const [deleteLoading, setDeleteLoading] = useState<boolean>(false)
 
   // Debounce search term
   useEffect(() => {
@@ -230,8 +234,9 @@ export function CollectionItems({
   }
 
   const handleDelete = (id: string) => {
-    console.log('Delete item:', id)
-    // Implement delete functionality
+    setDeletingId(id)
+    setDeleteError('')
+    setIsDeleteModalOpen(true)
   }
 
   const handlePageChange = (newPage: number) => {
@@ -255,6 +260,31 @@ export function CollectionItems({
     // Refresh the items list after successful creation
     const controller = new AbortController()
     fetchItems(controller.signal)
+  }
+
+  const handleConfirmDelete = async () => {
+    if (!deletingId) return
+    try {
+      setDeleteLoading(true)
+      setDeleteError('')
+      const res = await fetch(`/api/custom-admin/${slug}/${deletingId}?locale=${locale}`, {
+        method: 'DELETE',
+        headers: getApiHeaders(!isInternalRequest()),
+      })
+      if (!res.ok) {
+        const text = await res.text()
+        throw new Error(text || 'Failed to delete')
+      }
+      setIsDeleteModalOpen(false)
+      setDeletingId('')
+      // refresh list
+      const controller = new AbortController()
+      fetchItems(controller.signal)
+    } catch (err: any) {
+      setDeleteError(err.message || 'Failed to delete')
+    } finally {
+      setDeleteLoading(false)
+    }
   }
 
   // Show loading state
@@ -886,6 +916,79 @@ export function CollectionItems({
         locale={locale}
         onSuccess={handleCreateSuccess}
       />
+
+      {/* Delete Confirmation Modal */}
+      {isDeleteModalOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.4)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+          }}
+          onClick={() => {
+            if (!deleteLoading) setIsDeleteModalOpen(false)
+          }}
+        >
+          <div
+            className="admin-card"
+            style={{ width: 420, padding: 20 }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="text-lg font-semibold" style={{ marginBottom: 10 }}>
+              Confirm deletion
+            </h3>
+            <p className="text-sm" style={{ color: '#6b7280', marginBottom: 12 }}>
+              Are you sure you want to delete this record? This action cannot be undone.
+            </p>
+            {deleteError && (
+              <div
+                style={{
+                  color: '#dc2626',
+                  background: '#fef2f2',
+                  border: '1px solid #fecaca',
+                  padding: 8,
+                  borderRadius: 8,
+                  marginBottom: 10,
+                }}
+              >
+                {deleteError}
+              </div>
+            )}
+            <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+              <button
+                type="button"
+                className="admin-button"
+                onClick={() => setIsDeleteModalOpen(false)}
+                disabled={deleteLoading}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmDelete}
+                disabled={deleteLoading}
+                style={{
+                  padding: '8px 12px',
+                  border: '1px solid #ef4444',
+                  borderRadius: 8,
+                  background: deleteLoading ? '#fee2e2' : '#ffffff',
+                  color: '#ef4444',
+                  cursor: deleteLoading ? 'not-allowed' : 'pointer',
+                  fontWeight: 600,
+                }}
+              >
+                {deleteLoading ? 'Deleting...' : 'Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   )
 }
