@@ -832,7 +832,7 @@ export function CollectionItems({
                   const half = Math.floor(windowSize / 2)
                   const total = Math.max(1, pagination.totalPages)
                   let start = Math.max(1, pagination.page - half)
-                  let end = Math.min(total, start + windowSize - 1)
+                  const end = Math.min(total, start + windowSize - 1)
                   start = Math.max(1, end - windowSize + 1)
                   const pages = Array.from({ length: end - start + 1 }, (_, i) => start + i)
                   return pages.map((pageNum) => {
