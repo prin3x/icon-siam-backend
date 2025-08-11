@@ -141,6 +141,7 @@ export const Promotions: CollectionConfig = {
             type: {
               equals: 'promotions',
             },
+            status: { equals: 'ACTIVE' },
           },
         },
         {

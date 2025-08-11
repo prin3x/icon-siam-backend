@@ -56,6 +56,7 @@ export const Dinings: CollectionConfig = {
         type: {
           equals: 'dinings',
         },
+        status: { equals: 'ACTIVE' },
       },
     },
     {

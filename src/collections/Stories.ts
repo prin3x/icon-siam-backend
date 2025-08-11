@@ -150,6 +150,10 @@ export const Stories: CollectionConfig = {
           label: 'Categories',
           relationTo: 'categories',
           hasMany: true,
+          filterOptions: {
+            type: { equals: 'stories' },
+            status: { equals: 'ACTIVE' },
+          },
         },
         {
           name: 'related_content',

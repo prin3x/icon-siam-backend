@@ -186,6 +186,7 @@ export const Events: CollectionConfig = {
             type: {
               equals: 'events',
             },
+            status: { equals: 'ACTIVE' },
           },
         },
         {

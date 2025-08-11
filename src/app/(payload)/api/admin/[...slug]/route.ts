@@ -237,6 +237,7 @@ async function handleSchemaRequest(request: NextRequest, collectionSlug: string)
             : generatedOptions,
         defaultValue: field.defaultValue,
         admin: field.admin || {},
+        filterOptions: field.filterOptions || undefined,
         // Add relationship-specific properties
         relationTo: field.relationTo,
         hasMany: field.hasMany || false,
@@ -249,8 +250,12 @@ async function handleSchemaRequest(request: NextRequest, collectionSlug: string)
       (collection.config?.admin && Array.isArray(collection.config.admin.defaultColumns)
         ? collection.config.admin.defaultColumns
         : []) || []
+    const adminUseAsTitle = collection.config?.admin?.useAsTitle
 
-    return NextResponse.json({ fields, admin: { defaultColumns: adminDefaultColumns } })
+    return NextResponse.json({
+      fields,
+      admin: { defaultColumns: adminDefaultColumns, useAsTitle: adminUseAsTitle },
+    })
   } catch (error) {
     console.error('Error fetching schema:', error)
     return NextResponse.json({ error: 'Failed to fetch schema' }, { status: 500 })

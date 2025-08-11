@@ -266,7 +266,6 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
 
   // Keep all fetched schema fields accessible
   const fields = schema
-  console.log(fields, 'fields')
 
   return (
     <div style={{ padding: '24px' }}>

@@ -56,6 +56,7 @@ export const Shops: CollectionConfig = {
         type: {
           equals: 'shops',
         },
+        status: { equals: 'ACTIVE' },
       },
     },
     {

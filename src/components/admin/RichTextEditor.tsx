@@ -95,21 +95,6 @@ const detectContentFormat = (value: any): 'html' | 'tiptap' | 'lexical' | 'unkno
   return 'unknown'
 }
 
-// Debug utility to log content format and conversion
-const debugContentConversion = (value: any, format: string) => {
-  if (process.env.NODE_ENV === 'development') {
-    console.group('RichTextEditor Content Conversion')
-    console.log('Input value:', value)
-    console.log('Detected format:', format)
-    console.log('Input type:', typeof value)
-    if (Array.isArray(value)) {
-      console.log('Array length:', value.length)
-      console.log('First few items:', value.slice(0, 3))
-    }
-    console.groupEnd()
-  }
-}
-
 // Convert PayloadCMS rich text format to Tiptap JSON
 const convertPayloadToTiptap = (payloadValue: any): any => {
   if (!payloadValue) return { type: 'doc', content: [] }
@@ -118,11 +103,9 @@ const convertPayloadToTiptap = (payloadValue: any): any => {
   if (typeof payloadValue === 'string') {
     // Check if it's HTML content
     if (payloadValue.includes('<') && payloadValue.includes('>')) {
-      debugContentConversion(payloadValue, 'html')
       return convertHtmlToTiptap(payloadValue)
     }
 
-    debugContentConversion(payloadValue, 'plain-text')
     // Plain text fallback
     return {
       type: 'doc',
@@ -136,7 +119,6 @@ const convertPayloadToTiptap = (payloadValue: any): any => {
   }
 
   if (Array.isArray(payloadValue)) {
-    debugContentConversion(payloadValue, 'lexical')
     const content = payloadValue.map((node: any) => {
       if (node.type === 'upload' && node.value?.url) {
         return {

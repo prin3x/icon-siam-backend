@@ -38,7 +38,7 @@ export function CollectionItems({
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string>('')
   const [viewMode, setViewMode] = useState<'list' | 'grid' | 'table'>('table')
-  const [visibleColumns, setVisibleColumns] = useState<string[]>(['title', 'status', 'createdAt'])
+  const [visibleColumns, setVisibleColumns] = useState<string[]>([])
   const [availableColumns, setAvailableColumns] = useState<Array<{ key: string; label: string }>>([
     { key: 'title', label: 'Title' },
     { key: 'status', label: 'Status' },
@@ -46,9 +46,20 @@ export function CollectionItems({
   ])
   const [filters, setFilters] = useState<Record<string, string | null>>({})
   const [showColumnsDropdown, setShowColumnsDropdown] = useState(false)
-  const [showFiltersDropdown, setShowFiltersDropdown] = useState(false)
+  const [showFilterPanel, setShowFilterPanel] = useState(false)
   const columnsRef = useRef<HTMLDivElement | null>(null)
   const filtersRef = useRef<HTMLDivElement | null>(null)
+  const [schemaFields, setSchemaFields] = useState<
+    Array<{
+      name: string
+      label: string
+      type: string
+      options?: Array<{ label: string; value: string }>
+    }>
+  >([])
+  type FilterCondition = { field: string; operator: string; value: string }
+  const [editingFilters, setEditingFilters] = useState<FilterCondition[]>([])
+  const [appliedFilters, setAppliedFilters] = useState<FilterCondition[]>([])
 
   // Search and pagination state
   const [searchTerm, setSearchTerm] = useState('')
@@ -87,7 +98,7 @@ export function CollectionItems({
   // Reset to first page when filters change
   useEffect(() => {
     setPagination((prev) => ({ ...prev, page: 1 }))
-  }, [filters])
+  }, [filters, appliedFilters])
 
   // Close dropdowns on outside click
   useEffect(() => {
@@ -96,13 +107,11 @@ export function CollectionItems({
       if (showColumnsDropdown && columnsRef.current && !columnsRef.current.contains(target)) {
         setShowColumnsDropdown(false)
       }
-      if (showFiltersDropdown && filtersRef.current && !filtersRef.current.contains(target)) {
-        setShowFiltersDropdown(false)
-      }
+      // Do not auto-close filter panel; it's inline below
     }
     document.addEventListener('mousedown', handleDocClick)
     return () => document.removeEventListener('mousedown', handleDocClick)
-  }, [showColumnsDropdown, showFiltersDropdown])
+  }, [showColumnsDropdown])
 
   const fetchItems = useCallback(
     async (signal: AbortSignal) => {
@@ -122,21 +131,35 @@ export function CollectionItems({
       })
 
       // Text search across common fields using where[or]
+      let orIndex = 0
       if (debouncedSearchTerm) {
-        params.append('where[or][0][title][like]', debouncedSearchTerm)
-        params.append('where[or][1][subtitle][like]', debouncedSearchTerm)
-        params.append('where[or][2][description][like]', debouncedSearchTerm)
+        params.append(`where[or][${orIndex++}][title][like]`, debouncedSearchTerm)
+        params.append(`where[or][${orIndex++}][subtitle][like]`, debouncedSearchTerm)
+        params.append(`where[or][${orIndex++}][description][like]`, debouncedSearchTerm)
       }
 
-      // Status filter (Payload expects uppercase values in our collections)
-      if (filters.status) {
-        params.append('where[status][equals]', String(filters.status).toUpperCase())
+      // Advanced builder: each row is appended as an OR condition
+      const opMap: Record<string, string> = {
+        equals: 'equals',
+        contains: 'like',
+        greater_than: 'greater_than',
+        less_than: 'less_than',
+        not_equals: 'not_equals',
+        in: 'in',
+        not_in: 'not_in',
       }
-
-      // Created date filter (created after)
-      if (filters.createdAt) {
-        params.append('where[createdAt][greater_than]', String(filters.createdAt))
-      }
+      appliedFilters.forEach((cond) => {
+        if (!cond.field || !cond.operator) return
+        const operator = opMap[cond.operator] || 'equals'
+        const value =
+          operator === 'in' || operator === 'not_in'
+            ? cond.value
+                .split(',')
+                .map((s) => s.trim())
+                .filter(Boolean)
+            : cond.value
+        params.append(`where[or][${orIndex++}][${cond.field}][${operator}]`, String(value))
+      })
 
       try {
         const response = await fetch(`${API_URL}/custom-admin/${slug}?${params}`, {
@@ -184,6 +207,18 @@ export function CollectionItems({
           if (schemaRes.ok) {
             const schemaJson = await schemaRes.json()
             const defaults: string[] = schemaJson?.admin?.defaultColumns || []
+            const fieldsFromSchema: Array<{
+              name: string
+              label: string
+              type: string
+              options?: Array<{ label: string; value: string }>
+            }> = (schemaJson?.fields || []).map((f: any) => ({
+              name: f.name,
+              label: f.label || f.name,
+              type: f.type,
+              options: f.options,
+            }))
+            setSchemaFields(fieldsFromSchema)
             const fromDefaults = defaults.map((k: string) => ({
               key: k,
               label: k.charAt(0).toUpperCase() + k.slice(1),
@@ -210,7 +245,7 @@ export function CollectionItems({
         setLoading(false)
       }
     },
-    [slug, locale, debouncedSearchTerm, pagination.page, pagination.limit, filters],
+    [slug, locale, debouncedSearchTerm, pagination.page, pagination.limit, filters, appliedFilters],
   )
 
   // Combined effect for all data fetching
@@ -551,11 +586,11 @@ export function CollectionItems({
               )}
             </div>
 
-            {/* Filters dropdown */}
+            {/* Filter builder toggle */}
             <div style={{ position: 'relative' }} ref={filtersRef}>
               <button
                 type="button"
-                onClick={() => setShowFiltersDropdown((v) => !v)}
+                onClick={() => setShowFilterPanel((v) => !v)}
                 style={{
                   padding: '10px 14px',
                   border: '1px solid #e5e7eb',
@@ -567,72 +602,6 @@ export function CollectionItems({
               >
                 Filter ▾
               </button>
-              {showFiltersDropdown && (
-                <div
-                  style={{
-                    position: 'absolute',
-                    right: 0,
-                    marginTop: 8,
-                    background: '#fff',
-                    border: '1px solid #e5e7eb',
-                    borderRadius: 10,
-                    padding: 12,
-                    minWidth: 260,
-                    zIndex: 20,
-                    display: 'grid',
-                    gap: 10,
-                  }}
-                >
-                  <div>
-                    <label style={{ fontSize: 12, color: '#6b7280' }}>Status</label>
-                    <select
-                      value={(filters.status as string) || ''}
-                      onChange={(e) => {
-                        setFilters((f) => ({ ...f, status: e.target.value || null }))
-                      }}
-                      style={{
-                        width: '100%',
-                        padding: '8px 10px',
-                        border: '1px solid #e5e7eb',
-                        borderRadius: 8,
-                      }}
-                    >
-                      <option value="">All</option>
-                      <option value="active">Active</option>
-                      <option value="inactive">Inactive</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label style={{ fontSize: 12, color: '#6b7280' }}>Created after</label>
-                    <input
-                      type="date"
-                      value={(filters.createdAt as string) || ''}
-                      onChange={(e) =>
-                        setFilters((f) => ({ ...f, createdAt: e.target.value || null }))
-                      }
-                      style={{
-                        width: '100%',
-                        padding: '8px 10px',
-                        border: '1px solid #e5e7eb',
-                        borderRadius: 8,
-                      }}
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setFilters({})}
-                    style={{
-                      padding: '8px 12px',
-                      border: '1px solid #e5e7eb',
-                      borderRadius: 8,
-                      background: '#fff',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    Clear filters
-                  </button>
-                </div>
-              )}
             </div>
           </div>
 
@@ -659,6 +628,127 @@ export function CollectionItems({
             </select>
           </div>
         </div>
+
+        {/* Filter builder panel */}
+        {showFilterPanel && (
+          <div
+            style={{
+              background: '#f8fafc',
+              border: '1px solid #e5e7eb',
+              borderRadius: 12,
+              padding: 16,
+              marginBottom: 16,
+            }}
+          >
+            <div style={{ fontWeight: 600, marginBottom: 10 }}>Add new filter</div>
+            {editingFilters.map((cond, idx) => (
+              <div
+                key={idx}
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1.2fr 1fr 1.4fr auto',
+                  gap: 10,
+                  alignItems: 'center',
+                  marginBottom: 10,
+                }}
+              >
+                <select
+                  value={cond.field}
+                  onChange={(e) =>
+                    setEditingFilters((arr) =>
+                      arr.map((c, i) => (i === idx ? { ...c, field: e.target.value } : c)),
+                    )
+                  }
+                  style={{ padding: '10px', border: '1px solid #e5e7eb', borderRadius: 10 }}
+                >
+                  <option value="">Select field</option>
+                  {schemaFields.map((f) => (
+                    <option key={f.name} value={f.name}>
+                      {f.label}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  value={cond.operator}
+                  onChange={(e) =>
+                    setEditingFilters((arr) =>
+                      arr.map((c, i) => (i === idx ? { ...c, operator: e.target.value } : c)),
+                    )
+                  }
+                  style={{ padding: '10px', border: '1px solid #e5e7eb', borderRadius: 10 }}
+                >
+                  <option value="equals">equals</option>
+                  <option value="contains">contains</option>
+                  <option value="greater_than">greater than</option>
+                  <option value="less_than">less than</option>
+                  <option value="not_equals">not equals</option>
+                  <option value="in">in (comma separated)</option>
+                  <option value="not_in">not in (comma separated)</option>
+                </select>
+                <input
+                  value={cond.value}
+                  onChange={(e) =>
+                    setEditingFilters((arr) =>
+                      arr.map((c, i) => (i === idx ? { ...c, value: e.target.value } : c)),
+                    )
+                  }
+                  placeholder="Enter a value"
+                  style={{ padding: '10px', border: '1px solid #e5e7eb', borderRadius: 10 }}
+                />
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button
+                    type="button"
+                    onClick={() => setEditingFilters((arr) => arr.filter((_, i) => i !== idx))}
+                    className="admin-button"
+                  >
+                    ×
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setEditingFilters((arr) => [
+                        ...arr.slice(0, idx + 1),
+                        { field: '', operator: 'equals', value: '' },
+                        ...arr.slice(idx + 1),
+                      ])
+                    }
+                    className="admin-button"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            ))}
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button
+                type="button"
+                onClick={() =>
+                  setEditingFilters((arr) => [...arr, { field: '', operator: 'equals', value: '' }])
+                }
+                className="admin-button"
+              >
+                + Add Or
+              </button>
+              <button
+                type="button"
+                className="admin-button-primary"
+                onClick={() => setAppliedFilters(editingFilters)}
+              >
+                Apply
+              </button>
+              <button
+                type="button"
+                className="admin-button"
+                onClick={() => {
+                  setEditingFilters([])
+                  setAppliedFilters([])
+                }}
+              >
+                Clear
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Chips row (click to remove column) */}
         <div
