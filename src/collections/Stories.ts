@@ -34,6 +34,22 @@ export const Stories: CollectionConfig = {
       }),
     },
     {
+      name: 'videos',
+      type: 'group',
+      label: 'Hub of Videos',
+      fields: [
+        {
+          name: 'youtube_url',
+          type: 'text',
+          localized: true,
+          label: 'Youtube URL',
+          admin: {
+            description: 'Enter the Embed URL of the Youtube video',
+          },
+        },
+      ],
+    },
+    {
       name: 'seo',
       type: 'group',
       label: 'SEO',

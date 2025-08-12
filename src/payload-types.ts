@@ -1227,6 +1227,12 @@ export interface Story {
     };
     [k: string]: unknown;
   } | null;
+  videos?: {
+    /**
+     * Enter the Embed URL of the Youtube video
+     */
+    youtube_url?: string | null;
+  };
   seo?: {
     keywords?: string | null;
     description?: string | null;
@@ -2599,6 +2605,11 @@ export interface StoriesSelect<T extends boolean = true> {
   title?: T;
   subtitle?: T;
   content?: T;
+  videos?:
+    | T
+    | {
+        youtube_url?: T;
+      };
   seo?:
     | T
     | {
