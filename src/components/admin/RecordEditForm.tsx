@@ -185,7 +185,7 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
       if (!response.ok) {
         // Parse potential validation errors from server
         let message = `Failed to ${isCreateMode ? 'create' : 'update'} record.`
-        let nextFieldErrors: Record<string, string> = {}
+        const nextFieldErrors: Record<string, string> = {}
         try {
           const errJson = await response.json()
           if (typeof errJson?.message === 'string') message = errJson.message
