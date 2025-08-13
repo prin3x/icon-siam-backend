@@ -6,7 +6,7 @@ export const Promotions: CollectionConfig = {
   slug: 'promotions',
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'start_date', 'end_date', 'status', 'pin_to_home', 'pin_to_section'],
+    defaultColumns: ['title', 'start_date', 'end_date', 'status'],
   },
   access: {
     read: () => true,

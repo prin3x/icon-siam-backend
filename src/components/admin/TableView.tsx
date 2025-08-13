@@ -12,6 +12,9 @@ interface TableViewProps {
   onDelete: (id: string) => void
   onPreview: (id: string) => void
   columns?: ColumnDef[]
+  sortKey?: string
+  sortOrder?: 'asc' | 'desc'
+  onSortChange?: (key: string, order: 'asc' | 'desc') => void
 }
 
 const defaultColumns: ColumnDef[] = [
@@ -26,7 +29,66 @@ export function TableView({
   onDelete,
   onPreview,
   columns = defaultColumns,
+  sortKey,
+  sortOrder,
+  onSortChange,
 }: TableViewProps) {
+  const IconEye = ({ size = 20 }: { size?: number }) => (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M12 5c-5 0-9 4.5-10 6 1 1.5 5 6 10 6s9-4.5 10-6c-1-1.5-5-6-10-6Zm0 10a4 4 0 1 1 0-8 4 4 0 0 1 0 8Z"
+        fill="currentColor"
+      />
+    </svg>
+  )
+
+  const IconPencil = ({ size = 20 }: { size?: number }) => (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25Zm18.71-11.04a1.003 1.003 0 0 0 0-1.42l-2.5-2.5a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.66.16-.16Z"
+        fill="currentColor"
+      />
+    </svg>
+  )
+
+  const IconTrash = ({ size = 20 }: { size?: number }) => (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path d="M6 7h12l-1 14H7L6 7Zm3-3h6l1 3H8l1-3Z" fill="currentColor" />
+    </svg>
+  )
+
+  const actionButtonStyle = (color: string, hoverBg: string): React.CSSProperties => ({
+    width: 40,
+    height: 40,
+    borderRadius: 10,
+    border: `2px solid ${color}`,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    color,
+    backgroundColor: '#ffffff',
+    cursor: 'pointer',
+    transition: 'all 0.15s ease',
+  })
+
   const toDisplayString = (value: any): string => {
     if (value === null || value === undefined) return 'N/A'
     if (Array.isArray(value)) {
@@ -100,21 +162,62 @@ export function TableView({
               borderBottom: '2px solid #e5e7eb',
             }}
           >
-            {columns.map((col) => (
-              <th
-                key={col.key}
-                style={{
-                  padding: '16px 20px',
-                  textAlign: 'left',
-                  fontSize: '14px',
-                  fontWeight: '600',
-                  color: '#374151',
-                  letterSpacing: '0.05em',
-                }}
-              >
-                {col.label}
-              </th>
-            ))}
+            {columns.map((col) => {
+              const active = sortKey === col.key
+              const isAsc = active && sortOrder === 'asc'
+              const nextOrder: 'asc' | 'desc' = active ? (isAsc ? 'desc' : 'asc') : 'asc'
+              return (
+                <th
+                  key={col.key}
+                  style={{
+                    padding: '16px 20px',
+                    textAlign: 'left',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    color: '#374151',
+                    letterSpacing: '0.05em',
+                    cursor: onSortChange ? 'pointer' : 'default',
+                    userSelect: 'none',
+                  }}
+                  onClick={() => onSortChange && onSortChange(col.key, nextOrder)}
+                  aria-sort={active ? (isAsc ? 'ascending' : 'descending') : 'none'}
+                >
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                    {col.label}
+                    <span
+                      aria-hidden
+                      style={{
+                        display: 'inline-flex',
+                        flexDirection: 'column',
+                        lineHeight: 1,
+                        marginLeft: 2,
+                      }}
+                    >
+                      <svg
+                        width={10}
+                        height={10}
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        style={{ color: active && isAsc ? '#6b7280' : '#d1d5db' }}
+                      >
+                        <path d="M7 14l5-5 5 5H7z" fill="currentColor" />
+                      </svg>
+                      <svg
+                        width={10}
+                        height={10}
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        style={{ color: active && !isAsc ? '#6b7280' : '#d1d5db' }}
+                      >
+                        <path d="M7 10l5 5 5-5H7z" fill="currentColor" />
+                      </svg>
+                    </span>
+                  </span>
+                </th>
+              )
+            })}
             <th
               style={{
                 padding: '16px 20px',
@@ -190,78 +293,53 @@ export function TableView({
                 </td>
               ))}
               <td style={{ padding: '16px 20px' }}>
-                <div style={{ display: 'flex', gap: '8px' }}>
+                <div style={{ display: 'flex', gap: '10px' }}>
                   <button
+                    aria-label="Preview"
+                    title="Preview"
                     onClick={() => onPreview(item.id)}
-                    style={{
-                      padding: '8px 16px',
-                      border: '1px solid #10b981',
-                      borderRadius: '8px',
-                      backgroundColor: '#ffffff',
-                      color: '#10b981',
-                      cursor: 'pointer',
-                      fontSize: '13px',
-                      fontWeight: '500',
-                      transition: 'all 0.2s ease',
-                    }}
+                    style={actionButtonStyle('#8b5cf6', 'rgba(139,92,246,0.1)')}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = '#10b981'
-                      e.currentTarget.style.color = '#ffffff'
+                      e.currentTarget.setAttribute('data-hover', 'true')
+                      ;(e.currentTarget as HTMLButtonElement).style.backgroundColor =
+                        'rgba(139,92,246,0.1)'
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = '#ffffff'
-                      e.currentTarget.style.color = '#10b981'
+                      e.currentTarget.removeAttribute('data-hover')
+                      ;(e.currentTarget as HTMLButtonElement).style.backgroundColor = '#ffffff'
                     }}
                   >
-                    Preview
+                    <IconEye />
                   </button>
                   <button
+                    aria-label="Edit"
+                    title="Edit"
                     onClick={() => onEdit(item.id)}
-                    style={{
-                      padding: '8px 16px',
-                      border: '1px solid #3b82f6',
-                      borderRadius: '8px',
-                      backgroundColor: '#ffffff',
-                      color: '#3b82f6',
-                      cursor: 'pointer',
-                      fontSize: '13px',
-                      fontWeight: '500',
-                      transition: 'all 0.2s ease',
-                    }}
+                    style={actionButtonStyle('#3b82f6', 'rgba(59,130,246,0.1)')}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = '#3b82f6'
-                      e.currentTarget.style.color = '#ffffff'
+                      ;(e.currentTarget as HTMLButtonElement).style.backgroundColor =
+                        'rgba(59,130,246,0.1)'
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = '#ffffff'
-                      e.currentTarget.style.color = '#3b82f6'
+                      ;(e.currentTarget as HTMLButtonElement).style.backgroundColor = '#ffffff'
                     }}
                   >
-                    Edit
+                    <IconPencil />
                   </button>
                   <button
+                    aria-label="Delete"
+                    title="Delete"
                     onClick={() => onDelete(item.id)}
-                    style={{
-                      padding: '8px 16px',
-                      border: '1px solid #ef4444',
-                      borderRadius: '8px',
-                      backgroundColor: '#ffffff',
-                      color: '#ef4444',
-                      cursor: 'pointer',
-                      fontSize: '13px',
-                      fontWeight: '500',
-                      transition: 'all 0.2s ease',
-                    }}
+                    style={actionButtonStyle('#ef4444', 'rgba(239,68,68,0.1)')}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = '#ef4444'
-                      e.currentTarget.style.color = '#ffffff'
+                      ;(e.currentTarget as HTMLButtonElement).style.backgroundColor =
+                        'rgba(239,68,68,0.1)'
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = '#ffffff'
-                      e.currentTarget.style.color = '#ef4444'
+                      ;(e.currentTarget as HTMLButtonElement).style.backgroundColor = '#ffffff'
                     }}
                   >
-                    Delete
+                    <IconTrash />
                   </button>
                 </div>
               </td>

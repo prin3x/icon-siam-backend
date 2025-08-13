@@ -8,7 +8,7 @@ export const Dinings: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'start_date', 'end_date', 'status'],
+    defaultColumns: ['title', 'status', 'updatedAt'],
   },
   fields: [
     {

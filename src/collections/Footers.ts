@@ -4,7 +4,7 @@ export const Footers: CollectionConfig = {
   slug: 'footers',
   admin: {
     useAsTitle: 'name',
-    defaultColumns: ['name', 'connect_with_us', 'awards'],
+    defaultColumns: ['name', 'connect_with_us', 'awards', 'status'],
   },
   access: {
     read: () => true,

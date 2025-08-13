@@ -4,7 +4,7 @@ export const Categories: CollectionConfig = {
   slug: 'categories',
   admin: {
     useAsTitle: 'name',
-    defaultColumns: ['name', 'type', 'slug'],
+    defaultColumns: ['name', 'type', 'slug', 'status'],
   },
   access: {
     read: () => true,

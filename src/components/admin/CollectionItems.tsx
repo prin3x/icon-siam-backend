@@ -72,6 +72,8 @@ export function CollectionItems({
     hasNextPage: false,
     hasPrevPage: false,
   })
+  const [sortKey, setSortKey] = useState<string>('updatedAt')
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
 
   // Modal state (only for preview)
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false)
@@ -151,7 +153,7 @@ export function CollectionItems({
 
       const params = new URLSearchParams({
         locale,
-        sort: '-updatedAt',
+        sort: sortOrder === 'asc' ? sortKey : `-${sortKey}`,
         page: pagination.page.toString(),
         limit: pagination.limit.toString(),
       })
@@ -263,7 +265,17 @@ export function CollectionItems({
         setLoading(false)
       }
     },
-    [slug, locale, debouncedSearchTerm, pagination.page, pagination.limit, filters, appliedFilters],
+    [
+      slug,
+      locale,
+      debouncedSearchTerm,
+      pagination.page,
+      pagination.limit,
+      filters,
+      appliedFilters,
+      sortKey,
+      sortOrder,
+    ],
   )
 
   // Combined effect for all data fetching
@@ -846,6 +858,13 @@ export function CollectionItems({
                 label: k === 'createdAt' ? 'Created' : k[0].toUpperCase() + k.slice(1),
                 type: k === 'status' ? 'status' : k === 'createdAt' ? 'date' : 'text',
               }))}
+              sortKey={sortKey}
+              sortOrder={sortOrder}
+              onSortChange={(key, order) => {
+                setSortKey(key)
+                setSortOrder(order)
+                setPagination((prev) => ({ ...prev, page: 1 }))
+              }}
             />
           )}
         </div>

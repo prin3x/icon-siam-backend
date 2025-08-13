@@ -5,7 +5,7 @@ export const Attractions: CollectionConfig = {
   slug: 'attractions',
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'status'],
+    defaultColumns: ['title', 'status', 'updatedAt'],
   },
   access: {
     read: () => true,

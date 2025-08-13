@@ -5,7 +5,7 @@ export const Shops: CollectionConfig = {
   slug: 'shops',
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'start_date', 'end_date', 'status'],
+    defaultColumns: ['title', 'status', 'updatedAt'],
   },
   access: {
     read: () => true,

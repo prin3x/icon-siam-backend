@@ -9,6 +9,9 @@ export const Stickbar: CollectionConfig = {
   access: {
     read: () => true,
   },
+  admin: {
+    defaultColumns: ['title', 'status', 'updatedAt'],
+  },
   fields: [
     {
       name: 'title',

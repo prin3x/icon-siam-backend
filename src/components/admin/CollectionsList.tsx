@@ -34,6 +34,31 @@ export const GROUPS: Record<string, string[]> = {
   'Images & Videos': ['media'],
 }
 
+// Display name overrides for specific slugs to match the design copy exactly
+const TITLE_OVERRIDES: Record<string, string> = {
+  'page-banners': 'Page Banners',
+  'icon-craft': 'Icon Crafts',
+  'icon-luxe': 'Icon Luxes',
+  'getting-here': 'Getting Here',
+  directory: 'Directories',
+  floors: 'Floors',
+  users: 'Users',
+  categories: 'Categories',
+  'gallery-collections': 'Gallery Collections',
+  promotions: 'Promotions',
+  footers: 'Footers',
+  stickbar: 'Stickbars',
+  'api-sync-logs': 'API Sync Logs',
+  facilities: 'Facilities',
+  'about-iconsiam': 'About Iconsiam',
+  'board-of-directors': 'Board of Directors',
+  'iconsiam-awards': 'Iconsiam Awards',
+  'vision-mission': 'Vision and mission',
+  residences: 'Residences',
+  stories: 'Stories',
+  media: 'Media',
+}
+
 interface CollectionsListProps {
   onSelect?: (slug: string) => void
 }
@@ -57,7 +82,14 @@ export function CollectionsList({ onSelect }: CollectionsListProps) {
       }}
     >
       <span className="gold-plus">+</span>
-      <span style={{ fontWeight: 600, color: '#3f3f46' }}>{formatSlugToTitle(slug)}</span>
+      <span
+        style={{
+          fontWeight: 600,
+          color: 'var(--brand-sidebar)',
+        }}
+      >
+        {formatSlugToTitle(slug)}
+      </span>
     </button>
   )
 
@@ -71,7 +103,8 @@ export function CollectionsList({ onSelect }: CollectionsListProps) {
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(6, minmax(0, 1fr))',
+              // Match the design: five cards per row at desktop widths
+              gridTemplateColumns: 'repeat(5, minmax(0, 1fr))',
               gap: 16,
             }}
           >
@@ -84,8 +117,20 @@ export function CollectionsList({ onSelect }: CollectionsListProps) {
 }
 
 function formatSlugToTitle(slug: string): string {
+  if (TITLE_OVERRIDES[slug]) return TITLE_OVERRIDES[slug]
+
+  const stopWords = new Set(['of', 'and', 'to', 'in', 'on', 'the', 'for'])
+  const acronyms = new Set(['api', 'id', 'url'])
+
   return slug
     .split('-')
-    .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+    .map((word, idx) => {
+      const lower = word.toLowerCase()
+      if (acronyms.has(lower)) return lower.toUpperCase()
+      const title = lower.charAt(0).toUpperCase() + lower.slice(1)
+      // Lowercase stop-words except when first word
+      if (idx !== 0 && stopWords.has(lower)) return lower
+      return title
+    })
     .join(' ')
 }
