@@ -32,7 +32,10 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
   const [formData, setFormData] = useState<any>({})
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  // Separate load errors from submit/validation errors
+  const [loadError, setLoadError] = useState<string>('')
   const [error, setError] = useState<string>('')
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const isCreateMode = !recordId
 
   useEffect(() => {
@@ -42,7 +45,7 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
     const fetchRecordAndSchema = async () => {
       try {
         setLoading(true)
-        setError('')
+        setLoadError('')
 
         // Fetch schema from the correct custom-admin endpoint
         const schemaResponse = await fetch(
@@ -95,7 +98,7 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
       } catch (error: any) {
         if (error.name !== 'AbortError') {
           console.error('Error fetching data:', error)
-          setError(error.message)
+          setLoadError(error.message)
         }
       } finally {
         if (!signal.aborted) {
@@ -118,6 +121,13 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
       ...prev,
       [fieldName]: value,
     }))
+    // Clear field-level error when user edits the field
+    setFieldErrors((prev) => {
+      if (!prev[fieldName]) return prev
+      const next = { ...prev }
+      delete next[fieldName]
+      return next
+    })
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -126,6 +136,23 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
     try {
       setSaving(true)
       setError('')
+      setFieldErrors({})
+
+      // Basic client-side required validation based on schema
+      const missing: Record<string, string> = {}
+      schema.forEach((field: FieldSchema) => {
+        if (field.required) {
+          const v = (formData as any)[field.name]
+          const isEmpty =
+            v === undefined || v === null || v === '' || (Array.isArray(v) && v.length === 0)
+          if (isEmpty) missing[field.name] = `${field.label || field.name} is required`
+        }
+      })
+      if (Object.keys(missing).length > 0) {
+        setFieldErrors(missing)
+        setError('Please fix the highlighted fields and try again.')
+        return
+      }
 
       const processedFormData = Object.entries(formData).reduce((acc, [key, value]) => {
         if (value !== '') {
@@ -156,16 +183,38 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
       })
 
       if (!response.ok) {
-        const errorData = await response.text()
-        const errorMessage = `Failed to ${isCreateMode ? 'create' : 'update'} record: ${errorData}`
-        throw new Error(errorMessage)
+        // Parse potential validation errors from server
+        let message = `Failed to ${isCreateMode ? 'create' : 'update'} record.`
+        let nextFieldErrors: Record<string, string> = {}
+        try {
+          const errJson = await response.json()
+          if (typeof errJson?.message === 'string') message = errJson.message
+          if (typeof errJson?.error === 'string') message = errJson.error
+          if (Array.isArray(errJson?.errors)) {
+            errJson.errors.forEach((e: any) => {
+              const path = e?.path || e?.field || e?.data?.path
+              const msg = e?.message || e?.err || String(e)
+              if (path && typeof path === 'string') {
+                nextFieldErrors[path] = msg
+              }
+            })
+          }
+        } catch (_) {
+          try {
+            const txt = await response.text()
+            if (txt) message = txt
+          } catch (_) {}
+        }
+        if (Object.keys(nextFieldErrors).length > 0) setFieldErrors(nextFieldErrors)
+        setError(message)
+        return
       }
 
       // Redirect back to collection page
       navigateWithLocale(router, `/custom-admin/collections/${collectionSlug}`, locale)
     } catch (error: any) {
       console.error(`Error ${isCreateMode ? 'creating' : 'updating'} record:`, error)
-      setError(error.message)
+      setError(error.message || 'An unexpected error occurred.')
     } finally {
       setSaving(false)
     }
@@ -188,7 +237,7 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
     )
   }
 
-  if (error) {
+  if (loadError) {
     return (
       <div style={{ padding: '24px' }}>
         <div
@@ -199,7 +248,7 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
             padding: '16px',
           }}
         >
-          <div style={{ color: '#dc2626' }}>Error: {error}</div>
+          <div style={{ color: '#dc2626' }}>Error: {loadError}</div>
         </div>
       </div>
     )
@@ -228,6 +277,7 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
                 field={field}
                 formData={formData}
                 handleInputChange={handleInputChange}
+                fieldError={fieldErrors[field.name]}
               />
             ))}
           </div>
@@ -256,6 +306,7 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
                 field={field}
                 formData={formData}
                 handleInputChange={handleInputChange}
+                fieldError={fieldErrors[field.name]}
               />
             ))}
           </div>
@@ -288,6 +339,22 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
       </div>
 
       <form onSubmit={handleSubmit} style={{ paddingBottom: '100px' }}>
+        {error && (
+          <div
+            style={{
+              marginBottom: 16,
+              backgroundColor: '#fef2f2',
+              border: '1px solid #fecaca',
+              borderRadius: '8px',
+              padding: '12px 16px',
+              color: '#b91c1c',
+              fontSize: 14,
+            }}
+            role="alert"
+          >
+            {error}
+          </div>
+        )}
         {layout ? (
           <div
             style={{
@@ -327,6 +394,7 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
                 field={field}
                 formData={formData}
                 handleInputChange={handleInputChange}
+                fieldError={fieldErrors[field.name]}
               />
             ))}
           </div>

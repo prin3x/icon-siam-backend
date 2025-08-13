@@ -14,9 +14,15 @@ interface FieldRendererProps {
   field: any
   formData: any
   handleInputChange: (fieldName: string, value: any) => void
+  fieldError?: string
 }
 
-export function FieldRenderer({ field, formData, handleInputChange }: FieldRendererProps) {
+export function FieldRenderer({
+  field,
+  formData,
+  handleInputChange,
+  fieldError,
+}: FieldRendererProps) {
   const handleChange = (value: any) => {
     handleInputChange(field.name, value)
   }
@@ -46,7 +52,7 @@ export function FieldRenderer({ field, formData, handleInputChange }: FieldRende
             style={{
               width: '100%',
               padding: '12px',
-              border: '1px solid #d1d5db',
+              border: `1px solid ${fieldError ? '#ef4444' : '#d1d5db'}`,
               borderRadius: '8px',
               fontSize: '14px',
               outline: 'none',
@@ -54,6 +60,9 @@ export function FieldRenderer({ field, formData, handleInputChange }: FieldRende
               backgroundColor: '#ffffff',
             }}
           />
+          {fieldError && (
+            <div style={{ color: '#b91c1c', fontSize: 12, marginTop: 6 }}>{fieldError}</div>
+          )}
         </div>
       )
     case 'textarea':
@@ -77,7 +86,7 @@ export function FieldRenderer({ field, formData, handleInputChange }: FieldRende
               width: '100%',
               minHeight: '120px',
               padding: '12px',
-              border: '1px solid #d1d5db',
+              border: `1px solid ${fieldError ? '#ef4444' : '#d1d5db'}`,
               borderRadius: '8px',
               fontSize: '14px',
               outline: 'none',
@@ -85,6 +94,9 @@ export function FieldRenderer({ field, formData, handleInputChange }: FieldRende
               backgroundColor: '#ffffff',
             }}
           />
+          {fieldError && (
+            <div style={{ color: '#b91c1c', fontSize: 12, marginTop: 6 }}>{fieldError}</div>
+          )}
         </div>
       )
     case 'checkbox':
@@ -124,7 +136,7 @@ export function FieldRenderer({ field, formData, handleInputChange }: FieldRende
             style={{
               width: '100%',
               padding: '12px',
-              border: '1px solid #d1d5db',
+              border: `1px solid ${fieldError ? '#ef4444' : '#d1d5db'}`,
               borderRadius: '8px',
               fontSize: '14px',
               backgroundColor: '#ffffff',
@@ -138,10 +150,39 @@ export function FieldRenderer({ field, formData, handleInputChange }: FieldRende
               </option>
             ))}
           </select>
+          {fieldError && (
+            <div style={{ color: '#b91c1c', fontSize: 12, marginTop: 6 }}>{fieldError}</div>
+          )}
         </div>
       )
     case 'richText':
-      return <RichTextEditor value={formData[field.name]} onChange={handleChange} />
+      return (
+        <div style={{ marginBottom: '16px' }}>
+          <label
+            style={{
+              display: 'block',
+              marginBottom: '8px',
+              fontSize: '14px',
+              fontWeight: '600',
+              color: '#374151',
+            }}
+          >
+            {field.label || field.name}
+          </label>
+          <div
+            style={{
+              border: `1px solid ${fieldError ? '#ef4444' : 'transparent'}`,
+              borderRadius: 8,
+              padding: fieldError ? 4 : 0,
+            }}
+          >
+            <RichTextEditor value={formData[field.name]} onChange={handleChange} />
+          </div>
+          {fieldError && (
+            <div style={{ color: '#b91c1c', fontSize: 12, marginTop: 6 }}>{fieldError}</div>
+          )}
+        </div>
+      )
     case 'upload':
       return (
         <div>
