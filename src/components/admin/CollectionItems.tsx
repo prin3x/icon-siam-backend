@@ -123,6 +123,32 @@ export function CollectionItems({
       setLoading(true)
       setError('')
 
+      // Fetch schema FIRST to build safe search params for the given collection
+      let schemaJson: any | null = null
+      try {
+        const schemaRes = await fetch(`/api/admin/${slug}?schema=true&locale=${locale}`, {
+          signal,
+        })
+        if (schemaRes.ok) {
+          schemaJson = await schemaRes.json()
+        }
+      } catch (_) {}
+
+      // Determine searchable text fields from schema
+      const searchableFields: string[] = []
+      if (schemaJson?.fields && Array.isArray(schemaJson.fields)) {
+        const allowedTypes = new Set(['text', 'textarea', 'email', 'url', 'slug'])
+        schemaJson.fields.forEach((f: any) => {
+          if (f?.name && allowedTypes.has(f.type)) {
+            searchableFields.push(f.name)
+          }
+        })
+      }
+      // Fallback if schema missing: try common field 'title' only
+      if (searchableFields.length === 0) {
+        searchableFields.push('title')
+      }
+
       const params = new URLSearchParams({
         locale,
         sort: '-updatedAt',
@@ -130,12 +156,12 @@ export function CollectionItems({
         limit: pagination.limit.toString(),
       })
 
-      // Text search across common fields using where[or]
+      // Text search across schema-derived fields using where[or]
       let orIndex = 0
       if (debouncedSearchTerm) {
-        params.append(`where[or][${orIndex++}][title][like]`, debouncedSearchTerm)
-        params.append(`where[or][${orIndex++}][subtitle][like]`, debouncedSearchTerm)
-        params.append(`where[or][${orIndex++}][description][like]`, debouncedSearchTerm)
+        searchableFields.forEach((field) => {
+          params.append(`where[or][${orIndex++}][${field}][like]`, debouncedSearchTerm)
+        })
       }
 
       // Advanced builder: each row is appended as an OR condition
@@ -199,42 +225,34 @@ export function CollectionItems({
           key: k,
           label: k === 'createdAt' ? 'Created' : k.charAt(0).toUpperCase() + k.slice(1),
         }))
-        // Fallback to admin defaultColumns from schema endpoint
-        try {
-          const schemaRes = await fetch(`/api/admin/${slug}?schema=true&locale=${locale}`, {
-            signal,
-          })
-          if (schemaRes.ok) {
-            const schemaJson = await schemaRes.json()
-            const defaults: string[] = schemaJson?.admin?.defaultColumns || []
-            const fieldsFromSchema: Array<{
-              name: string
-              label: string
-              type: string
-              options?: Array<{ label: string; value: string }>
-            }> = (schemaJson?.fields || []).map((f: any) => ({
-              name: f.name,
-              label: f.label || f.name,
-              type: f.type,
-              options: f.options,
-            }))
-            setSchemaFields(fieldsFromSchema)
-            const fromDefaults = defaults.map((k: string) => ({
-              key: k,
-              label: k.charAt(0).toUpperCase() + k.slice(1),
-            }))
-            const merged = Array.from(
-              new Map([...fromDefaults, ...inferred].map((o) => [o.key, o])).values(),
-            )
-            if (merged.length > 0) setAvailableColumns(merged)
-            if (defaults.length > 0) {
-              setVisibleColumns((prev) => (prev.length ? prev : defaults))
-            }
-          } else if (inferred.length > 0) {
-            setAvailableColumns(inferred)
+        // Use the schema fetched earlier (if available) for defaults/columns; otherwise fallback
+        if (schemaJson) {
+          const defaults: string[] = schemaJson?.admin?.defaultColumns || []
+          const fieldsFromSchema: Array<{
+            name: string
+            label: string
+            type: string
+            options?: Array<{ label: string; value: string }>
+          }> = (schemaJson?.fields || []).map((f: any) => ({
+            name: f.name,
+            label: f.label || f.name,
+            type: f.type,
+            options: f.options,
+          }))
+          setSchemaFields(fieldsFromSchema)
+          const fromDefaults = defaults.map((k: string) => ({
+            key: k,
+            label: k.charAt(0).toUpperCase() + k.slice(1),
+          }))
+          const merged = Array.from(
+            new Map([...fromDefaults, ...inferred].map((o) => [o.key, o])).values(),
+          )
+          if (merged.length > 0) setAvailableColumns(merged)
+          if (defaults.length > 0) {
+            setVisibleColumns((prev) => (prev.length ? prev : defaults))
           }
-        } catch (_) {
-          if (inferred.length > 0) setAvailableColumns(inferred)
+        } else if (inferred.length > 0) {
+          setAvailableColumns(inferred)
         }
       } catch (error: any) {
         if (error.name !== 'AbortError') {

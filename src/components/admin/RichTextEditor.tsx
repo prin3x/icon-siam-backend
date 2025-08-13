@@ -72,8 +72,13 @@ const detectContentFormat = (value: any): 'html' | 'tiptap' | 'lexical' | 'unkno
     return 'unknown'
   }
 
+  // Legacy Payload richText (Lexical) often stored as an object with a `root` node
+  if (value && typeof value === 'object' && value.root && value.root.type === 'root') {
+    return 'lexical'
+  }
+
   if (Array.isArray(value)) {
-    // Check if it's PayloadCMS format
+    // Older Payload richText array form
     if (value.some((node: any) => node.type === 'paragraph' && node.children)) {
       return 'lexical'
     }
@@ -81,7 +86,7 @@ const detectContentFormat = (value: any): 'html' | 'tiptap' | 'lexical' | 'unkno
   }
 
   if (value.type === 'doc' && Array.isArray(value.content)) {
-    // Check if it's Tiptap format
+    // TipTap JSON format
     if (
       value.content.some(
         (node: any) =>
@@ -95,7 +100,7 @@ const detectContentFormat = (value: any): 'html' | 'tiptap' | 'lexical' | 'unkno
   return 'unknown'
 }
 
-// Convert PayloadCMS rich text format to Tiptap JSON
+// Convert PayloadCMS rich text format (including legacy Lexical) to Tiptap JSON
 const convertPayloadToTiptap = (payloadValue: any): any => {
   if (!payloadValue) return { type: 'doc', content: [] }
 
@@ -116,6 +121,11 @@ const convertPayloadToTiptap = (payloadValue: any): any => {
         },
       ],
     }
+  }
+
+  // Legacy Lexical object shape
+  if (payloadValue && typeof payloadValue === 'object' && payloadValue.root) {
+    return convertLexicalToTiptap(payloadValue)
   }
 
   if (Array.isArray(payloadValue)) {
@@ -175,6 +185,188 @@ const convertPayloadToTiptap = (payloadValue: any): any => {
   }
 
   return { type: 'doc', content: [] }
+}
+
+// Map Lexical textFormat bitmask to TipTap marks
+const applyMarksFromLexicalFormat = (textNode: any): any => {
+  const marks: any[] = []
+  const format =
+    typeof textNode.textFormat === 'number'
+      ? textNode.textFormat
+      : typeof textNode.format === 'number'
+        ? textNode.format
+        : 0
+  // Lexical format bit flags
+  const BOLD = 1
+  const ITALIC = 2
+  const STRIKETHROUGH = 4
+  const UNDERLINE = 8
+  const CODE = 16
+  const SUBSCRIPT = 32
+  const SUPERSCRIPT = 64
+  const HIGHLIGHT = 128
+
+  if (format & BOLD) marks.push({ type: 'bold' })
+  if (format & ITALIC) marks.push({ type: 'italic' })
+  if (format & UNDERLINE) marks.push({ type: 'underline' })
+  if (format & STRIKETHROUGH) marks.push({ type: 'strike' })
+  if (format & CODE) marks.push({ type: 'code' })
+  // TipTap does not support sub/sup as marks by default; ignore or extend if needed
+  if (format & HIGHLIGHT) marks.push({ type: 'highlight' })
+
+  // Colors from Lexical inline style, e.g. "color: #ff0000" can be represented by TextStyle+Color extension
+  if (typeof textNode.style === 'string' && /color:\s*#[0-9a-fA-F]{3,6}/.test(textNode.style)) {
+    const match = textNode.style.match(/color:\s*(#[0-9a-fA-F]{3,6})/)
+    if (match) {
+      marks.push({ type: 'textStyle', attrs: { color: match[1] } })
+    }
+  }
+
+  return marks
+}
+
+// Convert Lexical JSON to TipTap JSON
+const convertLexicalToTiptap = (lexicalValue: any): any => {
+  try {
+    const root = lexicalValue.root
+    if (!root || !Array.isArray(root.children)) return { type: 'doc', content: [] }
+
+    const docContent: any[] = []
+
+    const mapChildrenInline = (children: any[], linkHref?: string): any[] => {
+      const inline: any[] = []
+      children?.forEach((child) => {
+        switch (child.type) {
+          case 'text': {
+            const node: any = { type: 'text', text: child.text || '' }
+            const marks = applyMarksFromLexicalFormat(child)
+            if (marks.length > 0) node.marks = marks
+            // Link mark
+            if (linkHref) {
+              node.marks = [...(node.marks || []), { type: 'link', attrs: { href: linkHref } }]
+            }
+            inline.push(node)
+            break
+          }
+          case 'linebreak': {
+            inline.push({ type: 'hardBreak' })
+            break
+          }
+          case 'link': {
+            const href = child.url || child.fields?.url || ''
+            inline.push(...mapChildrenInline(child.children || [], href))
+            break
+          }
+          default: {
+            // Recurse for unknown wrappers like span
+            if (Array.isArray(child.children)) {
+              inline.push(...mapChildrenInline(child.children, linkHref))
+            }
+            break
+          }
+        }
+      })
+      return inline
+    }
+
+    const normalizeAlign = (value: any): 'left' | 'right' | 'center' | undefined => {
+      if (!value) return undefined
+      if (value === 'start' || value === '') return 'left'
+      if (value === 'end') return 'right'
+      if (['left', 'right', 'center', 'justify'].includes(value)) {
+        return value === 'justify' ? 'left' : (value as 'left' | 'right' | 'center')
+      }
+      return undefined
+    }
+
+    const toTiptapParagraph = (lexNode: any): any => {
+      const content = mapChildrenInline(lexNode.children || [])
+      const para: any = { type: 'paragraph' }
+      if (content.length > 0) para.content = content
+      // Alignment
+      const align = normalizeAlign(lexNode.format)
+      if (align) para.attrs = { textAlign: align }
+      return para
+    }
+
+    const toTiptapHeading = (lexNode: any): any => {
+      const tag = lexNode.tag || 'h1'
+      const level = Number(tag.replace('h', '')) || 1
+      const content = mapChildrenInline(lexNode.children || [])
+      const heading: any = { type: 'heading', attrs: { level } }
+      if (content.length > 0) heading.content = content
+      const align = normalizeAlign(lexNode.format)
+      if (align) heading.attrs.textAlign = align
+      return heading
+    }
+
+    const toTiptapList = (lexNode: any): any => {
+      const listType =
+        lexNode.listType === 'number' || lexNode.tag === 'ol' ? 'orderedList' : 'bulletList'
+      const items: any[] = []
+      ;(lexNode.children || []).forEach((li: any) => {
+        if (li.type === 'listitem' || li.type === 'listItem') {
+          // Build paragraph content from direct inline children (text/link/linebreak)
+          const inline = mapChildrenInline(li.children || [])
+          const content: any[] = [
+            inline.length > 0 ? { type: 'paragraph', content: inline } : { type: 'paragraph' },
+          ]
+
+          // Handle nested lists inside a list item
+          ;(li.children || []).forEach((child: any) => {
+            if (child.type === 'list') {
+              const nested = toTiptapList(child)
+              if (nested) content.push(nested)
+            }
+          })
+
+          items.push({ type: 'listItem', content })
+        }
+      })
+      return { type: listType, content: items }
+    }
+
+    root.children.forEach((node: any) => {
+      switch (node.type) {
+        case 'paragraph':
+          docContent.push(toTiptapParagraph(node))
+          break
+        case 'heading':
+          docContent.push(toTiptapHeading(node))
+          break
+        case 'list':
+          docContent.push(toTiptapList(node))
+          break
+        case 'quote':
+        case 'blockquote': {
+          const content = mapChildrenInline(node.children || [])
+          if (content.length > 0) {
+            docContent.push({ type: 'blockquote', content: [{ type: 'paragraph', content }] })
+          } else {
+            docContent.push({ type: 'blockquote', content: [{ type: 'paragraph' }] })
+          }
+          break
+        }
+        default:
+          // Try to unwrap unknown containers as paragraphs
+          if (Array.isArray(node.children)) {
+            const content = mapChildrenInline(node.children)
+            if (content.length > 0) {
+              docContent.push({ type: 'paragraph', content })
+            }
+          }
+      }
+    })
+
+    if (docContent.length === 0) {
+      docContent.push({ type: 'paragraph' })
+    }
+
+    return { type: 'doc', content: docContent }
+  } catch (e) {
+    console.warn('Error converting Lexical to Tiptap:', e)
+    return { type: 'doc', content: [] }
+  }
 }
 
 // Convert HTML to Tiptap JSON format
