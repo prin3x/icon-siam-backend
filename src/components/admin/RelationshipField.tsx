@@ -33,6 +33,33 @@ export function RelationshipField({ value, onChange, field, placeholder }: Relat
   const schemaCacheRef = useRef<Record<string, { useAsTitle?: string; fieldNames: Set<string> }>>(
     {},
   )
+  // Cache selected option labels so chips render titles immediately
+  const selectedCacheRef = useRef<Record<string, RelatedRecord>>({})
+
+  // Small constants and helpers
+  const MIN_SEARCH_LEN = 2
+
+  const normalizePair = (item: any): { collection: string; id: string } | null => {
+    if (!item) return null
+    if (typeof item === 'string' || typeof item === 'number') {
+      const firstCollection = Array.isArray(field.relationTo)
+        ? field.relationTo[0]
+        : (field.relationTo as string)
+      return { collection: firstCollection, id: String(item) }
+    }
+    if (typeof item === 'object' && 'value' in item && 'relationTo' in item) {
+      return { collection: (item as any).relationTo, id: String((item as any).value) }
+    }
+    if (typeof item === 'object' && 'id' in item) {
+      return {
+        collection:
+          (item as any).collection ||
+          (Array.isArray(field.relationTo) ? field.relationTo[0] : (field.relationTo as string)),
+        id: String((item as any).id),
+      }
+    }
+    return null
+  }
 
   // Convert relationTo to array if it's a string
   const collections = field.relationTo
@@ -55,7 +82,7 @@ export function RelationshipField({ value, onChange, field, placeholder }: Relat
     const signal = controller.signal
 
     const fetchSearch = async () => {
-      if (!debouncedTerm || debouncedTerm.length < 2 || collections.length === 0) {
+      if (!debouncedTerm || debouncedTerm.length < MIN_SEARCH_LEN || collections.length === 0) {
         // Provide default suggestions with empty search: first 5 per collection
         if (collections.length === 0) {
           setOptions([])
@@ -229,6 +256,23 @@ export function RelationshipField({ value, onChange, field, placeholder }: Relat
     return () => document.removeEventListener('mousedown', onDocClick)
   }, [])
 
+  const toKey = (item: any): string => {
+    if (!item) return ''
+    const collection = (() => {
+      if (typeof item === 'object' && 'relationTo' in item) return String((item as any).relationTo)
+      return Array.isArray(field.relationTo)
+        ? String(field.relationTo[0])
+        : String(field.relationTo || '')
+    })()
+    const id = (() => {
+      if (typeof item === 'string' || typeof item === 'number') return String(item)
+      if (typeof item === 'object' && 'value' in item) return String((item as any).value)
+      if (typeof item === 'object' && 'id' in item) return String((item as any).id)
+      return ''
+    })()
+    return `${collection}:${id}`
+  }
+
   const handleChange = (selectedValue: string) => {
     if (!selectedValue) return
 
@@ -237,12 +281,11 @@ export function RelationshipField({ value, onChange, field, placeholder }: Relat
 
     if (field.hasMany) {
       const currentValues = Array.isArray(value) ? value : []
-      const isSelected = currentValues.some(
-        (item) => item.relationTo === collection && item.value === id,
-      )
+      const selectedKey = `${collection}:${id}`
+      const isSelected = currentValues.some((item) => toKey(item) === selectedKey)
 
       const newValues = isSelected
-        ? currentValues.filter((item) => !(item.relationTo === collection && item.value === id))
+        ? currentValues.filter((item) => toKey(item) !== selectedKey)
         : [...currentValues, recordToToggle]
       onChange(newValues)
     } else {
@@ -252,23 +295,223 @@ export function RelationshipField({ value, onChange, field, placeholder }: Relat
 
   const selectedRecords = useMemo(() => {
     if (!value) return []
-    const selectedItems = field.hasMany ? (Array.isArray(value) ? value : []) : [value]
-    const fallback = (item: any): RelatedRecord => ({
-      id: item.value,
-      title: String(item.value),
-      name: String(item.value),
-      collection: item.relationTo,
-    })
-    return selectedItems
-      .map((item) => {
-        if (!item || !item.value) return null
-        const found = options.find(
-          (o: any) => o.id === item.value && o.collection === item.relationTo,
+    const selectedItemsRaw = field.hasMany ? (Array.isArray(value) ? value : []) : [value]
+
+    // Normalize possible shapes: id string, populated doc, or { relationTo, value }
+    const normalizeItem = (
+      item: any,
+    ): {
+      collection: string
+      id: string
+      displayTitle: string
+      title: string
+      name: string
+    } | null => {
+      if (!item) return null
+      if (typeof item === 'string' || typeof item === 'number') {
+        // single-collection relation; infer collection when listing - we'll search in options only by id
+        const firstCollection = Array.isArray(field.relationTo)
+          ? field.relationTo[0]
+          : (field.relationTo as string)
+        const doc = options.find(
+          (o: any) => o.id === String(item) && o.collection === firstCollection,
         )
-        return found || fallback(item)
+
+        return {
+          collection: firstCollection,
+          id: String(item),
+          displayTitle: String(doc?.displayTitle || item),
+          title: String(doc?.title || item),
+          name: String(doc?.name || item),
+        }
+      }
+      if (typeof item === 'object' && 'value' in item && 'relationTo' in item) {
+        return {
+          collection: (item as any).relationTo,
+          id: String((item as any).value),
+          displayTitle: String((item as any).value || (item as any).name || (item as any).id),
+          title: String((item as any).value || (item as any).name || (item as any).id),
+          name: String((item as any).value || (item as any).name || (item as any).id),
+        }
+      }
+      if (typeof item === 'object' && 'id' in item) {
+        return {
+          collection:
+            (item as any).collection ||
+            (Array.isArray(field.relationTo) ? field.relationTo[0] : (field.relationTo as string)),
+          id: String((item as any).id),
+          displayTitle: String((item as any).value || (item as any).name || (item as any).id),
+          title: String((item as any).value || (item as any).name || (item as any).id),
+          name: String((item as any).value || (item as any).name || (item as any).id),
+        }
+      }
+      return null
+    }
+
+    const selectedItems = selectedItemsRaw.map(normalizeItem).filter(Boolean) as Array<{
+      collection: string
+      id: string
+      displayTitle: string
+      title: string
+      name: string
+    }>
+
+    const fallback = (norm: {
+      collection: string
+      id: string
+      displayTitle: string
+      title: string
+      name: string
+    }): RelatedRecord =>
+      ({
+        id: norm.id,
+        title: String(norm.title),
+        name: String(norm.name),
+        collection: norm.collection,
+        displayTitle: String(norm.displayTitle),
+      }) as any
+
+    return selectedItems
+      .map((norm) => {
+        const key = `${norm.collection}:${norm.id}`
+        const cached = selectedCacheRef.current[key]
+        const found = options.find(
+          (o: any) => String(o.id) === String(norm.id) && o.collection === norm.collection,
+        )
+        return (cached as any) || (found as any) || fallback(norm)
       })
       .filter(Boolean) as RelatedRecord[]
-  }, [value, options, field.hasMany])
+  }, [value, options, field.hasMany, field.relationTo])
+
+  // Ensure labels for already-selected items by fetching their documents
+  useEffect(() => {
+    if (!Array.isArray(collections) || collections.length === 0) return
+    const controller = new AbortController()
+    const signal = controller.signal
+
+    const selectedItemsRaw = field.hasMany
+      ? Array.isArray(value)
+        ? value
+        : []
+      : value
+        ? [value]
+        : []
+    if (selectedItemsRaw.length === 0) return
+
+    const normalize = (
+      item: any,
+    ): {
+      collection: string
+      id: string
+      displayTitle: string
+      title: string
+      name: string
+    } | null => {
+      if (!item) return null
+      if (typeof item === 'string' || typeof item === 'number') {
+        const firstCollection = Array.isArray(field.relationTo)
+          ? field.relationTo[0]
+          : (field.relationTo as string)
+        const doc = options.find(
+          (o: any) => o.id === String(item) && o.collection === firstCollection,
+        )
+        return {
+          collection: firstCollection,
+          id: String(item),
+          displayTitle: String(doc?.displayTitle || doc?.title || doc?.name),
+          title: String(doc?.title || item),
+          name: String(doc?.name || item),
+        }
+      }
+      if (typeof item === 'object' && 'value' in item && 'relationTo' in item) {
+        return {
+          collection: (item as any).relationTo,
+          id: String((item as any).value),
+          displayTitle: String(item.value || item.name || item.id),
+          title: String(item.value || item.name || item.id),
+          name: String(item.value || item.name || item.id),
+        }
+      }
+      if (typeof item === 'object' && 'id' in item) {
+        return {
+          collection:
+            (item as any).collection ||
+            (Array.isArray(field.relationTo) ? field.relationTo[0] : (field.relationTo as string)),
+          id: String((item as any).id),
+          displayTitle: String(item.value || item.name || item.id),
+          title: String(item.value || item.name || item.id),
+          name: String(item.value || item.name || item.id),
+        }
+      }
+      return null
+    }
+
+    const normalized = (field.hasMany ? selectedItemsRaw : [selectedItemsRaw])
+      .map(normalize)
+      .filter(Boolean) as Array<{
+      collection: string
+      id: string
+      displayTitle: string
+      title: string
+      name: string
+    }>
+
+    // Determine which selected items are missing from options
+    const missingByCollection = new Map<string, Set<string>>()
+    normalized.forEach(({ collection, id }) => {
+      const exists = options.some(
+        (o: any) => String(o.id) === String(id) && (o as any).collection === collection,
+      )
+      if (!exists) {
+        if (!missingByCollection.has(collection)) missingByCollection.set(collection, new Set())
+        missingByCollection.get(collection)!.add(id)
+      }
+    })
+
+    if (missingByCollection.size === 0) return
+    ;(async () => {
+      try {
+        const requests: Promise<RelatedRecord[]>[] = []
+        missingByCollection.forEach((ids, collection) => {
+          const params = new URLSearchParams()
+          params.set('limit', String(ids.size))
+          if (locale) params.set('locale', locale)
+          params.set(`where[id][in]`, Array.from(ids).join(','))
+          requests.push(
+            fetch(`/api/custom-admin/${collection}?${params.toString()}`, { signal })
+              .then((r) => (r.ok ? r.json() : null))
+              .then(
+                (json) =>
+                  (json?.docs || []).map((record: any) => ({
+                    ...record,
+                    collection,
+                    displayTitle: record.title || record.name || `Record ${record.id}`,
+                  })) as RelatedRecord[],
+              ) as any,
+          )
+        })
+        const results = (await Promise.all(requests)).flat()
+        if (!signal.aborted && results.length > 0) {
+          setOptions((prev) => {
+            const seen = new Set(prev.map((p: any) => `${(p as any).collection}:${p.id}`))
+            const merged = [...prev]
+            results.forEach((r: any) => {
+              const key = `${(r as any).collection}:${r.id}`
+              if (!seen.has(key)) {
+                seen.add(key)
+                merged.push(r)
+              }
+            })
+            return merged
+          })
+        }
+      } catch (_) {
+        // ignore fetch errors
+      }
+    })()
+
+    return () => controller.abort()
+  }, [value, field.hasMany, field.relationTo, collectionsKey, locale, options])
 
   if (!field.relationTo || collections.length === 0) {
     return (
@@ -299,29 +542,42 @@ export function RelationshipField({ value, onChange, field, placeholder }: Relat
               <div
                 key={`${record.collection}:${record.id}:${index}`}
                 style={{
-                  backgroundColor: '#f3f4f6',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '4px',
-                  padding: '4px 8px',
+                  backgroundColor: '#eff6ff',
+                  border: '1px solid #bfdbfe',
+                  borderRadius: '9999px',
+                  padding: '6px 10px',
                   fontSize: '12px',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '4px',
+                  gap: '6px',
                 }}
               >
-                <span>{record.displayTitle}</span>
+                <span style={{ color: '#1e40af' }}>
+                  {record.displayTitle ||
+                    (record as any).title ||
+                    (record as any).name ||
+                    String(record.id)}
+                </span>
                 <button
                   type="button"
                   onClick={() => handleChange(`${record.collection}:${record.id}`)}
                   style={{
-                    background: 'none',
+                    background: 'transparent',
                     border: 'none',
-                    color: '#ef4444',
+                    color: '#2563eb',
                     cursor: 'pointer',
                     fontSize: '12px',
-                    padding: '0',
-                    marginLeft: '4px',
+                    padding: '0 2px',
+                    lineHeight: 1,
                   }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = '#1d4ed8'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.color = '#2563eb'
+                  }}
+                  aria-label={`Remove ${record.displayTitle || (record as any).title || (record as any).name || String(record.id)}`}
+                  title="Remove"
                 >
                   ×
                 </button>
@@ -373,49 +629,62 @@ export function RelationshipField({ value, onChange, field, placeholder }: Relat
             {loading && (
               <div style={{ padding: 8, fontSize: 12, color: '#6b7280' }}>Searching...</div>
             )}
-            {!loading && (!debouncedTerm || debouncedTerm.length < 2) && (
+            {!loading && (!debouncedTerm || debouncedTerm.length < MIN_SEARCH_LEN) && (
               <div style={{ padding: 8, fontSize: 12, color: '#6b7280' }}>
-                Type at least 2 characters to search
+                Type at least {MIN_SEARCH_LEN} characters to search
               </div>
             )}
-            {!loading && debouncedTerm.length >= 2 && options.length === 0 && (
+            {!loading && debouncedTerm.length >= MIN_SEARCH_LEN && options.length === 0 && (
               <div style={{ padding: 8, fontSize: 12, color: '#6b7280' }}>No results</div>
             )}
             {!loading &&
-              options.map((option, index) => (
-                <button
-                  key={`${(option as any).collection}:${option.id}:${index}`}
-                  type="button"
-                  onClick={() => {
-                    handleChange(`${(option as any).collection}:${option.id}`)
-                    setOpen(false)
-                    setSearchTerm('')
-                  }}
-                  style={{
-                    display: 'block',
-                    width: '100%',
-                    textAlign: 'left',
-                    padding: '8px 10px',
-                    borderRadius: 6,
-                    border: '1px solid transparent',
-                    background: 'transparent',
-                    cursor: 'pointer',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = '#f3f4f6'
-                    e.currentTarget.style.borderColor = '#e5e7eb'
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = 'transparent'
-                    e.currentTarget.style.borderColor = 'transparent'
-                  }}
-                >
-                  <div style={{ fontSize: 14, color: '#111827' }}>
-                    {(option as any).displayTitle || option.title || option.name}
-                  </div>
-                  <div style={{ fontSize: 12, color: '#6b7280' }}>{(option as any).collection}</div>
-                </button>
-              ))}
+              // Hide options already selected
+              options
+                .filter((option) => {
+                  const key = `${(option as any).collection}:${String(option.id)}`
+                  const current = field.hasMany ? (Array.isArray(value) ? value : []) : [value]
+                  return !current.some((item) => toKey(item) === key)
+                })
+                .map((option, index) => (
+                  <button
+                    key={`${(option as any).collection}:${option.id}:${index}`}
+                    type="button"
+                    onClick={() => {
+                      // Cache selected option label to show chip immediately
+                      selectedCacheRef.current[
+                        `${(option as any).collection}:${String(option.id)}`
+                      ] = option as any
+                      handleChange(`${(option as any).collection}:${option.id}`)
+                      setOpen(false)
+                      setSearchTerm('')
+                    }}
+                    style={{
+                      display: 'block',
+                      width: '100%',
+                      textAlign: 'left',
+                      padding: '8px 10px',
+                      borderRadius: 6,
+                      border: '1px solid transparent',
+                      background: 'transparent',
+                      cursor: 'pointer',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = '#f3f4f6'
+                      e.currentTarget.style.borderColor = '#e5e7eb'
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'transparent'
+                      e.currentTarget.style.borderColor = 'transparent'
+                    }}
+                  >
+                    <div style={{ fontSize: 14, color: '#111827' }}>
+                      {(option as any).displayTitle || option.title || option.name}
+                    </div>
+                    <div style={{ fontSize: 12, color: '#6b7280' }}>
+                      {(option as any).collection}
+                    </div>
+                  </button>
+                ))}
           </div>
         )}
       </div>

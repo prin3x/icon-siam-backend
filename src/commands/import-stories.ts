@@ -325,39 +325,29 @@ async function importStories() {
         }
 
         // Patch rich text content per locale (HTML → store as any, as done in events patch)
-        const contentUpdates: Array<Promise<unknown>> = []
         if (row.text_en) {
-          contentUpdates.push(
-            payload.update({
-              collection: 'stories',
-              where: { slug: { equals: finalSlug } },
-              data: { content: decodeText(row.text_en) as any },
-              locale: 'en',
-            }),
-          )
+          await payload.update({
+            collection: 'stories',
+            where: { slug: { equals: finalSlug } },
+            data: { content: decodeText(row.text_en) as any },
+            locale: 'en',
+          })
         }
         if (row.text_th) {
-          contentUpdates.push(
-            payload.update({
-              collection: 'stories',
-              where: { slug: { equals: finalSlug } },
-              data: { content: decodeText(row.text_th) as any },
-              locale: 'th',
-            }),
-          )
+          await payload.update({
+            collection: 'stories',
+            where: { slug: { equals: finalSlug } },
+            data: { content: decodeText(row.text_th) as any },
+            locale: 'th',
+          })
         }
         if (row.text_cn) {
-          contentUpdates.push(
-            payload.update({
-              collection: 'stories',
-              where: { slug: { equals: finalSlug } },
-              data: { content: decodeText(row.text_cn) as any },
-              locale: 'zh',
-            }),
-          )
-        }
-        if (contentUpdates.length > 0) {
-          await Promise.all(contentUpdates)
+          await payload.update({
+            collection: 'stories',
+            where: { slug: { equals: finalSlug } },
+            data: { content: decodeText(row.text_cn) as any },
+            locale: 'zh',
+          })
         }
 
         // Patch images per locale similarly to event thumbnails script, with fallback

@@ -20,7 +20,8 @@
     "migrate-events-table": "cross-env NODE_OPTIONS=--no-deprecation payload run ./src/commands/migrate-events-table.ts",
     "migrate-promotions-table": "cross-env NODE_OPTIONS=--no-deprecation payload run ./src/commands/migrate-promotions-table.ts",
     "sync-external-api": "cross-env NODE_OPTIONS=--no-deprecation payload run ./src/commands/sync-external-api.ts",
-    "remove-old-promotions": "cross-env NODE_OPTIONS=--no-deprecation payload run ./src/commands/remove-old-promotions.ts"
+    "remove-old-promotions": "cross-env NODE_OPTIONS=--no-deprecation payload run ./src/commands/remove-old-promotions.ts",
+    "import-stories": "cross-env NODE_OPTIONS=--no-deprecation payload run ./src/commands/import-stories.ts"
   },
   "dependencies": {
     "@eslint/eslintrc": "^3.3.1",

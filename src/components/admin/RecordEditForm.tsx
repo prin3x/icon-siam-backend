@@ -62,10 +62,17 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
         setSchema(schemaData.fields || [])
 
         if (isCreateMode) {
-          // Initialize form with default values for new record
+          // Initialize form with sensible defaults for new record
           const initialFormData: any = {}
           schemaData.fields?.forEach((field: FieldSchema) => {
-            initialFormData[field.name] = field.defaultValue || ''
+            if (field.type === 'group') {
+              initialFormData[field.name] = {}
+            } else if (field.type === 'relationship') {
+              // Use [] for hasMany relations to avoid string default leaks
+              initialFormData[field.name] = field.hasMany ? [] : ''
+            } else {
+              initialFormData[field.name] = field.defaultValue ?? ''
+            }
           })
           setFormData(initialFormData)
         } else {
@@ -89,8 +96,12 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
             const value = recordData[field.name]
             if (field.type === 'date' && value) {
               initialFormData[field.name] = new Date(value).toISOString().split('T')[0]
+            } else if (field.type === 'group') {
+              initialFormData[field.name] = value || {}
+            } else if (field.type === 'relationship') {
+              initialFormData[field.name] = value ?? (field.hasMany ? [] : '')
             } else {
-              initialFormData[field.name] = value || field.defaultValue || ''
+              initialFormData[field.name] = value ?? field.defaultValue ?? ''
             }
           })
           setFormData(initialFormData)
@@ -130,6 +141,107 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
     })
   }
 
+  // Normalize form data into the shape expected by Payload API
+  const normalizeForSubmission = (fields: FieldSchema[], data: any): any => {
+    const coerceId = (v: any): any => {
+      if (typeof v === 'number') return v
+      if (typeof v === 'string' && /^\d+$/.test(v)) return Number(v)
+      return v
+    }
+    const result: any = {}
+    for (const field of fields) {
+      const value = data?.[field.name]
+      if (value === undefined) continue
+
+      switch (field.type) {
+        case 'group': {
+          const nested = normalizeForSubmission(field.fields || [], value || {})
+          result[field.name] = nested
+          break
+        }
+        case 'relationship': {
+          if (value === '' || value === null) break
+          const relationTo = field.relationTo
+          const isPoly = Array.isArray(relationTo)
+          if (field.hasMany) {
+            const items = Array.isArray(value) ? value : value ? [value] : []
+            if (isPoly) {
+              result[field.name] = items
+                .map((it: any) =>
+                  it && typeof it === 'object' && 'value' in it
+                    ? { relationTo: it.relationTo, value: coerceId(it.value) }
+                    : it && typeof it === 'object' && 'id' in it
+                      ? {
+                          relationTo: (it as any).collection || (relationTo as string[])[0],
+                          value: coerceId(it.id),
+                        }
+                      : null,
+                )
+                .filter(Boolean)
+            } else {
+              // single collection expects array of IDs
+              const ids = items
+                .map((it: any) =>
+                  typeof it === 'string' || typeof it === 'number'
+                    ? coerceId(it)
+                    : it && typeof it === 'object' && 'value' in it
+                      ? coerceId((it as any).value)
+                      : it && typeof it === 'object' && 'id' in it
+                        ? coerceId((it as any).id)
+                        : undefined,
+                )
+                .filter(Boolean)
+              result[field.name] = ids
+            }
+          } else {
+            if (isPoly) {
+              if (value && typeof value === 'object' && 'value' in value) {
+                result[field.name] = {
+                  relationTo: (value as any).relationTo,
+                  value: coerceId((value as any).value),
+                }
+              } else if (value && typeof value === 'object' && 'id' in value) {
+                result[field.name] = {
+                  relationTo:
+                    (value as any).collection ||
+                    (Array.isArray(relationTo) ? relationTo[0] : relationTo),
+                  value: coerceId((value as any).id),
+                }
+              } else if (typeof value === 'string' || typeof value === 'number') {
+                result[field.name] = {
+                  relationTo: Array.isArray(relationTo) ? relationTo[0] : (relationTo as any),
+                  value: coerceId(value),
+                }
+              }
+            } else {
+              // single collection expects a single ID
+              if (typeof value === 'string' || typeof value === 'number') {
+                result[field.name] = coerceId(value)
+              } else if (value && typeof value === 'object' && 'value' in value) {
+                result[field.name] = coerceId((value as any).value)
+              } else if (value && typeof value === 'object' && 'id' in value) {
+                result[field.name] = coerceId((value as any).id)
+              }
+            }
+          }
+          break
+        }
+        case 'upload': {
+          if (value && typeof value === 'object' && 'id' in value) {
+            result[field.name] = (value as any).id
+          } else if (value !== '') {
+            result[field.name] = value
+          }
+          break
+        }
+        default: {
+          if (value !== '') result[field.name] = value
+        }
+      }
+    }
+    return result
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -154,18 +266,7 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
         return
       }
 
-      const processedFormData = Object.entries(formData).reduce((acc, [key, value]) => {
-        if (value !== '') {
-          const anyValue = value as any
-          if (typeof anyValue === 'object' && anyValue !== null && anyValue.id) {
-            // Handle populated media object
-            acc[key] = anyValue.id
-          } else {
-            acc[key] = value
-          }
-        }
-        return acc
-      }, {} as any)
+      const processedFormData = normalizeForSubmission(schema as any, formData)
 
       const url = isCreateMode
         ? `/api/custom-admin/${collectionSlug}?locale=${locale}`
