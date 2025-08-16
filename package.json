@@ -21,7 +21,9 @@
     "migrate-promotions-table": "cross-env NODE_OPTIONS=--no-deprecation payload run ./src/commands/migrate-promotions-table.ts",
     "sync-external-api": "cross-env NODE_OPTIONS=--no-deprecation payload run ./src/commands/sync-external-api.ts",
     "remove-old-promotions": "cross-env NODE_OPTIONS=--no-deprecation payload run ./src/commands/remove-old-promotions.ts",
-    "import-stories": "cross-env NODE_OPTIONS=--no-deprecation payload run ./src/commands/import-stories.ts"
+    "import-stories": "cross-env NODE_OPTIONS=--no-deprecation payload run ./src/commands/import-stories.ts",
+    "patch-stories-categories": "cross-env NODE_OPTIONS=--no-deprecation payload run ./src/commands/patch-stories-categories.ts",
+    "import-news-press": "cross-env NODE_OPTIONS=--no-deprecation payload run ./src/commands/import-news-press.ts"
   },
   "dependencies": {
     "@eslint/eslintrc": "^3.3.1",
