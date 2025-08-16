@@ -492,31 +492,16 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: layout.right ? 'minmax(0,1fr) 320px' : '1fr',
+              gridTemplateColumns: '1fr',
               gap: 16,
               alignItems: 'start',
             }}
           >
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              {layout.left.map((section) =>
+              {[...layout.left, ...(layout.right || [])].map((section) =>
                 renderSection(section.title, section.fields, section.description, section.wrap),
               )}
             </div>
-            {layout.right && (
-              <aside
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 16,
-                  position: 'sticky',
-                  top: 16,
-                }}
-              >
-                {layout.right.map((section) =>
-                  renderSection(section.title, section.fields, section.description, section.wrap),
-                )}
-              </aside>
-            )}
           </div>
         ) : (
           // Fallback: render fields in natural order
