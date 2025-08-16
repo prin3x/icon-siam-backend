@@ -5,6 +5,7 @@ import { getApiHeaders, isInternalRequest } from '@/utilities/apiKeyUtils'
 import { useRouter } from 'next/navigation'
 import { navigateWithLocale } from '@/utilities/navigation'
 import { FieldRenderer } from './FieldRenderer'
+import { getLayoutForCollection, type CollectionFormLayout } from './formLayouts'
 
 interface RecordDetailModalProps {
   isOpen: boolean
@@ -373,22 +374,150 @@ export function RecordDetailModal({
       )
     }
 
-    // View mode (original display)
-    const excludedKeys = ['id', 'createdAt', 'updatedAt']
-    const priorityKeys = ['title', 'name', 'subtitle', 'description', 'content', 'status', 'slug']
-
-    const sortedKeys = Object.keys(record).sort((a, b) => {
-      const aPriority = priorityKeys.indexOf(a)
-      const bPriority = priorityKeys.indexOf(b)
-
-      if (aPriority !== -1 && bPriority !== -1) {
-        return aPriority - bPriority
+    // View mode – render same layout structure as RecordEditForm, but read-only
+    const excluded = new Set(['id'])
+    const displayValue = (field: any, value: any): React.ReactNode => {
+      if (value === undefined || value === null || value === '')
+        return <span style={{ color: '#9ca3af' }}>—</span>
+      switch (field.type) {
+        case 'checkbox':
+          return <span>{value ? 'Yes' : 'No'}</span>
+        case 'relationship': {
+          const renderRel = (v: any) => {
+            if (!v) return null
+            if (typeof v === 'string' || typeof v === 'number') return String(v)
+            if (v && typeof v === 'object') {
+              return v.title || v.name || v.display_name || v.slug || v.id || v.value || '—'
+            }
+            return '—'
+          }
+          if (Array.isArray(value)) {
+            if (value.length === 0) return <span style={{ color: '#9ca3af' }}>—</span>
+            return (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                {value.map((v, i) => (
+                  <span
+                    key={i}
+                    style={{
+                      padding: '4px 8px',
+                      background: '#f1f5f9',
+                      border: '1px solid #e2e8f0',
+                      borderRadius: 9999,
+                    }}
+                  >
+                    {renderRel(v)}
+                  </span>
+                ))}
+              </div>
+            )
+          }
+          return <span>{renderRel(value)}</span>
+        }
+        case 'upload': {
+          const url = typeof value === 'object' ? value.url : null
+          if (url)
+            return (
+              <img
+                src={url}
+                alt={value?.filename || 'Image'}
+                style={{ maxHeight: 120, borderRadius: 8, border: '1px solid #e5e7eb' }}
+              />
+            )
+          return <span>{value?.filename || String(value)}</span>
+        }
+        case 'richText':
+          return <div style={{ whiteSpace: 'pre-wrap' }}>{formatValue(value, field.name)}</div>
+        case 'array': {
+          const items = Array.isArray(value) ? value : []
+          return (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {items.length === 0 && <span style={{ color: '#9ca3af' }}>—</span>}
+              {items.map((row, idx) => (
+                <div
+                  key={idx}
+                  style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 12 }}
+                >
+                  {(field.fields || []).map((sf: any) => (
+                    <div key={sf.name} style={{ marginBottom: 8 }}>
+                      <div style={{ fontSize: 12, color: '#6b7280', marginBottom: 4 }}>
+                        {sf.label || sf.name}
+                      </div>
+                      <div>{displayValue(sf, row?.[sf.name])}</div>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          )
+        }
+        case 'group': {
+          const obj = value || {}
+          return (
+            <div style={{ display: 'grid', gap: 8 }}>
+              {(field.fields || []).map((sf: any) => (
+                <div key={sf.name}>
+                  <div style={{ fontSize: 12, color: '#6b7280', marginBottom: 4 }}>
+                    {sf.label || sf.name}
+                  </div>
+                  <div>{displayValue(sf, obj?.[sf.name])}</div>
+                </div>
+              ))}
+            </div>
+          )
+        }
+        default:
+          return <span>{String(value)}</span>
       }
-      if (aPriority !== -1) return -1
-      if (bPriority !== -1) return 1
+    }
 
-      return a.localeCompare(b)
-    })
+    const layout: CollectionFormLayout | undefined = getLayoutForCollection(
+      collectionSlug,
+      schema as any,
+    )
+
+    const renderSection = (
+      title: string,
+      fieldsList: string[],
+      description?: string,
+      wrap: boolean = true,
+    ) => {
+      const sectionFields = (schema || []).filter(
+        (f) => fieldsList.includes(f.name) && !excluded.has(f.name),
+      )
+      if (sectionFields.length === 0) return null
+      const sectionBody = (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          {sectionFields.map((field) => (
+            <div key={field.name}>
+              <div style={{ fontSize: 12, color: '#6b7280', marginBottom: 6 }}>
+                {field.label || field.name}
+              </div>
+              <div>{displayValue(field, (record as any)[field.name])}</div>
+            </div>
+          ))}
+        </div>
+      )
+      if (!wrap) return <section style={{ marginBottom: 16 }}>{sectionBody}</section>
+      return (
+        <section style={{ marginBottom: 16 }}>
+          <div
+            style={{
+              backgroundColor: '#ffffff',
+              border: '1px solid #e5e7eb',
+              borderRadius: 12,
+              boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
+              padding: 16,
+            }}
+          >
+            <div style={{ fontSize: 20, fontWeight: 700, marginBottom: 12 }}>{title}</div>
+            {description && (
+              <div style={{ fontSize: 12, color: '#6b7280', marginBottom: 12 }}>{description}</div>
+            )}
+            {sectionBody}
+          </div>
+        </section>
+      )
+    }
 
     return (
       <div style={{ maxHeight: '60vh', overflowY: 'auto' }}>
@@ -425,67 +554,35 @@ export function RecordDetailModal({
           </div>
         </div>
 
-        {/* Main Content */}
-        <div style={{ display: 'grid', gap: '16px' }}>
-          {sortedKeys
-            .filter((key) => !excludedKeys.includes(key))
-            .map((key) => {
-              const isComplex =
-                typeof record[key] === 'object' &&
-                record[key] !== null &&
-                !Array.isArray(record[key])
-
-              return (
-                <div
-                  key={key}
-                  style={{
-                    padding: '16px',
-                    border: '1px solid #e5e7eb',
-                    borderRadius: '8px',
-                    backgroundColor: '#ffffff',
-                    marginBottom: '12px',
-                  }}
-                >
-                  <div
-                    style={{
-                      fontSize: '14px',
-                      fontWeight: '600',
-                      color: '#374151',
-                      marginBottom: '8px',
-                      textTransform: 'capitalize',
-                    }}
-                  >
-                    {key.replace(/_/g, ' ')}
+        {layout ? (
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr',
+              gap: 16,
+              alignItems: 'start',
+            }}
+          >
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              {[...layout.left, ...(layout.right || [])].map((section) =>
+                renderSection(section.title, section.fields, section.description, section.wrap),
+              )}
+            </div>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            {(schema || [])
+              .filter((f) => !excluded.has(f.name))
+              .map((field) => (
+                <div key={field.name}>
+                  <div style={{ fontSize: 12, color: '#6b7280', marginBottom: 6 }}>
+                    {field.label || field.name}
                   </div>
-                  <div
-                    style={{
-                      fontSize: '14px',
-                      color: '#6b7280',
-                      lineHeight: '1.5',
-                      wordBreak: 'break-word',
-                    }}
-                  >
-                    {isComplex ? (
-                      <pre
-                        style={{
-                          backgroundColor: '#f9fafb',
-                          padding: '12px',
-                          borderRadius: '6px',
-                          fontSize: '12px',
-                          overflow: 'auto',
-                          maxHeight: '200px',
-                        }}
-                      >
-                        {formatValue(record[key], key)}
-                      </pre>
-                    ) : (
-                      formatValue(record[key], key)
-                    )}
-                  </div>
+                  <div>{displayValue(field, (record as any)[field.name])}</div>
                 </div>
-              )
-            })}
-        </div>
+              ))}
+          </div>
+        )}
       </div>
     )
   }

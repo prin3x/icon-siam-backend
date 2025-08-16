@@ -304,6 +304,24 @@ export function CollectionItems({
     setIsDeleteModalOpen(true)
   }
 
+  const handleToggleField = async (id: string, field: string, value: any) => {
+    try {
+      const res = await fetch(`/api/custom-admin/${slug}/${id}?locale=${locale}`, {
+        method: 'PATCH',
+        headers: getApiHeaders(!isInternalRequest()),
+        body: JSON.stringify({ [field]: value }),
+      })
+      if (!res.ok) {
+        const text = await res.text()
+        throw new Error(text || 'Failed to update')
+      }
+      const controller = new AbortController()
+      fetchItems(controller.signal)
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
   const handlePageChange = (newPage: number) => {
     setPagination((prev) => ({ ...prev, page: newPage }))
   }
@@ -853,11 +871,26 @@ export function CollectionItems({
               onEdit={handleEdit}
               onDelete={handleDelete}
               onPreview={handlePreview}
-              columns={visibleColumns.map((k) => ({
-                key: k,
-                label: k === 'createdAt' ? 'Created' : k[0].toUpperCase() + k.slice(1),
-                type: k === 'status' ? 'status' : k === 'createdAt' ? 'date' : 'text',
-              }))}
+              onToggleField={handleToggleField}
+              loading={loading}
+              columns={visibleColumns.map((k) => {
+                const fromSchema = schemaFields.find((f) => f.name === k)
+                const isDate =
+                  k === 'createdAt' ||
+                  k === 'updatedAt' ||
+                  /At$/.test(k) ||
+                  (fromSchema && fromSchema.type === 'date')
+                return {
+                  key: k,
+                  label:
+                    k === 'createdAt'
+                      ? 'Created'
+                      : k === 'updatedAt'
+                        ? 'Updated'
+                        : k[0].toUpperCase() + k.slice(1),
+                  type: k === 'status' ? 'status' : isDate ? 'date' : 'text',
+                }
+              })}
               sortKey={sortKey}
               sortOrder={sortOrder}
               onSortChange={(key, order) => {

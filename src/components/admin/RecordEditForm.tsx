@@ -1,11 +1,11 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { useLocale } from './LocaleContext'
 import { navigateWithLocale } from '@/utilities/navigation'
+import { useRouter } from 'next/navigation'
+import React, { useEffect, useState } from 'react'
 import { FieldRenderer } from './FieldRenderer'
-import { FORM_LAYOUTS, getLayoutForCollection, type CollectionFormLayout } from './formLayouts'
+import { getLayoutForCollection, type CollectionFormLayout } from './formLayouts'
+import { useLocale } from './LocaleContext'
 
 interface RecordEditFormProps {
   collectionSlug: string
@@ -37,6 +37,7 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
   const [error, setError] = useState<string>('')
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const isCreateMode = !recordId
+  const shouldHideField = (name: string) => String(name || '').toLowerCase() === 'id'
 
   useEffect(() => {
     const controller = new AbortController()
@@ -65,11 +66,14 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
           // Initialize form with sensible defaults for new record
           const initialFormData: any = {}
           schemaData.fields?.forEach((field: FieldSchema) => {
+            if (shouldHideField(field.name)) return
             if (field.type === 'group') {
               initialFormData[field.name] = {}
             } else if (field.type === 'relationship') {
               // Use [] for hasMany relations to avoid string default leaks
               initialFormData[field.name] = field.hasMany ? [] : ''
+            } else if (field.type === 'array') {
+              initialFormData[field.name] = []
             } else {
               initialFormData[field.name] = field.defaultValue ?? ''
             }
@@ -93,6 +97,7 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
           // Initialize form with existing data
           const initialFormData: any = {}
           schemaData.fields?.forEach((field: FieldSchema) => {
+            if (shouldHideField(field.name)) return
             const value = recordData[field.name]
             if (field.type === 'date' && value) {
               initialFormData[field.name] = new Date(value).toISOString().split('T')[0]
@@ -100,6 +105,8 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
               initialFormData[field.name] = value || {}
             } else if (field.type === 'relationship') {
               initialFormData[field.name] = value ?? (field.hasMany ? [] : '')
+            } else if (field.type === 'array') {
+              initialFormData[field.name] = Array.isArray(value) ? value : []
             } else {
               initialFormData[field.name] = value ?? field.defaultValue ?? ''
             }
@@ -150,6 +157,7 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
     }
     const result: any = {}
     for (const field of fields) {
+      if (shouldHideField(field.name)) continue
       const value = data?.[field.name]
       if (value === undefined) continue
 
@@ -232,6 +240,15 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
           } else if (value !== '') {
             result[field.name] = value
           }
+          break
+        }
+        case 'array': {
+          // Preserve order; recursively normalize each row according to sub-schema
+          const rows = Array.isArray(value) ? value : []
+          const normalizedRows = rows.map((row) =>
+            normalizeForSubmission((field.fields || []) as any, row),
+          )
+          result[field.name] = normalizedRows
           break
         }
         default: {
@@ -417,28 +434,43 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
   }
 
   // Keep all fetched schema fields accessible
-  const fields = schema
+  const fields = schema.filter((f) => !shouldHideField(f.name))
 
   return (
-    <div style={{ padding: '24px' }}>
+    <div>
       <div style={{ marginBottom: '24px' }}>
-        <h1
-          style={{
-            fontSize: '24px',
-            fontWeight: '700',
-            color: '#111827',
-            margin: '0 0 8px 0',
-          }}
-        >
-          {isCreateMode ? `Create New ${collectionSlug}` : `Edit ${collectionSlug} Record`}
-        </h1>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <h1
+            style={{
+              fontSize: '24px',
+              fontWeight: '700',
+              color: '#111827',
+              margin: '0 0 8px 0',
+            }}
+          >
+            {isCreateMode ? `Create New ${collectionSlug}` : `Edit ${collectionSlug}`}
+          </h1>
+          <p
+            style={{
+              fontSize: '14px',
+              color: '#6b7280',
+              margin: '0',
+              cursor: 'pointer',
+              borderBottom: '1px solid #d1d5db',
+            }}
+            onClick={() => {
+              window.open(`/api/custom-admin/${collectionSlug}/example`, '_blank')
+            }}
+          >
+            See Example
+          </p>
+        </div>
         {!isCreateMode && (
           <p style={{ fontSize: '14px', color: '#6b7280', margin: '0' }}>
             Record ID: {recordId} | Locale: {locale}
           </p>
         )}
       </div>
-
       <form onSubmit={handleSubmit} style={{ paddingBottom: '100px' }}>
         {error && (
           <div
@@ -549,7 +581,7 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
               padding: '12px 24px',
               border: '1px solid transparent',
               borderRadius: '8px',
-              backgroundColor: saving ? '#9ca3af' : '#3b82f6',
+              backgroundColor: saving ? '#f3e8c7' : '#6b5526',
               color: '#ffffff',
               fontSize: '14px',
               fontWeight: '500',
@@ -558,12 +590,12 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
             }}
             onMouseEnter={(e) => {
               if (!saving) {
-                e.currentTarget.style.backgroundColor = '#2563eb'
+                e.currentTarget.style.backgroundColor = '#6b5526'
               }
             }}
             onMouseLeave={(e) => {
               if (!saving) {
-                e.currentTarget.style.backgroundColor = '#3b82f6'
+                e.currentTarget.style.backgroundColor = '#6b5526'
               }
             }}
           >

@@ -30,6 +30,8 @@ interface ArrayFieldProps {
 
 export function ArrayField({ value, onChange, field }: ArrayFieldProps) {
   const [items, setItems] = useState<any[]>(value || [])
+  const [dragIndex, setDragIndex] = useState<number | null>(null)
+  const shouldHideField = (name: string) => String(name || '').toLowerCase() === 'id'
 
   useEffect(() => {
     // Sync items state with external value changes
@@ -42,6 +44,7 @@ export function ArrayField({ value, onChange, field }: ArrayFieldProps) {
     const newItem: any = {}
     // Initialize with default values
     field.fields?.forEach((subField) => {
+      if (shouldHideField(subField.name)) return
       newItem[subField.name] = subField.defaultValue ?? ''
     })
 
@@ -63,7 +66,27 @@ export function ArrayField({ value, onChange, field }: ArrayFieldProps) {
     onChange(newItems)
   }
 
+  const moveItem = (fromIndex: number, toIndex: number) => {
+    if (toIndex < 0 || toIndex >= items.length || fromIndex === toIndex) return
+    const next = [...items]
+    const [moved] = next.splice(fromIndex, 1)
+    next.splice(toIndex, 0, moved)
+    setItems(next)
+    onChange(next)
+  }
+
+  const handleDragStart = (index: number) => setDragIndex(index)
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+  }
+  const handleDrop = (index: number) => {
+    if (dragIndex === null) return
+    moveItem(dragIndex, index)
+    setDragIndex(null)
+  }
+
   const renderSubField = (subField: any, itemValue: any, itemIndex: number) => {
+    if (shouldHideField(subField.name)) return null
     const value = itemValue?.[subField.name] ?? ''
 
     const handleChange = (newValue: any) => {
@@ -206,37 +229,82 @@ export function ArrayField({ value, onChange, field }: ArrayFieldProps) {
       {items.map((item, index) => (
         <div
           key={index}
+          draggable
+          onDragStart={() => handleDragStart(index)}
+          onDragOver={handleDragOver}
+          onDrop={() => handleDrop(index)}
           style={{
             border: '1px solid #e5e7eb',
             padding: '16px',
             borderRadius: '8px',
             marginBottom: '16px',
             position: 'relative',
+            backgroundColor: dragIndex === index ? '#f9fafb' : '#fff',
+            cursor: 'grab',
           }}
         >
-          {field.fields?.map((subField) => renderSubField(subField, item, index))}
-          <button
-            type="button"
-            onClick={() => removeItem(index)}
+          <div
             style={{
-              position: 'absolute',
-              top: '16px',
-              right: '16px',
-              background: '#ef4444',
-              color: 'white',
-              border: 'none',
-              borderRadius: '50%',
-              width: '24px',
-              height: '24px',
-              cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
-              fontWeight: 'bold',
+              justifyContent: 'space-between',
+              marginBottom: 12,
             }}
           >
-            &times;
-          </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ fontSize: 12, color: '#6b7280' }}>Item {index + 1}</span>
+              <span title="Drag to reorder" style={{ userSelect: 'none', color: '#9ca3af' }}>
+                ≡
+              </span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <button
+                type="button"
+                onClick={() => moveItem(index, index - 1)}
+                disabled={index === 0}
+                style={{
+                  padding: '4px 8px',
+                  border: '1px solid #d1d5db',
+                  borderRadius: 6,
+                  background: '#fff',
+                  color: '#374151',
+                  cursor: index === 0 ? 'not-allowed' : 'pointer',
+                }}
+              >
+                ↑
+              </button>
+              <button
+                type="button"
+                onClick={() => moveItem(index, index + 1)}
+                disabled={index === items.length - 1}
+                style={{
+                  padding: '4px 8px',
+                  border: '1px solid #d1d5db',
+                  borderRadius: 6,
+                  background: '#fff',
+                  color: '#374151',
+                  cursor: index === items.length - 1 ? 'not-allowed' : 'pointer',
+                }}
+              >
+                ↓
+              </button>
+              <button
+                type="button"
+                onClick={() => removeItem(index)}
+                style={{
+                  background: '#ef4444',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '6px',
+                  padding: '4px 8px',
+                  cursor: 'pointer',
+                }}
+              >
+                Remove
+              </button>
+            </div>
+          </div>
+          {field.fields?.map((subField) => renderSubField(subField, item, index))}
         </div>
       ))}
       <button

@@ -11,16 +11,7 @@ export const Homepage: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'title',
-    defaultColumns: [
-      'title',
-      'subtitle',
-      'description',
-      'happening',
-      'iconic_experience',
-      'dinings',
-      'shops',
-      'status',
-    ],
+    defaultColumns: ['title', 'subtitle', 'status'],
   },
   fields: [
     {

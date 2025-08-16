@@ -17,6 +17,7 @@ export function ImageUpload({ value, onChange, uploadOnly = false }: ImageUpload
   const [fileName, setFileName] = useState('')
   const [uploading, setUploading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const [isDragOver, setIsDragOver] = useState(false)
 
   React.useEffect(() => {
     if (uploadOnly || !value) {
@@ -57,8 +58,7 @@ export function ImageUpload({ value, onChange, uploadOnly = false }: ImageUpload
     setIsMediaModalOpen(false)
   }
 
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
+  const uploadFile = async (file: File) => {
     if (!file) return
 
     setUploading(true)
@@ -83,6 +83,12 @@ export function ImageUpload({ value, onChange, uploadOnly = false }: ImageUpload
     }
   }
 
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+    uploadFile(file)
+  }
+
   const handleRemoveImage = () => {
     onChange(null)
   }
@@ -91,33 +97,71 @@ export function ImageUpload({ value, onChange, uploadOnly = false }: ImageUpload
     return (
       <div
         style={{
-          border: '2px dashed #d1d5db',
-          borderRadius: '8px',
-          padding: '24px',
+          border: '2px dashed #e5e7eb',
+          borderRadius: '12px',
+          padding: '28px 16px',
           textAlign: 'center',
-          cursor: 'pointer',
-          backgroundColor: '#f9fafb',
-          transition: 'all 0.2s ease',
+          backgroundColor: isDragOver ? '#f3f4f6' : 'transparent',
+          transition: 'all 0.15s ease',
         }}
-        onClick={() => fileInputRef.current?.click()}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.borderColor = '#3b82f6'
+        onDragOver={(e) => {
+          e.preventDefault()
+          setIsDragOver(true)
         }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.borderColor = '#d1d5db'
+        onDragLeave={() => setIsDragOver(false)}
+        onDrop={(e) => {
+          e.preventDefault()
+          setIsDragOver(false)
+          const file = e.dataTransfer.files?.[0]
+          if (file) uploadFile(file)
         }}
       >
         <input
           type="file"
+          accept="image/png,image/jpeg,image/webp"
           ref={fileInputRef}
           onChange={handleFileChange}
           style={{ display: 'none' }}
         />
+        <div style={{ color: '#9ca3af', marginBottom: 8 }}>
+          {/* simple image icon */}
+          <svg
+            width="28"
+            height="28"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+          >
+            <rect x="3" y="5" width="18" height="14" rx="2" ry="2" />
+            <circle cx="8.5" cy="10.5" r="1.5" />
+            <path d="M21 15l-4.5-4.5L9 18" />
+          </svg>
+        </div>
         {uploading ? (
-          <p>Uploading...</p>
+          <div style={{ color: '#6b7280' }}>Uploading...</div>
         ) : (
-          <p style={{ margin: 0, color: '#6b7280' }}>Click or drag file to upload</p>
+          <div style={{ color: '#111827' }}>
+            <span style={{ color: '#374151' }}>Drag and drop a file or </span>
+            <a
+              onClick={() => fileInputRef.current?.click()}
+              style={{ color: '#0ea5e9', cursor: 'pointer' }}
+            >
+              Upload
+            </a>
+            <span style={{ color: '#374151' }}> or </span>
+            <a
+              onClick={() => setIsMediaModalOpen(true)}
+              style={{ color: '#0ea5e9', cursor: 'pointer' }}
+            >
+              Choose from existing
+            </a>
+          </div>
         )}
+        <div style={{ marginTop: 8, color: '#6b7280', fontSize: 12 }}>
+          PNG, JPG, and WEBP. Maximum size: 1 MB.
+          <div>image size: 800×800 px</div>
+        </div>
       </div>
     )
   }
@@ -188,31 +232,73 @@ export function ImageUpload({ value, onChange, uploadOnly = false }: ImageUpload
           </button>
         </div>
       ) : (
-        <button
-          type="button"
-          onClick={() => setIsMediaModalOpen(true)}
+        <div
           style={{
-            width: '100%',
-            padding: '12px',
-            border: '1px solid #d1d5db',
-            borderRadius: '8px',
-            backgroundColor: '#ffffff',
-            color: '#374151',
-            cursor: 'pointer',
-            fontSize: '14px',
-            fontWeight: '500',
+            border: '2px dashed #e5e7eb',
+            borderRadius: '12px',
+            padding: '28px 16px',
             textAlign: 'center',
-            transition: 'all 0.2s ease',
+            backgroundColor: isDragOver ? '#f3f4f6' : 'transparent',
+            transition: 'all 0.15s ease',
           }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = '#f9fafb'
+          onDragOver={(e) => {
+            e.preventDefault()
+            setIsDragOver(true)
           }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = '#ffffff'
+          onDragLeave={() => setIsDragOver(false)}
+          onDrop={(e) => {
+            e.preventDefault()
+            setIsDragOver(false)
+            const file = e.dataTransfer.files?.[0]
+            if (file) uploadFile(file)
           }}
         >
-          Select Image
-        </button>
+          <input
+            type="file"
+            accept="image/png,image/jpeg,image/webp"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            style={{ display: 'none' }}
+          />
+          <div style={{ color: '#9ca3af', marginBottom: 8 }}>
+            <svg
+              width="28"
+              height="28"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+            >
+              <rect x="3" y="5" width="18" height="14" rx="2" ry="2" />
+              <circle cx="8.5" cy="10.5" r="1.5" />
+              <path d="M21 15l-4.5-4.5L9 18" />
+            </svg>
+          </div>
+          {uploading ? (
+            <div style={{ color: '#6b7280' }}>Uploading...</div>
+          ) : (
+            <div style={{ color: '#111827' }}>
+              <span style={{ color: '#374151' }}>Drag and drop a file or </span>
+              <a
+                onClick={() => fileInputRef.current?.click()}
+                style={{ color: '#0ea5e9', cursor: 'pointer' }}
+              >
+                Upload
+              </a>
+              <span style={{ color: '#374151' }}> or </span>
+              <a
+                onClick={() => setIsMediaModalOpen(true)}
+                style={{ color: '#0ea5e9', cursor: 'pointer' }}
+              >
+                Choose from existing
+              </a>
+            </div>
+          )}
+          <div style={{ marginTop: 8, color: '#6b7280', fontSize: 12 }}>
+            PNG, JPG, and WEBP. Maximum size: 1 MB.
+            <div>image size: 800×800 px</div>
+          </div>
+        </div>
       )}
 
       {isMediaModalOpen && (

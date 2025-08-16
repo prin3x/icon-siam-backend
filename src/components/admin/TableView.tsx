@@ -1,4 +1,6 @@
 import React from 'react'
+import * as Switch from '@radix-ui/react-switch'
+import { EyeOpenIcon, Pencil2Icon, TrashIcon } from '@radix-ui/react-icons'
 
 type ColumnDef = {
   key: string
@@ -15,6 +17,9 @@ interface TableViewProps {
   sortKey?: string
   sortOrder?: 'asc' | 'desc'
   onSortChange?: (key: string, order: 'asc' | 'desc') => void
+  onToggleField?: (id: string, field: string, value: any) => void
+  loading?: boolean
+  skeletonRowCount?: number
 }
 
 const defaultColumns: ColumnDef[] = [
@@ -32,48 +37,17 @@ export function TableView({
   sortKey,
   sortOrder,
   onSortChange,
+  onToggleField,
+  loading = false,
+  skeletonRowCount = 8,
 }: TableViewProps) {
-  const IconEye = ({ size = 20 }: { size?: number }) => (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M12 5c-5 0-9 4.5-10 6 1 1.5 5 6 10 6s9-4.5 10-6c-1-1.5-5-6-10-6Zm0 10a4 4 0 1 1 0-8 4 4 0 0 1 0 8Z"
-        fill="currentColor"
-      />
-    </svg>
-  )
+  const IconEye = ({ size = 20 }: { size?: number }) => <EyeOpenIcon width={size} height={size} />
 
   const IconPencil = ({ size = 20 }: { size?: number }) => (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25Zm18.71-11.04a1.003 1.003 0 0 0 0-1.42l-2.5-2.5a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.66.16-.16Z"
-        fill="currentColor"
-      />
-    </svg>
+    <Pencil2Icon width={size} height={size} />
   )
 
-  const IconTrash = ({ size = 20 }: { size?: number }) => (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path d="M6 7h12l-1 14H7L6 7Zm3-3h6l1 3H8l1-3Z" fill="currentColor" />
-    </svg>
-  )
+  const IconTrash = ({ size = 20 }: { size?: number }) => <TrashIcon width={size} height={size} />
 
   const actionButtonStyle = (color: string, hoverBg: string): React.CSSProperties => ({
     width: 40,
@@ -134,6 +108,18 @@ export function TableView({
       }
     }
     return String(value)
+  }
+
+  const formatDateTime = (value: any): string => {
+    if (!value) return 'N/A'
+    const date = new Date(value)
+    if (isNaN(date.getTime())) return 'N/A'
+    const mm = String(date.getMonth() + 1).padStart(2, '0')
+    const dd = String(date.getDate()).padStart(2, '0')
+    const yyyy = date.getFullYear()
+    const hh = String(date.getHours()).padStart(2, '0')
+    const min = String(date.getMinutes()).padStart(2, '0')
+    return `${mm}/${dd}/${yyyy}, ${hh}:${min}`
   }
 
   return (
@@ -233,9 +219,9 @@ export function TableView({
           </tr>
         </thead>
         <tbody>
-          {items.map((item, index) => (
+          {(loading ? Array.from({ length: skeletonRowCount }) : items).map((row, index) => (
             <tr
-              key={item.id}
+              key={loading ? `skeleton-${index}` : row.id}
               style={{
                 borderBottom: '1px solid #f3f4f6',
                 backgroundColor: index % 2 === 0 ? '#ffffff' : '#f9fafb',
@@ -250,31 +236,68 @@ export function TableView({
             >
               {columns.map((col) => (
                 <td key={col.key} style={{ padding: '16px 20px' }}>
-                  {col.type === 'status' ? (
-                    item[col.key] ? (
-                      <span
-                        style={{
-                          padding: '6px 12px',
-                          borderRadius: '20px',
-                          fontSize: '12px',
-                          fontWeight: '600',
-                          backgroundColor: item[col.key] === 'ACTIVE' ? '#dcfce7' : '#fef2f2',
-                          color: item[col.key] === 'ACTIVE' ? '#166534' : '#dc2626',
-                          textTransform: 'uppercase',
-                          letterSpacing: '0.05em',
-                        }}
-                      >
-                        {String(item[col.key])}
-                      </span>
+                  {loading ? (
+                    col.type === 'status' ? (
+                      <div
+                        style={{ width: 44, height: 24, borderRadius: 9999 }}
+                        className="skeleton"
+                      />
                     ) : (
-                      'N/A'
+                      <div
+                        style={{ width: '70%', height: 14, borderRadius: 6 }}
+                        className="skeleton"
+                      />
                     )
+                  ) : col.type === 'status' ? (
+                    (() => {
+                      const value = row[col.key]
+                      const isOn = value === 'ACTIVE' || value === 'published' || value === true
+                      const mapNext = (checked: boolean) => {
+                        if (value === 'ACTIVE' || value === 'INACTIVE') {
+                          return checked ? 'ACTIVE' : 'INACTIVE'
+                        }
+                        if (value === 'published' || value === 'draft') {
+                          return checked ? 'published' : 'draft'
+                        }
+                        return checked
+                      }
+                      return (
+                        <Switch.Root
+                          checked={isOn}
+                          onCheckedChange={(checked) =>
+                            onToggleField && onToggleField(row.id, col.key, mapNext(checked))
+                          }
+                          aria-label="Toggle status"
+                          style={{
+                            cursor: 'pointer',
+                            width: 44,
+                            height: 24,
+                            borderRadius: 9999,
+                            background: isOn ? '#16a34a' : '#f3f4f6',
+                            border: '1px solid ' + (isOn ? '#16a34a' : '#d1d5db'),
+                            position: 'relative',
+                            WebkitTapHighlightColor: 'transparent',
+                          }}
+                        >
+                          <Switch.Thumb
+                            style={{
+                              position: 'absolute',
+                              top: '50%',
+                              left: isOn ? 22 : 2,
+                              width: 20,
+                              height: 20,
+                              background: '#fff',
+                              borderRadius: '9999px',
+                              boxShadow: '0 1px 2px rgba(0,0,0,0.2)',
+                              transform: 'translateY(-50%)',
+                              transition: 'left 0.15s ease',
+                            }}
+                          />
+                        </Switch.Root>
+                      )
+                    })()
                   ) : col.type === 'date' ? (
-                    item[col.key] ? (
-                      new Date(item[col.key]).toLocaleDateString()
-                    ) : (
-                      'N/A'
-                    )
+                    formatDateTime(row[col.key])
                   ) : (
                     // text/default (handles arrays/objects safely)
                     <div>
@@ -286,7 +309,7 @@ export function TableView({
                           marginBottom: '4px',
                         }}
                       >
-                        {toDisplayString(item[col.key])}
+                        {toDisplayString(row[col.key])}
                       </div>
                     </div>
                   )}
@@ -294,53 +317,72 @@ export function TableView({
               ))}
               <td style={{ padding: '16px 20px' }}>
                 <div style={{ display: 'flex', gap: '10px' }}>
-                  <button
-                    aria-label="Preview"
-                    title="Preview"
-                    onClick={() => onPreview(item.id)}
-                    style={actionButtonStyle('#8b5cf6', 'rgba(139,92,246,0.1)')}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.setAttribute('data-hover', 'true')
-                      ;(e.currentTarget as HTMLButtonElement).style.backgroundColor =
-                        'rgba(139,92,246,0.1)'
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.removeAttribute('data-hover')
-                      ;(e.currentTarget as HTMLButtonElement).style.backgroundColor = '#ffffff'
-                    }}
-                  >
-                    <IconEye />
-                  </button>
-                  <button
-                    aria-label="Edit"
-                    title="Edit"
-                    onClick={() => onEdit(item.id)}
-                    style={actionButtonStyle('#3b82f6', 'rgba(59,130,246,0.1)')}
-                    onMouseEnter={(e) => {
-                      ;(e.currentTarget as HTMLButtonElement).style.backgroundColor =
-                        'rgba(59,130,246,0.1)'
-                    }}
-                    onMouseLeave={(e) => {
-                      ;(e.currentTarget as HTMLButtonElement).style.backgroundColor = '#ffffff'
-                    }}
-                  >
-                    <IconPencil />
-                  </button>
-                  <button
-                    aria-label="Delete"
-                    title="Delete"
-                    onClick={() => onDelete(item.id)}
-                    style={actionButtonStyle('#ef4444', 'rgba(239,68,68,0.1)')}
-                    onMouseEnter={(e) => {
-                      ;(e.currentTarget as HTMLButtonElement).style.backgroundColor =
-                        'rgba(239,68,68,0.1)'
-                    }}
-                    onMouseLeave={(e) => {
-                      ;(e.currentTarget as HTMLButtonElement).style.backgroundColor = '#ffffff'
-                    }}
-                  >
-                    <IconTrash />
-                  </button>
+                  {loading ? (
+                    <>
+                      <div
+                        style={{ width: 40, height: 40, borderRadius: 10 }}
+                        className="skeleton"
+                      />
+                      <div
+                        style={{ width: 40, height: 40, borderRadius: 10 }}
+                        className="skeleton"
+                      />
+                      <div
+                        style={{ width: 40, height: 40, borderRadius: 10 }}
+                        className="skeleton"
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <button
+                        aria-label="Preview"
+                        title="Preview"
+                        onClick={() => onPreview(row.id)}
+                        style={actionButtonStyle('#8b5cf6', 'rgba(139,92,246,0.1)')}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.setAttribute('data-hover', 'true')
+                          ;(e.currentTarget as HTMLButtonElement).style.backgroundColor =
+                            'rgba(139,92,246,0.1)'
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.removeAttribute('data-hover')
+                          ;(e.currentTarget as HTMLButtonElement).style.backgroundColor = '#ffffff'
+                        }}
+                      >
+                        <IconEye />
+                      </button>
+                      <button
+                        aria-label="Edit"
+                        title="Edit"
+                        onClick={() => onEdit(row.id)}
+                        style={actionButtonStyle('#3b82f6', 'rgba(59,130,246,0.1)')}
+                        onMouseEnter={(e) => {
+                          ;(e.currentTarget as HTMLButtonElement).style.backgroundColor =
+                            'rgba(59,130,246,0.1)'
+                        }}
+                        onMouseLeave={(e) => {
+                          ;(e.currentTarget as HTMLButtonElement).style.backgroundColor = '#ffffff'
+                        }}
+                      >
+                        <IconPencil />
+                      </button>
+                      <button
+                        aria-label="Delete"
+                        title="Delete"
+                        onClick={() => onDelete(row.id)}
+                        style={actionButtonStyle('#ef4444', 'rgba(239,68,68,0.1)')}
+                        onMouseEnter={(e) => {
+                          ;(e.currentTarget as HTMLButtonElement).style.backgroundColor =
+                            'rgba(239,68,68,0.1)'
+                        }}
+                        onMouseLeave={(e) => {
+                          ;(e.currentTarget as HTMLButtonElement).style.backgroundColor = '#ffffff'
+                        }}
+                      >
+                        <IconTrash />
+                      </button>
+                    </>
+                  )}
                 </div>
               </td>
             </tr>

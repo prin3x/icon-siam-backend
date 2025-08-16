@@ -103,7 +103,7 @@ export function RelationshipField({ value, onChange, field, placeholder }: Relat
           ] as const
           const requests = collections.map(async (collection) => {
             const params = new URLSearchParams()
-            params.set('limit', '5')
+            params.set('limit', '10')
             if (locale) params.set('locale', locale)
             Object.entries(fo).forEach(([key, cond]) => {
               if (cond && typeof cond === 'object') {
