@@ -527,6 +527,7 @@ export interface Promotion {
   id: number;
   title?: string | null;
   subtitle?: string | null;
+  description?: string | null;
   content?: {
     root: {
       type: string;
@@ -2463,6 +2464,7 @@ export interface GalleryCollectionsSelect<T extends boolean = true> {
 export interface PromotionsSelect<T extends boolean = true> {
   title?: T;
   subtitle?: T;
+  description?: T;
   content?: T;
   highlight?: T;
   section_highlight?: T;
