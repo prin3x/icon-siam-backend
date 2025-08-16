@@ -960,6 +960,7 @@ export interface GettingHere {
         id?: string | null;
       }[]
     | null;
+  explore_icon_siam_title?: string | null;
   explore_icon_siam?:
     | {
         placement_key:
@@ -2335,6 +2336,7 @@ export interface GettingHereSelect<T extends boolean = true> {
         details?: T;
         id?: T;
       };
+  explore_icon_siam_title?: T;
   explore_icon_siam?:
     | T
     | {
