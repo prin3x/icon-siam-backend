@@ -155,6 +155,12 @@ export const GettingHere: CollectionConfig = {
       ],
     },
     {
+      name: 'explore_icon_siam_title',
+      type: 'text',
+      label: 'Explore Icon Siam Title',
+      localized: true,
+    },
+    {
       name: 'explore_icon_siam',
       type: 'array',
       label: 'Explore Icon Siam',
