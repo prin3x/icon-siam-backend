@@ -25,12 +25,6 @@ export const Promotions: CollectionConfig = {
       label: 'Subtitle',
     },
     {
-      name: 'description',
-      type: 'textarea',
-      localized: true,
-      label: 'Description',
-    },
-    {
       name: 'content',
       type: 'richText',
       localized: true,
