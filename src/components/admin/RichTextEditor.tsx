@@ -42,15 +42,32 @@ import { MediaModal } from './MediaModal'
  * the modern TipTap editing experience.
  */
 
-// Create a custom image extension to store media ID
+// Create a custom image extension to store media ID and optional link
 const Image = TiptapImage.extend({
+  selectable: true,
+  draggable: true,
   addAttributes() {
     return {
-      ...this.parent?.(),
+      ...((TiptapImage as any).config?.addAttributes?.call(this) || {}),
       'data-id': {
         default: null,
       },
+      href: {
+        default: null,
+        parseHTML: (element: HTMLElement) => element.getAttribute('href'),
+      },
+      target: {
+        default: null,
+        parseHTML: (element: HTMLElement) => element.getAttribute('target'),
+      },
     }
+  },
+  renderHTML({ HTMLAttributes }: { HTMLAttributes: Record<string, unknown> }) {
+    const { href, target, ...rest } = HTMLAttributes as Record<string, any>
+    if (href) {
+      return ['a', { href, target: target || '_blank' }, ['img', rest]]
+    }
+    return ['img', rest]
   },
 })
 
@@ -137,6 +154,8 @@ const convertPayloadToTiptap = (payloadValue: any): any => {
             src: node.value.url,
             alt: node.value.filename,
             'data-id': node.value.id,
+            ...(node.value.href ? { href: node.value.href } : {}),
+            ...(node.value.target ? { target: node.value.target } : {}),
           },
         }
       }
@@ -160,6 +179,14 @@ const convertPayloadToTiptap = (payloadValue: any): any => {
             if (child.underline) marks.push({ type: 'underline' })
             if (child.strike) marks.push({ type: 'strike' })
             if (child.code) marks.push({ type: 'code' })
+            if (child.link)
+              marks.push({
+                type: 'link',
+                attrs: {
+                  href: child.link.url,
+                  target: child.link.target || '_blank',
+                },
+              })
 
             const tiptapChild: { type: string; text: string; marks?: any[] } = {
               type: 'text',
@@ -633,12 +660,20 @@ const convertTiptapToPayload = (tiptapValue: any): any => {
         const id = node.attrs['data-id']
         const src = node.attrs.src
         const alt = node.attrs.alt || 'Image'
+        const href = node.attrs.href
+        const target = node.attrs.target || '_blank'
 
         if (id) {
           // Image already has a PayloadCMS media ID
           return {
             type: 'upload',
-            value: { id, url: src, filename: alt },
+            value: {
+              id,
+              url: src,
+              filename: alt,
+              href: href || undefined,
+              target: href ? target : undefined,
+            },
             relationTo: 'media',
             children: [{ text: '' }],
           }
@@ -646,6 +681,16 @@ const convertTiptapToPayload = (tiptapValue: any): any => {
           // Image from HTML conversion or URL upload - create informative placeholder
           // This helps users understand what the image was and where it came from
           // Users can manually replace these placeholders with proper media uploads or use URL upload
+          if (href) {
+            return {
+              type: 'paragraph',
+              children: [
+                {
+                  text: `[Image: ${alt}] - Source: ${src}] (link: ${href})`,
+                },
+              ],
+            }
+          }
           return {
             type: 'paragraph',
             children: [
@@ -683,6 +728,10 @@ const convertTiptapToPayload = (tiptapValue: any): any => {
                 underline?: true
                 strike?: true
                 code?: true
+                link?: {
+                  url: string
+                  target: string
+                }
               } = {
                 text: child.text || '',
               }
@@ -702,6 +751,16 @@ const convertTiptapToPayload = (tiptapValue: any): any => {
               if (child.marks?.some((mark: any) => mark.type === 'code')) {
                 payloadChild.code = true
               }
+
+              // Handle link marks
+              const linkMark = child.marks?.find((mark: any) => mark.type === 'link')
+              if (linkMark) {
+                payloadChild.link = {
+                  url: linkMark.attrs.href,
+                  target: linkMark.attrs.target || '_blank',
+                }
+              }
+
               return payloadChild
             }) || [],
         }
@@ -737,6 +796,13 @@ const convertTiptapToPayload = (tiptapValue: any): any => {
                     }),
                     ...(child.marks?.some((m: any) => m.type === 'strike') && { strike: true }),
                     ...(child.marks?.some((m: any) => m.type === 'code') && { code: true }),
+                    ...(child.marks?.find((m: any) => m.type === 'link') && {
+                      link: {
+                        url: child.marks.find((m: any) => m.type === 'link').attrs.href,
+                        target:
+                          child.marks.find((m: any) => m.type === 'link').attrs.target || '_blank',
+                      },
+                    }),
                   })) || [{ text: '' }],
                 }
               }
@@ -767,23 +833,19 @@ const convertTiptapToPayload = (tiptapValue: any): any => {
     .flat() // Flatten arrays from lists
 }
 
-export function RichTextEditor({
+export const RichTextEditor: React.FC<RichTextEditorProps> = ({
   value,
   onChange,
-  placeholder = 'Enter content...',
-  readOnly = false,
-}: RichTextEditorProps) {
+  placeholder,
+  readOnly,
+}) => {
   const [isMediaModalOpen, setIsMediaModalOpen] = useState(false)
+  const [isLinkModalOpen, setIsLinkModalOpen] = useState(false)
+  const [linkUrl, setLinkUrl] = useState('')
+  const [linkTarget, setLinkTarget] = useState('_blank')
   const isInternallyUpdating = useRef(false)
-  const [showFormatInfo, setShowFormatInfo] = useState(false)
-
   const contentFormat = detectContentFormat(value)
-  const formatLabel = {
-    html: 'HTML (Legacy)',
-    tiptap: 'TipTap',
-    lexical: 'Lexical',
-    unknown: 'Unknown',
-  }[contentFormat]
+  const formatLabel = contentFormat === 'html' ? 'HTML Import' : 'Current Format'
 
   const editor = useEditor({
     extensions: [
@@ -797,6 +859,11 @@ export function RichTextEditor({
         HTMLAttributes: {
           class: 'text-blue-600 underline',
         },
+        validate: (href) => /^https?:\/\//.test(href),
+        protocols: ['http', 'https', 'mailto', 'tel'],
+        autolink: true,
+        linkOnPaste: true,
+        defaultProtocol: 'https',
       }),
       Image.configure({
         HTMLAttributes: {
@@ -876,6 +943,81 @@ export function RichTextEditor({
         .run()
     }
     setIsMediaModalOpen(false)
+  }
+
+  const handleLinkSubmit = () => {
+    const url = linkUrl.trim()
+    if (editor?.isActive('image')) {
+      if (url) {
+        editor.chain().focus().updateAttributes('image', { href: url, target: linkTarget }).run()
+      } else {
+        editor.chain().focus().updateAttributes('image', { href: null, target: null }).run()
+      }
+    } else if (url) {
+      if (editor?.state.selection.empty) {
+        const linkText = url.replace(/^https?:\/\//, '').replace(/^www\./, '')
+        const linkContent = {
+          type: 'doc',
+          content: [
+            {
+              type: 'paragraph',
+              content: [
+                {
+                  type: 'text',
+                  text: linkText,
+                  marks: [
+                    {
+                      type: 'link',
+                      attrs: {
+                        href: url,
+                        target: linkTarget,
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        }
+        editor?.chain().focus().insertContent(linkContent).run()
+      } else {
+        editor?.chain().focus().setLink({ href: url, target: linkTarget }).run()
+      }
+    }
+    setIsLinkModalOpen(false)
+    setLinkUrl('')
+  }
+
+  const handleRemoveLink = () => {
+    if (editor?.isActive('image')) {
+      editor.chain().focus().updateAttributes('image', { href: null, target: null }).run()
+    } else {
+      editor?.chain().focus().unsetLink().run()
+    }
+  }
+
+  const openLinkModal = () => {
+    if (editor?.isActive('image')) {
+      const imgAttrs = editor.getAttributes('image') as any
+      setLinkUrl(imgAttrs?.href || '')
+      setLinkTarget(imgAttrs?.target || '_blank')
+    } else {
+      const { from, to } = editor?.state.selection || {}
+      if (from !== to) {
+        const linkMark = editor?.getAttributes('link')
+        if (linkMark?.href) {
+          setLinkUrl(linkMark.href)
+          setLinkTarget(linkMark.target || '_blank')
+        } else {
+          setLinkUrl('')
+          setLinkTarget('_blank')
+        }
+      } else {
+        setLinkUrl('')
+        setLinkTarget('_blank')
+      }
+    }
+    setIsLinkModalOpen(true)
   }
 
   if (!editor) {
@@ -1023,6 +1165,62 @@ export function RichTextEditor({
           >
             Underline
           </button>
+          <button
+            onClick={openLinkModal}
+            style={{
+              padding: '8px 12px',
+              borderRadius: '6px',
+              fontSize: '13px',
+              fontWeight: '500',
+              backgroundColor: editor?.isActive('link') ? '#3b82f6' : '#ffffff',
+              color: editor?.isActive('link') ? '#ffffff' : '#374151',
+              border: '1px solid #d1d5db',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+            }}
+            onMouseEnter={(e) => {
+              if (!editor?.isActive('link')) {
+                e.currentTarget.style.backgroundColor = '#f3f4f6'
+                e.currentTarget.style.borderColor = '#9ca3af'
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!editor?.isActive('link')) {
+                e.currentTarget.style.backgroundColor = '#ffffff'
+                e.currentTarget.style.borderColor = '#d1d5db'
+              }
+            }}
+            type="button"
+          >
+            Link
+          </button>
+          {editor?.isActive('link') && (
+            <button
+              onClick={handleRemoveLink}
+              style={{
+                padding: '8px 12px',
+                borderRadius: '6px',
+                fontSize: '13px',
+                fontWeight: '500',
+                backgroundColor: '#ef4444',
+                color: '#ffffff',
+                border: '1px solid #dc2626',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#dc2626'
+                e.currentTarget.style.borderColor = '#b91c1c'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#ef4444'
+                e.currentTarget.style.borderColor = '#dc2626'
+              }}
+              type="button"
+            >
+              Remove Link
+            </button>
+          )}
           <button
             onClick={() => setIsMediaModalOpen(true)}
             style={{
@@ -1343,6 +1541,164 @@ export function RichTextEditor({
       {isMediaModalOpen && (
         <MediaModal onClose={() => setIsMediaModalOpen(false)} onSelect={handleImageSelection} />
       )}
+      {isLinkModalOpen && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+          }}
+          onClick={() => setIsLinkModalOpen(false)}
+        >
+          <div
+            style={{
+              backgroundColor: '#ffffff',
+              padding: '24px',
+              borderRadius: '8px',
+              boxShadow:
+                '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+              minWidth: '400px',
+              maxWidth: '500px',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3
+              style={{
+                margin: '0 0 16px 0',
+                fontSize: '18px',
+                fontWeight: '600',
+                color: '#111827',
+              }}
+            >
+              {editor?.state.selection.empty ? 'Insert Link' : 'Edit Link'}
+            </h3>
+            <div style={{ marginBottom: '16px' }}>
+              <label
+                style={{
+                  display: 'block',
+                  marginBottom: '8px',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  color: '#374151',
+                }}
+              >
+                URL
+              </label>
+              <input
+                type="url"
+                value={linkUrl}
+                onChange={(e) => setLinkUrl(e.target.value)}
+                placeholder="https://example.com"
+                style={{
+                  width: '100%',
+                  padding: '8px 12px',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '6px',
+                  fontSize: '14px',
+                  outline: 'none',
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleLinkSubmit()
+                  } else if (e.key === 'Escape') {
+                    setIsLinkModalOpen(false)
+                  }
+                }}
+                autoFocus
+              />
+            </div>
+            <div style={{ marginBottom: '20px' }}>
+              <label
+                style={{
+                  display: 'block',
+                  marginBottom: '8px',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  color: '#374151',
+                }}
+              >
+                Target
+              </label>
+              <select
+                value={linkTarget}
+                onChange={(e) => setLinkTarget(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '8px 12px',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '6px',
+                  fontSize: '14px',
+                  outline: 'none',
+                }}
+              >
+                <option value="_blank">Open in new tab</option>
+                <option value="_self">Open in same tab</option>
+                <option value="_parent">Open in parent frame</option>
+                <option value="_top">Open in top frame</option>
+              </select>
+            </div>
+            <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+              <button
+                onClick={() => setIsLinkModalOpen(false)}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: '6px',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  backgroundColor: '#ffffff',
+                  color: '#374151',
+                  border: '1px solid #d1d5db',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#f3f4f6'
+                  e.currentTarget.style.borderColor = '#9ca3af'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = '#ffffff'
+                  e.currentTarget.style.borderColor = '#d1d5db'
+                }}
+                type="button"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleLinkSubmit}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: '6px',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  backgroundColor: '#3b82f6',
+                  color: '#ffffff',
+                  border: '1px solid #2563eb',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#2563eb'
+                  e.currentTarget.style.borderColor = '#1d4ed8'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = '#3b82f6'
+                  e.currentTarget.style.borderColor = '#2563eb'
+                }}
+                type="button"
+              >
+                {editor?.state.selection.empty ? 'Insert' : 'Update'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <div
         style={{
           border: '1px solid #d1d5db',
@@ -1441,6 +1797,24 @@ export function RichTextEditor({
               border: none !important;
               border-top: 1px solid #d1d5db !important;
               margin: 1em 0 !important;
+            }
+            .ProseMirror a {
+              color: #2563eb !important;
+              text-decoration: underline !important;
+              text-decoration-color: #93c5fd !important;
+              text-underline-offset: 2px !important;
+            }
+            .ProseMirror a:hover {
+              color: #1d4ed8 !important;
+              text-decoration-color: #60a5fa !important;
+            }
+            .ProseMirror img {
+              cursor: pointer !important;
+            }
+            .ProseMirror-selectednode {
+              outline: 2px solid #3b82f6 !important;
+              outline-offset: 2px !important;
+              border-radius: 4px !important;
             }
           `,
           }}
