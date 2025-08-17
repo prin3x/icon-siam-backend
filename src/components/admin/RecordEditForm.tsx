@@ -251,8 +251,31 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
           result[field.name] = normalizedRows
           break
         }
+        case 'number': {
+          // Convert empty input to null so Payload clears the value; otherwise coerce to number
+          if (value === '') {
+            result[field.name] = null
+          } else {
+            result[field.name] = typeof value === 'number' ? value : Number(value)
+          }
+          break
+        }
+        case 'date': {
+          // Empty date should clear the field
+          result[field.name] = value === '' ? null : value
+          break
+        }
+        case 'text':
+        case 'textarea':
+        case 'email':
+        case 'select':
+        case 'url':
+        case 'slug':
+        case 'checkbox':
         default: {
-          if (value !== '') result[field.name] = value
+          // Always include value, even if empty string, so clearing a field persists
+          result[field.name] = value
+          break
         }
       }
     }
