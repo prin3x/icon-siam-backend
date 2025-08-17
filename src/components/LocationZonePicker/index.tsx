@@ -1,17 +1,16 @@
 'use client'
 
 import React from 'react'
-import { useField } from '@payloadcms/ui'
 import './styles.css'
 
 interface LocationZonePickerProps {
   path: string
   field: any
+  value?: string
+  onChange?: (value: string) => void
 }
 
-const LocationZonePicker = ({ path, field }: LocationZonePickerProps) => {
-  const { value, setValue } = useField<string>({ path: path || field.name })
-
+const LocationZonePicker = ({ path, field, value, onChange }: LocationZonePickerProps) => {
   const locationZones = [
     'SIAM Takashimaya',
     'ICONEATS',
@@ -34,10 +33,16 @@ const LocationZonePicker = ({ path, field }: LocationZonePickerProps) => {
     'Napalai Terrace',
   ]
 
+  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    if (onChange) {
+      onChange(e.target.value)
+    }
+  }
+
   return (
     <div className="location-zone-picker">
       <label className="field-label">{field.label || 'Location Zone'}</label>
-      <select value={value || ''} onChange={(e) => setValue(e.target.value)}>
+      <select value={value || ''} onChange={handleChange}>
         <option value="">Select a location zone...</option>
         {locationZones.map((zone) => (
           <option key={zone} value={zone}>

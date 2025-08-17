@@ -126,3 +126,133 @@
   font-size: 30px;
   line-height: 1;
 }
+
+/* Responsive two-column layout for forms */
+.two-column-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.single-column-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+/* Form section styling */
+.two-column-layout section,
+.single-column-layout section {
+  margin-bottom: 16px;
+}
+
+.two-column-layout section > div,
+.single-column-layout section > div {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  padding: 16px;
+}
+
+/* Wrapped sections */
+.wrapped-section > div {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  padding: 16px;
+}
+
+/* Inline sections (no wrapper) */
+.inline-section {
+  margin-bottom: 8px;
+}
+/* 
+.inline-section > div {
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+} */
+
+/* Form section titles and descriptions */
+.wrapped-section h3,
+.wrapped-section h4 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.wrapped-section p {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  color: #6b7280;
+  line-height: 1.4;
+}
+
+/* Form field spacing within sections */
+.wrapped-section > div > div,
+.inline-section > div {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Mobile responsive breakpoint */
+@media (max-width: 768px) {
+  .two-column-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .single-column-layout {
+    grid-template-columns: 1fr;
+  }
+
+  /* Also make the sidebar responsive */
+  .custom-admin-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .custom-admin-aside {
+    order: 2;
+  }
+
+  /* Improve mobile form experience */
+  .two-column-layout > div,
+  .single-column-layout > div {
+    margin-bottom: 12px;
+  }
+
+  /* Make form sections more compact on mobile */
+  section {
+    margin-bottom: 12px !important;
+  }
+
+  /* Adjust padding for mobile */
+  section > div > div {
+    padding: 12px !important;
+  }
+
+  /* Make buttons more touch-friendly on mobile */
+  button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Better visual separation on mobile */
+  .two-column-layout > div:not(:last-child),
+  .single-column-layout > div:not(:last-child) {
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 16px;
+  }
+
+  /* Improve form field spacing on mobile */
+  .two-column-layout > div > div,
+  .single-column-layout > div > div {
+    gap: 8px !important;
+  }
+}

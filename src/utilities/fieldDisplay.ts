@@ -7,6 +7,7 @@ export const shouldHideField = (name: string) => {
     lower === 'updatedat' ||
     lower === 'created_at' ||
     lower === 'updated_at' ||
-    lower === '_status'
+    lower === '_status' ||
+    lower === 'unique_id'
   )
 }

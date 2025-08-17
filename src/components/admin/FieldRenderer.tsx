@@ -9,6 +9,7 @@ import { CollapsibleField } from './CollapsibleField'
 import { RowField } from './RowField'
 import { TabsField } from './TabsField'
 import { ImageUpload } from './ImageUpload'
+import LocationZonePicker from '@/components/LocationZonePicker'
 
 interface FieldRendererProps {
   field: any
@@ -25,6 +26,21 @@ export function FieldRenderer({
 }: FieldRendererProps) {
   const handleChange = (value: any) => {
     handleInputChange(field.name, value)
+  }
+
+  // Handle custom field components
+  if (field.admin?.components?.Field) {
+    const ComponentName = field.admin.components.Field
+    if (ComponentName === '@/components/LocationZonePicker') {
+      return (
+        <LocationZonePicker
+          path={field.name}
+          field={field}
+          value={formData[field.name]}
+          onChange={handleChange}
+        />
+      )
+    }
   }
 
   switch (field.type) {

@@ -410,7 +410,7 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
     if (sectionFields.length === 0) return null
     if (!wrap) {
       return (
-        <section style={{ marginBottom: 16 }}>
+        <section className="inline-section" style={{ marginBottom: 16 }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {sectionFields.map((field) => (
               <FieldRenderer
@@ -426,7 +426,7 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
       )
     }
     return (
-      <section style={{ marginBottom: 16 }}>
+      <section className="wrapped-section" style={{ marginBottom: 16 }}>
         <div
           style={{
             backgroundColor: '#ffffff',
@@ -513,18 +513,24 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
         )}
         {layout ? (
           <div
+            className={layout.columns === 2 ? 'two-column-layout' : 'single-column-layout'}
             style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr',
               gap: 16,
               alignItems: 'start',
             }}
           >
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              {[...layout.left, ...(layout.right || [])].map((section) =>
+              {layout.left.map((section) =>
                 renderSection(section.title, section.fields, section.description, section.wrap),
               )}
             </div>
+            {layout.right && layout.right.length > 0 && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                {layout.right.map((section) =>
+                  renderSection(section.title, section.fields, section.description, section.wrap),
+                )}
+              </div>
+            )}
           </div>
         ) : (
           // Fallback: render fields in natural order
