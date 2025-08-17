@@ -186,6 +186,30 @@ export function ArrayField({ value, onChange, field }: ArrayFieldProps) {
           <RowField field={subField} value={value} onChange={handleChange} />
         ) : subField.type === 'collapsible' ? (
           <CollapsibleField field={subField} value={value} onChange={handleChange} />
+        ) : subField.type === 'text' || subField.type === 'textarea' ? (
+          <textarea
+            value={value}
+            onChange={(e) => handleChange(e.target.value)}
+            style={{
+              width: '100%',
+              padding: '12px',
+              border: '1px solid #d1d5db',
+              borderRadius: '8px',
+              fontSize: '14px',
+              outline: 'none',
+              transition: 'all 0.2s ease',
+              backgroundColor: '#ffffff',
+            }}
+            placeholder={`Enter ${subField?.label?.toLowerCase() || subField.name?.toLowerCase()}...`}
+            onFocus={(e) => {
+              e.target.style.borderColor = '#3b82f6'
+              e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)'
+            }}
+            onBlur={(e) => {
+              e.target.style.borderColor = '#d1d5db'
+              e.target.style.boxShadow = 'none'
+            }}
+          />
         ) : (
           <input
             type={subField.type === 'number' ? 'number' : 'text'}

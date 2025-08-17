@@ -28,7 +28,6 @@ export function FieldRenderer({
   }
 
   switch (field.type) {
-    case 'text':
     case 'email':
     case 'number':
     case 'date':
@@ -65,6 +64,7 @@ export function FieldRenderer({
           )}
         </div>
       )
+    case 'text':
     case 'textarea':
       return (
         <div style={{ marginBottom: '16px' }}>
