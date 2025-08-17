@@ -30,6 +30,7 @@ export const GROUPS: Record<string, string[]> = {
     'vision-mission',
     'residences',
     'stories',
+    'news-press',
   ],
   'Images & Videos': ['media'],
 }
@@ -56,6 +57,7 @@ const TITLE_OVERRIDES: Record<string, string> = {
   'vision-mission': 'Vision and mission',
   residences: 'Residences',
   stories: 'Stories',
+  'news-press': 'News and Press',
   media: 'Media',
 }
 
