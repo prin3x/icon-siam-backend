@@ -1450,6 +1450,7 @@ export interface AboutIconsiam {
     title?: string | null;
     image?: (number | null) | Media;
     description?: string | null;
+    background_color?: string | null;
   };
   awards?: {
     title?: string | null;
@@ -2813,6 +2814,7 @@ export interface AboutIconsiamSelect<T extends boolean = true> {
         title?: T;
         image?: T;
         description?: T;
+        background_color?: T;
       };
   awards?:
     | T
