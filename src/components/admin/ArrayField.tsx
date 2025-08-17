@@ -7,6 +7,7 @@ import { GroupField } from './GroupField'
 import { TabsField } from './TabsField'
 import { RowField } from './RowField'
 import { CollapsibleField } from './CollapsibleField'
+import { shouldHideField } from '@/utilities/fieldDisplay'
 
 interface ArrayFieldProps {
   value: any[]
@@ -31,7 +32,6 @@ interface ArrayFieldProps {
 export function ArrayField({ value, onChange, field }: ArrayFieldProps) {
   const [items, setItems] = useState<any[]>(value || [])
   const [dragIndex, setDragIndex] = useState<number | null>(null)
-  const shouldHideField = (name: string) => String(name || '').toLowerCase() === 'id'
 
   useEffect(() => {
     // Sync items state with external value changes

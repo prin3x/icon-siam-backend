@@ -1,5 +1,6 @@
 'use client'
 
+import { shouldHideField } from '@/utilities/fieldDisplay'
 import { navigateWithLocale } from '@/utilities/navigation'
 import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
@@ -37,7 +38,6 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
   const [error, setError] = useState<string>('')
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const isCreateMode = !recordId
-  const shouldHideField = (name: string) => String(name || '').toLowerCase() === 'id'
 
   useEffect(() => {
     const controller = new AbortController()
