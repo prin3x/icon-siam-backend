@@ -131,6 +131,7 @@ export const AboutIconsiam: CollectionConfig = {
         },
       ],
     },
+
     {
       name: 'vision_mission',
       type: 'group',
@@ -154,6 +155,17 @@ export const AboutIconsiam: CollectionConfig = {
           type: 'textarea',
           label: 'Description',
           localized: true,
+        },
+        {
+          name: 'background_color',
+          type: 'text',
+          label: 'Vision Mission Background Color',
+          defaultValue: '#2B2B28',
+          admin: {
+            components: {
+              Field: '@/components/ColorPicker',
+            },
+          },
         },
       ],
     },
