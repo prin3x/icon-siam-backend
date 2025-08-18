@@ -203,7 +203,6 @@ export const AboutIconsiam: CollectionConfig = {
               type: 'text',
               label: 'Award Title',
               localized: true,
-              required: true,
             },
             {
               name: 'description',
