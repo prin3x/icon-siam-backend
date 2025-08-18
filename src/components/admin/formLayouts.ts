@@ -113,7 +113,7 @@ export const FORM_LAYOUTS: Record<string, CollectionFormLayout> = {
       {
         title: 'Categories & Classification',
         description: 'How this dining establishment is categorized',
-        fields: ['categories', 'pin_to_iconluxe', 'is_featured'],
+        fields: ['categories', 'pin_to_iconluxe', 'iconluxe_custom_link_url', 'is_featured'],
       },
       {
         title: 'Location Details',
@@ -187,7 +187,7 @@ export const FORM_LAYOUTS: Record<string, CollectionFormLayout> = {
       {
         title: 'Categories & Classification',
         description: 'How this shop is categorized',
-        fields: ['categories', 'pin_to_iconluxe', 'is_featured'],
+        fields: ['categories', 'pin_to_iconluxe', 'iconluxe_custom_link_url', 'is_featured'],
       },
       {
         title: 'Location Details',

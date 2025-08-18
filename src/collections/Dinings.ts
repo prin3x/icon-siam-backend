@@ -24,6 +24,11 @@ export const Dinings: CollectionConfig = {
       defaultValue: false,
     },
     {
+      name: 'iconluxe_custom_link_url',
+      type: 'text',
+      label: 'Iconluxe Custom Link URL',
+    },
+    {
       name: 'unique_id',
       type: 'text',
       label: 'Unique ID',

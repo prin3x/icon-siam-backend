@@ -32,6 +32,11 @@ export const Shops: CollectionConfig = {
       defaultValue: false,
     },
     {
+      name: 'iconluxe_custom_link_url',
+      type: 'text',
+      label: 'Iconluxe Custom Link URL',
+    },
+    {
       name: 'subtitle',
       type: 'textarea',
       localized: true,
