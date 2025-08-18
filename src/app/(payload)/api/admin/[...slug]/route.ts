@@ -243,6 +243,7 @@ async function handleSchemaRequest(request: NextRequest, collectionSlug: string)
         hasMany: field.hasMany || false,
         // Add array-specific properties
         fields: field.fields,
+        hidden: field.hidden || false,
       }
     })
 

@@ -44,7 +44,7 @@ export function ArrayField({ value, onChange, field }: ArrayFieldProps) {
     const newItem: any = {}
     // Initialize with default values
     field.fields?.forEach((subField) => {
-      if (shouldHideField(subField.name)) return
+      if (shouldHideField(subField)) return
       newItem[subField.name] = subField.defaultValue ?? ''
     })
 
@@ -86,7 +86,7 @@ export function ArrayField({ value, onChange, field }: ArrayFieldProps) {
   }
 
   const renderSubField = (subField: any, itemValue: any, itemIndex: number) => {
-    if (shouldHideField(subField.name)) return null
+    if (shouldHideField(subField)) return null
     const value = itemValue?.[subField.name] ?? ''
 
     const handleChange = (newValue: any) => {
