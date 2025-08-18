@@ -1458,7 +1458,7 @@ export interface AboutIconsiam {
     awards_list?:
       | {
           image?: (number | null) | Media;
-          title: string;
+          title?: string | null;
           description?: string | null;
           id?: string | null;
         }[]
