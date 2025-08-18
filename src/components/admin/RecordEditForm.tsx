@@ -23,6 +23,7 @@ interface FieldSchema {
   relationTo?: string | string[]
   hasMany?: boolean
   fields?: FieldSchema[]
+  hidden?: boolean
 }
 
 export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps) {
@@ -66,7 +67,7 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
           // Initialize form with sensible defaults for new record
           const initialFormData: any = {}
           schemaData.fields?.forEach((field: FieldSchema) => {
-            if (shouldHideField(field.name)) return
+            if (shouldHideField(field)) return
             if (field.type === 'group') {
               initialFormData[field.name] = {}
             } else if (field.type === 'relationship') {
@@ -97,7 +98,7 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
           // Initialize form with existing data
           const initialFormData: any = {}
           schemaData.fields?.forEach((field: FieldSchema) => {
-            if (shouldHideField(field.name)) return
+            if (shouldHideField(field)) return
             const value = recordData[field.name]
             if (field.type === 'date' && value) {
               initialFormData[field.name] = new Date(value).toISOString().split('T')[0]
@@ -157,7 +158,7 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
     }
     const result: any = {}
     for (const field of fields) {
-      if (shouldHideField(field.name)) continue
+      if (shouldHideField(field)) continue
       const value = data?.[field.name]
       if (value === undefined) continue
 
@@ -457,7 +458,7 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
   }
 
   // Keep all fetched schema fields accessible
-  const fields = schema.filter((f) => !shouldHideField(f.name))
+  const fields = schema.filter((f) => !shouldHideField(f))
 
   return (
     <div>
