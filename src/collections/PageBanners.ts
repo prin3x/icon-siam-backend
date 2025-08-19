@@ -214,6 +214,61 @@ export const PageBanners: CollectionConfig = {
       ],
       defaultValue: 'ACTIVE',
     },
+    {
+      name: 'config',
+      type: 'group',
+      label: 'Config',
+      fields: [
+        {
+          name: 'section_config',
+          type: 'array',
+          label: 'Section config',
+          fields: [
+            {
+              name: 'name',
+              type: 'text',
+              label: 'Section name',
+              admin: {
+                readOnly: true,
+                description: 'ex. Related Section',
+              },
+            },
+            {
+              name: 'key',
+              type: 'text',
+              label: 'Section key',
+              admin: {
+                readOnly: true,
+                description: 'ex. RELATED_SECTION',
+              },
+            },
+            {
+              name: 'status',
+              type: 'checkbox',
+              label: 'Active',
+            },
+          ],
+          hooks: {
+            beforeChange: [
+              ({ value, originalDoc }) => {
+                if (!originalDoc?.section_config) {
+                  return value
+                }
+
+                const original = originalDoc.section_config
+
+                const newArray = original.map((oldItem: any) => {
+                  const match = value?.find((v: any) => v.id === oldItem.id)
+                  return match || oldItem
+                })
+
+                return newArray
+              },
+            ],
+          },
+        },
+      ],
+    },
   ],
   timestamps: true,
 }

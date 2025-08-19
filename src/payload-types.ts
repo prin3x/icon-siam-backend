@@ -824,6 +824,22 @@ export interface PageBanner {
   custom_banner_section_title?: string | null;
   custom_banner_section_subtitle?: string | null;
   status?: ('ACTIVE' | 'INACTIVE') | null;
+  config?: {
+    section_config?:
+      | {
+          /**
+           * ex. Related Section
+           */
+          name?: string | null;
+          /**
+           * ex. RELATED_SECTION
+           */
+          key?: string | null;
+          status?: boolean | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
   updatedAt: string;
   createdAt: string;
 }
@@ -1902,6 +1918,18 @@ export interface PageBannersSelect<T extends boolean = true> {
   custom_banner_section_title?: T;
   custom_banner_section_subtitle?: T;
   status?: T;
+  config?:
+    | T
+    | {
+        section_config?:
+          | T
+          | {
+              name?: T;
+              key?: T;
+              status?: T;
+              id?: T;
+            };
+      };
   updatedAt?: T;
   createdAt?: T;
 }
