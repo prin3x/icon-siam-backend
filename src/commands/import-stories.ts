@@ -112,7 +112,7 @@ async function importStories() {
     ssl: process.env.DATABASE_SSL_MODE === 'true' ? { rejectUnauthorized: false } : undefined,
   })
   try {
-    const dataPath = path.resolve(process.cwd(), 'data', 'stories-table-export.json')
+    const dataPath = path.resolve(process.cwd(), 'data', 'stories2.json')
     const raw = await fs.readFile(dataPath, 'utf8')
     const rows: StoryRow[] = JSON.parse(raw)
 
@@ -158,6 +158,10 @@ async function importStories() {
     }
 
     for (const row of rows) {
+      if (row.id && row.id <= 900) {
+        console.log('Skipping story id:', row.id)
+        continue
+      }
       const originalId = row.id ?? undefined
 
       // Determine primary locale based on available title

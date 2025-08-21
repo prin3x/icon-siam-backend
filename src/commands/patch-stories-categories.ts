@@ -68,6 +68,9 @@ async function patchStoriesCategories() {
   while (page <= totalPages) {
     const res = await payload.find({
       collection: 'stories',
+      where: {
+        id: { greater_than: 970 },
+      },
       page,
       limit,
       depth: 0,
