@@ -477,10 +477,10 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
           <p
             style={{
               fontSize: '14px',
-              color: '#6b7280',
+              color: '#0089E4',
               margin: '0',
               cursor: 'pointer',
-              borderBottom: '1px solid #d1d5db',
+              borderBottom: '1px solid #0089E4',
             }}
             onClick={() => {
               window.open(`/api/custom-admin/${collectionSlug}/example`, '_blank')
