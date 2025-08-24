@@ -68,30 +68,6 @@ export function RelationshipField({ value, onChange, field, placeholder }: Relat
     )
   }
 
-  const normalizePair = (item: any): { collection: string; id: string } | null => {
-    if (!item) return null
-    if (typeof item === 'string' || typeof item === 'number') {
-      const firstCollection = Array.isArray(field.relationTo)
-        ? field.relationTo[0]
-        : (field.relationTo as string)
-      return { collection: firstCollection, id: String(item) }
-    }
-    if (typeof item === 'object' && 'value' in item && 'relationTo' in item) {
-      const v: any = (item as any).value
-      const id = typeof v === 'object' && v && 'id' in v ? String(v.id) : String(v)
-      return { collection: (item as any).relationTo, id }
-    }
-    if (typeof item === 'object' && 'id' in item) {
-      return {
-        collection:
-          (item as any).collection ||
-          (Array.isArray(field.relationTo) ? field.relationTo[0] : (field.relationTo as string)),
-        id: String((item as any).id),
-      }
-    }
-    return null
-  }
-
   // Convert relationTo to array if it's a string
   const collections = field.relationTo
     ? Array.isArray(field.relationTo)
