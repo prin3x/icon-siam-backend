@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -97,6 +98,25 @@ export default function LoginPage() {
               {isLoading ? 'Signing in...' : 'Sign in'}
             </button>
           </form>
+        </div>
+
+        <div className="mt-4">
+          <a
+            href="/api/auth/signin/azure-ad?callbackUrl=%2Fapi%2Fauth%2Fbridge"
+            className="admin-button-dark w-full inline-flex items-center justify-center py-3 rounded-md"
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className="mr-2"
+            >
+              <path d="M12 2L20 12L12 22L4 12L12 2Z" fill="#2F2F2F" />
+            </svg>
+            Sign in with Microsoft
+          </a>
         </div>
 
         <div className="text-center text-xs text-slate-500 mt-4">

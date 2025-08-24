@@ -4,7 +4,7 @@ import React from 'react'
 export const CustomLoginButton: React.FC = () => (
   <div style={{ marginTop: 24, textAlign: 'center' }}>
     <Link
-      href="/auth/login?callbackUrl=/admin"
+      href="/api/auth/signin/azure-ad?callbackUrl=%2Fapi%2Fauth%2Fbridge"
       style={{
         display: 'inline-block',
         padding: '10px 24px',
