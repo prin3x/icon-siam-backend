@@ -67,6 +67,9 @@ export const Homepage: CollectionConfig = {
           type: 'relationship',
           label: 'Showcase Item',
           relationTo: ['dinings', 'shops', 'attractions'],
+          filterOptions: {
+            status: { equals: 'ACTIVE' },
+          },
         },
         {
           name: 'custom_title',

@@ -39,6 +39,35 @@ export function RelationshipField({ value, onChange, field, placeholder }: Relat
   // Small constants and helpers
   const MIN_SEARCH_LEN = 2
 
+  const valueToText = (v: any): string => {
+    if (v == null) return ''
+    if (typeof v === 'string' || typeof v === 'number') return String(v)
+    if (typeof v === 'object') {
+      // Prefer current locale, then 'en', then first string value
+      if (locale && typeof v[locale] !== 'undefined') return String(v[locale])
+      if (typeof v['en'] !== 'undefined') return String(v['en'])
+      const first = Object.values(v).find(
+        (x) => typeof x === 'string' || typeof x === 'number',
+      ) as any
+      if (typeof first !== 'undefined') return String(first)
+    }
+    return ''
+  }
+
+  const recordToLabel = (record: any, preferredField?: string): string => {
+    if (!record) return ''
+    if (preferredField && record[preferredField]) {
+      const t = valueToText(record[preferredField])
+      if (t) return t
+    }
+    return (
+      valueToText(record.title) ||
+      valueToText(record.name) ||
+      valueToText(record.display_name) ||
+      `Record ${record.id}`
+    )
+  }
+
   const normalizePair = (item: any): { collection: string; id: string } | null => {
     if (!item) return null
     if (typeof item === 'string' || typeof item === 'number') {
@@ -48,7 +77,9 @@ export function RelationshipField({ value, onChange, field, placeholder }: Relat
       return { collection: firstCollection, id: String(item) }
     }
     if (typeof item === 'object' && 'value' in item && 'relationTo' in item) {
-      return { collection: (item as any).relationTo, id: String((item as any).value) }
+      const v: any = (item as any).value
+      const id = typeof v === 'object' && v && 'id' in v ? String(v.id) : String(v)
+      return { collection: (item as any).relationTo, id }
     }
     if (typeof item === 'object' && 'id' in item) {
       return {
@@ -126,7 +157,7 @@ export function RelationshipField({ value, onChange, field, placeholder }: Relat
             return (data?.docs || []).map((record: any) => ({
               ...record,
               collection,
-              displayTitle: record.title || record.name || `Record ${record.id}`,
+              displayTitle: recordToLabel(record),
             })) as RelatedRecord[]
           })
           const results = await Promise.all(requests)
@@ -227,7 +258,7 @@ export function RelationshipField({ value, onChange, field, placeholder }: Relat
           const records = (data?.docs || []).map((record: any) => ({
             ...record,
             collection,
-            displayTitle: record.title || record.name || `Record ${record.id}`,
+            displayTitle: recordToLabel(record, cache?.useAsTitle),
           }))
           return records as RelatedRecord[]
         })
@@ -266,7 +297,10 @@ export function RelationshipField({ value, onChange, field, placeholder }: Relat
     })()
     const id = (() => {
       if (typeof item === 'string' || typeof item === 'number') return String(item)
-      if (typeof item === 'object' && 'value' in item) return String((item as any).value)
+      if (typeof item === 'object' && 'value' in item) {
+        const v: any = (item as any).value
+        return typeof v === 'object' && v && 'id' in v ? String(v.id) : String(v)
+      }
       if (typeof item === 'object' && 'id' in item) return String((item as any).id)
       return ''
     })()
@@ -320,18 +354,20 @@ export function RelationshipField({ value, onChange, field, placeholder }: Relat
         return {
           collection: firstCollection,
           id: String(item),
-          displayTitle: String(doc?.displayTitle || item),
-          title: String(doc?.title || item),
-          name: String(doc?.name || item),
+          displayTitle: recordToLabel(doc || { id: item }),
+          title: valueToText(doc?.title) || String(item),
+          name: valueToText(doc?.name) || String(item),
         }
       }
       if (typeof item === 'object' && 'value' in item && 'relationTo' in item) {
+        const v: any = (item as any).value
+        const id = typeof v === 'object' && v && 'id' in v ? String(v.id) : String(v)
         return {
           collection: (item as any).relationTo,
-          id: String((item as any).value),
-          displayTitle: String((item as any).value || (item as any).name || (item as any).id),
-          title: String((item as any).value || (item as any).name || (item as any).id),
-          name: String((item as any).value || (item as any).name || (item as any).id),
+          id,
+          displayTitle: typeof v === 'object' ? recordToLabel(v) : String(v),
+          title: typeof v === 'object' ? recordToLabel(v) : String(v),
+          name: typeof v === 'object' ? recordToLabel(v) : String(v),
         }
       }
       if (typeof item === 'object' && 'id' in item) {
@@ -340,9 +376,9 @@ export function RelationshipField({ value, onChange, field, placeholder }: Relat
             (item as any).collection ||
             (Array.isArray(field.relationTo) ? field.relationTo[0] : (field.relationTo as string)),
           id: String((item as any).id),
-          displayTitle: String((item as any).value || (item as any).name || (item as any).id),
-          title: String((item as any).value || (item as any).name || (item as any).id),
-          name: String((item as any).value || (item as any).name || (item as any).id),
+          displayTitle: recordToLabel(item),
+          title: valueToText((item as any).title) || String((item as any).id),
+          name: valueToText((item as any).name) || String((item as any).id),
         }
       }
       return null
@@ -418,18 +454,20 @@ export function RelationshipField({ value, onChange, field, placeholder }: Relat
         return {
           collection: firstCollection,
           id: String(item),
-          displayTitle: String(doc?.displayTitle || doc?.title || doc?.name),
-          title: String(doc?.title || item),
-          name: String(doc?.name || item),
+          displayTitle: recordToLabel(doc || { id: item }),
+          title: valueToText(doc?.title) || String(item),
+          name: valueToText(doc?.name) || String(item),
         }
       }
       if (typeof item === 'object' && 'value' in item && 'relationTo' in item) {
+        const v: any = (item as any).value
+        const id = typeof v === 'object' && v && 'id' in v ? String(v.id) : String(v)
         return {
           collection: (item as any).relationTo,
-          id: String((item as any).value),
-          displayTitle: String(item.value || item.name || item.id),
-          title: String(item.value || item.name || item.id),
-          name: String(item.value || item.name || item.id),
+          id,
+          displayTitle: typeof v === 'object' ? recordToLabel(v) : String(v),
+          title: typeof v === 'object' ? recordToLabel(v) : String(v),
+          name: typeof v === 'object' ? recordToLabel(v) : String(v),
         }
       }
       if (typeof item === 'object' && 'id' in item) {
@@ -438,9 +476,9 @@ export function RelationshipField({ value, onChange, field, placeholder }: Relat
             (item as any).collection ||
             (Array.isArray(field.relationTo) ? field.relationTo[0] : (field.relationTo as string)),
           id: String((item as any).id),
-          displayTitle: String(item.value || item.name || item.id),
-          title: String(item.value || item.name || item.id),
-          name: String(item.value || item.name || item.id),
+          displayTitle: recordToLabel(item),
+          title: valueToText((item as any).title) || String((item as any).id),
+          name: valueToText((item as any).name) || String((item as any).id),
         }
       }
       return null
@@ -485,7 +523,7 @@ export function RelationshipField({ value, onChange, field, placeholder }: Relat
                   (json?.docs || []).map((record: any) => ({
                     ...record,
                     collection,
-                    displayTitle: record.title || record.name || `Record ${record.id}`,
+                    displayTitle: recordToLabel(record),
                   })) as RelatedRecord[],
               ) as any,
           )
@@ -552,15 +590,16 @@ export function RelationshipField({ value, onChange, field, placeholder }: Relat
                   gap: '6px',
                 }}
               >
-                <span style={{ color: '#1e40af' }}>
-                  {record.displayTitle ||
-                    (record as any).title ||
-                    (record as any).name ||
-                    String(record.id)}
-                </span>
+                <span style={{ color: '#1e40af' }}>{record.displayTitle}</span>
                 <button
                   type="button"
-                  onClick={() => handleChange(`${record.collection}:${record.id}`)}
+                  onClick={() => {
+                    if (field.hasMany) {
+                      handleChange(`${record.collection}:${record.id}`)
+                    } else {
+                      onChange(null)
+                    }
+                  }}
                   style={{
                     background: 'transparent',
                     border: 'none',
@@ -576,7 +615,7 @@ export function RelationshipField({ value, onChange, field, placeholder }: Relat
                   onMouseLeave={(e) => {
                     e.currentTarget.style.color = '#2563eb'
                   }}
-                  aria-label={`Remove ${record.displayTitle || (record as any).title || (record as any).name || String(record.id)}`}
+                  aria-label={`Remove ${record.displayTitle}`}
                   title="Remove"
                 >
                   ×
@@ -678,7 +717,7 @@ export function RelationshipField({ value, onChange, field, placeholder }: Relat
                     }}
                   >
                     <div style={{ fontSize: 14, color: '#111827' }}>
-                      {(option as any).displayTitle || option.title || option.name}
+                      {(option as any).displayTitle}
                     </div>
                     <div style={{ fontSize: 12, color: '#6b7280' }}>
                       {(option as any).collection}
