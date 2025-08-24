@@ -12,6 +12,38 @@ import { getApiHeaders, isInternalRequest } from '@/utilities/apiKeyUtils'
 
 const API_URL = '/api'
 
+// Explicit mapping of which fields are searchable per collection slug.
+// Keep values restricted to safe text-like fields to avoid over-broad queries.
+const SEARCH_FIELD_MAP: Record<string, string[]> = {
+  events: ['title', 'subtitle'],
+  shops: ['title'],
+  dinings: ['title'],
+  attractions: ['title'],
+  'icon-craft': ['title'],
+  'icon-luxe': ['title'],
+  'getting-here': ['title'],
+  directory: ['title'],
+  floors: ['title'],
+  homepage: ['title'],
+  categories: ['name'],
+  'gallery-collections': ['placement_key'],
+  promotions: ['title'],
+  footers: ['name'],
+  stickbar: ['title'],
+  'news-press': ['title'],
+  stories: ['title'],
+  'api-sync-logs': ['title'],
+  facilities: ['title'],
+  'about-iconsiam': ['title'],
+  'board-of-directors': ['title'],
+  'iconsiam-awards': ['title'],
+  'vision-mission': ['title'],
+  residences: ['title'],
+  media: ['title'],
+  'page-banners': ['placement_key'],
+  users: ['email'],
+}
+
 interface CollectionItemsProps {
   slug: string
   onBack: () => void
@@ -136,17 +168,30 @@ export function CollectionItems({
         }
       } catch (_) {}
 
-      // Determine searchable text fields from schema
+      // Determine searchable text fields from explicit map first, fallback to schema-derived
       const searchableFields: string[] = []
-      if (schemaJson?.fields && Array.isArray(schemaJson.fields)) {
-        const allowedTypes = new Set(['text', 'textarea', 'email', 'url', 'slug'])
+      const configuredFields = SEARCH_FIELD_MAP[slug] || []
+      if (configuredFields.length > 0) {
+        if (schemaJson?.fields && Array.isArray(schemaJson.fields)) {
+          const schemaFieldNames = new Set(
+            schemaJson.fields.map((f: any) => f?.name).filter(Boolean),
+          )
+          configuredFields.forEach((f) => {
+            if (schemaFieldNames.has(f)) searchableFields.push(f)
+          })
+        } else {
+          searchableFields.push(...configuredFields)
+        }
+      }
+      if (searchableFields.length === 0 && schemaJson?.fields && Array.isArray(schemaJson.fields)) {
+        const allowedFields = new Set(['title', 'subtitle', 'description'])
         schemaJson.fields.forEach((f: any) => {
-          if (f?.name && allowedTypes.has(f.type)) {
+          if (f?.name && allowedFields.has(f.name)) {
             searchableFields.push(f.name)
           }
         })
       }
-      // Fallback if schema missing: try common field 'title' only
+      // Final fallback if nothing detected
       if (searchableFields.length === 0) {
         searchableFields.push('title')
       }
@@ -158,11 +203,48 @@ export function CollectionItems({
         limit: pagination.limit.toString(),
       })
 
-      // Text search across schema-derived fields using where[or]
+      // Text search across chosen fields using where[or]
       let orIndex = 0
       if (debouncedSearchTerm) {
+        const schemaFieldMetaByName: Record<
+          string,
+          { type: string; options?: Array<{ label: string; value: string }> }
+        > = {}
+        if (schemaJson?.fields && Array.isArray(schemaJson.fields)) {
+          schemaJson.fields.forEach((f: any) => {
+            if (f?.name && f?.type) {
+              schemaFieldMetaByName[f.name] = { type: f.type, options: f.options }
+            }
+          })
+        }
+        const textLikeTypes = new Set(['text', 'textarea', 'richText', 'email', 'url'])
+        const term = debouncedSearchTerm
+        const termLower = term.toLowerCase()
         searchableFields.forEach((field) => {
-          params.append(`where[or][${orIndex++}][${field}][like]`, debouncedSearchTerm)
+          const meta = schemaFieldMetaByName[field]
+          const fieldType = meta?.type
+          if (fieldType && textLikeTypes.has(fieldType)) {
+            params.append(`where[or][${orIndex++}][${field}][like]`, term)
+            return
+          }
+          if (fieldType === 'select') {
+            const opts = meta?.options || []
+            // allow exact match against option value or label (case-insensitive)
+            let matchedValue: string | null = null
+            for (const opt of opts) {
+              const valueStr = String(opt.value)
+              const labelStr = String(opt.label ?? '')
+              if (valueStr.toLowerCase() === termLower || labelStr.toLowerCase() === termLower) {
+                matchedValue = valueStr
+                break
+              }
+            }
+            if (matchedValue) {
+              params.append(`where[or][${orIndex++}][${field}][equals]`, matchedValue)
+            }
+            return
+          }
+          // For other non-text types, skip adding a quick-search condition
         })
       }
 
