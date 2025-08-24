@@ -210,10 +210,10 @@ export interface Homepage {
   extraordinary_shopping_subtitle?: string | null;
   extraordinary_shopping?:
     | {
-        title: string;
-        subtitle: string;
-        cover_image: number | Media;
-        path_to_page: string;
+        title?: string | null;
+        subtitle?: string | null;
+        cover_image?: (number | null) | Media;
+        path_to_page?: string | null;
         id?: string | null;
       }[]
     | null;
