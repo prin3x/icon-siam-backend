@@ -193,6 +193,7 @@ export interface Homepage {
             } | null);
         custom_title?: string | null;
         custom_image?: (number | null) | Media;
+        custom_link?: string | null;
         id?: string | null;
       }[]
     | null;
@@ -1841,6 +1842,7 @@ export interface HomepageSelect<T extends boolean = true> {
         item?: T;
         custom_title?: T;
         custom_image?: T;
+        custom_link?: T;
         id?: T;
       };
   custom_dinings_title?: T;

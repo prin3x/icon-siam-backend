@@ -60,6 +60,7 @@ export const Homepage: CollectionConfig = {
       name: 'iconic_experience',
       type: 'array',
       label: 'Iconic Experience',
+      localized: true,
       fields: [
         {
           name: 'item',
@@ -71,13 +72,17 @@ export const Homepage: CollectionConfig = {
           name: 'custom_title',
           type: 'text',
           label: 'Custom Title (optional)',
-          localized: true,
         },
         {
           name: 'custom_image',
           type: 'upload',
           label: 'Custom Image (optional)',
           relationTo: 'media',
+        },
+        {
+          name: 'custom_link',
+          type: 'text',
+          label: 'Custom Link (optional)',
         },
       ],
     },
@@ -134,18 +139,17 @@ export const Homepage: CollectionConfig = {
       name: 'extraordinary_shopping',
       type: 'array',
       label: 'Extraordinary Shopping',
+      localized: true,
       fields: [
         {
           name: 'title',
           type: 'text',
           label: 'Title',
-          localized: true,
         },
         {
           name: 'subtitle',
           type: 'textarea',
           label: 'Subtitle',
-          localized: true,
         },
         {
           name: 'cover_image',
