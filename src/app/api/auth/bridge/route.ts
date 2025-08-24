@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
-import { authOptions } from '../[...nextauth]/route'
+import { authOptions } from '../options'
 import { getPayload } from 'payload'
 import configPromise from '@payload-config'
 import { randomUUID } from 'crypto'
