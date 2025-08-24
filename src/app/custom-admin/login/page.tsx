@@ -101,7 +101,7 @@ export default function LoginPage() {
         </div>
 
         <div className="mt-4">
-          <a
+          <Link
             href="/api/auth/signin/azure-ad?callbackUrl=%2Fapi%2Fauth%2Fbridge"
             className="admin-button-dark w-full inline-flex items-center justify-center py-3 rounded-md"
           >
@@ -116,7 +116,7 @@ export default function LoginPage() {
               <path d="M12 2L20 12L12 22L4 12L12 2Z" fill="#2F2F2F" />
             </svg>
             Sign in with Microsoft
-          </a>
+          </Link>
         </div>
 
         <div className="text-center text-xs text-slate-500 mt-4">
