@@ -33,6 +33,7 @@ export const Residences: CollectionConfig = {
       name: 'residence_sections',
       type: 'array',
       label: 'Residence Sections',
+      localized: true,
       fields: [
         {
           name: 'logo',
@@ -44,14 +45,12 @@ export const Residences: CollectionConfig = {
           name: 'title',
           type: 'text',
           label: 'Residence Title',
-          localized: true,
           required: true,
         },
         {
           name: 'description',
           type: 'textarea',
           label: 'Description',
-          localized: true,
         },
         {
           name: 'image',
@@ -74,7 +73,6 @@ export const Residences: CollectionConfig = {
               name: 'text',
               type: 'text',
               label: 'Button Text',
-              localized: true,
               defaultValue: 'GO TO WEBSITE',
             },
             {
