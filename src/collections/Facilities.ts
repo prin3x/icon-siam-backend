@@ -74,6 +74,7 @@ export const Facilities: CollectionConfig = {
       name: 'services',
       type: 'array',
       label: 'Services',
+      localized: true,
       fields: [
         {
           name: 'image_icon',
@@ -83,13 +84,11 @@ export const Facilities: CollectionConfig = {
         },
         {
           name: 'service_name',
-          localized: true,
           type: 'text',
           label: 'Service Name',
         },
         {
           name: 'description',
-          localized: true,
           type: 'text',
           label: 'Description',
         },
@@ -111,6 +110,7 @@ export const Facilities: CollectionConfig = {
       name: 'facilities',
       type: 'array',
       label: 'Facilities',
+      localized: true,
       fields: [
         {
           name: 'image_icon',
@@ -120,13 +120,11 @@ export const Facilities: CollectionConfig = {
         },
         {
           name: 'facility_name',
-          localized: true,
           type: 'text',
           label: 'Facility Name',
         },
         {
           name: 'description',
-          localized: true,
           type: 'text',
           label: 'Description',
         },
