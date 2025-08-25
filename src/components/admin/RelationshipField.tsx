@@ -97,7 +97,6 @@ export function RelationshipField({ value, onChange, field, placeholder }: Relat
         }
         try {
           setLoading(true)
-          const fo = field.filterOptions || {}
           const supportedOps = [
             'equals',
             'not_equals',
@@ -109,6 +108,10 @@ export function RelationshipField({ value, onChange, field, placeholder }: Relat
             'exists',
           ] as const
           const requests = collections.map(async (collection) => {
+            const fo =
+              field.filterOptions && Object.keys(field.filterOptions).length > 0
+                ? field.filterOptions
+                : { status: { equals: 'ACTIVE' } }
             const params = new URLSearchParams()
             params.set('limit', '10')
             if (locale) params.set('locale', locale)
@@ -148,7 +151,7 @@ export function RelationshipField({ value, onChange, field, placeholder }: Relat
       setLoading(true)
       setError('')
       try {
-        const fo = field.filterOptions || {}
+        const DEFAULT_STATUS_ACTIVE_COLLECTIONS = new Set(['dinings', 'shops', 'attractions'])
         const supportedOps = [
           'equals',
           'not_equals',
@@ -161,6 +164,12 @@ export function RelationshipField({ value, onChange, field, placeholder }: Relat
         ] as const
 
         const requests = collections.map(async (collection) => {
+          const fo =
+            field.filterOptions && Object.keys(field.filterOptions).length > 0
+              ? field.filterOptions
+              : DEFAULT_STATUS_ACTIVE_COLLECTIONS.has(collection)
+                ? { status: { equals: 'ACTIVE' } }
+                : {}
           // discover proper search keys using schema (with cache)
           let cache = schemaCacheRef.current[collection]
           if (!cache) {
@@ -192,9 +201,7 @@ export function RelationshipField({ value, onChange, field, placeholder }: Relat
             searchKeys.push(String(cache.useAsTitle))
           }
           // add common fallbacks only if present in schema
-          ;['title', 'name', 'display_name', 'slug'].forEach(
-            (k) => valid.has(k) && searchKeys.push(k),
-          )
+          ;['title', 'name', 'display_name'].forEach((k) => valid.has(k) && searchKeys.push(k))
           // include any text/textarea fields (from valid set we don't know type here; we approximate by presence)
           // since we don't have types in cache, rely on fieldNames from schema; that's okay
           // The earlier step already included all field names; limit to top 8 to avoid huge OR

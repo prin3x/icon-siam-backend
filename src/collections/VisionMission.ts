@@ -54,18 +54,17 @@ export const VisionMission: CollectionConfig = {
       name: 'content_sections',
       type: 'array',
       label: 'Content Sections',
+      localized: true,
       fields: [
         {
           name: 'title',
           type: 'text',
           label: 'Section Title',
-          localized: true,
         },
         {
           name: 'description',
           type: 'richText',
           label: 'Description',
-          localized: true,
         },
         {
           name: 'image',

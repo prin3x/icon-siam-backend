@@ -53,26 +53,24 @@ export const BoardOfDirectors: CollectionConfig = {
       name: 'directors',
       type: 'array',
       label: 'Board Members',
+      localized: true,
       fields: [
         {
           name: 'profile_image',
           type: 'upload',
           label: 'Profile Image',
           relationTo: 'media',
-          required: true,
         },
         {
           name: 'full_name',
           type: 'text',
           label: 'Full Name',
-          localized: true,
           required: true,
         },
         {
           name: 'title',
           type: 'text',
           label: 'Position/Title',
-          localized: true,
           required: true,
         },
         {

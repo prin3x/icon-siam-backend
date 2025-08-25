@@ -1505,7 +1505,7 @@ export interface BoardOfDirector {
   status: 'ACTIVE' | 'INACTIVE';
   directors?:
     | {
-        profile_image: number | Media;
+        profile_image?: (number | null) | Media;
         full_name: string;
         title: string;
         /**
