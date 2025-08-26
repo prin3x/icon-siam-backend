@@ -32,6 +32,12 @@ export const Shops: CollectionConfig = {
       defaultValue: false,
     },
     {
+      name: 'skip_sync',
+      type: 'checkbox',
+      label: 'Skip Sync',
+      defaultValue: false,
+    },
+    {
       name: 'iconluxe_custom_link_url',
       type: 'text',
       label: 'Iconluxe Custom Link URL',
