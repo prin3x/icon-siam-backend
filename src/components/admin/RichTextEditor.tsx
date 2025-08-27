@@ -1,46 +1,22 @@
-import React, { useState, useEffect, useRef } from 'react'
-import { useEditor, EditorContent } from '@tiptap/react'
-import StarterKit from '@tiptap/starter-kit'
-import Link from '@tiptap/extension-link'
-import TiptapImage from '@tiptap/extension-image'
-import TextAlign from '@tiptap/extension-text-align'
-import Underline from '@tiptap/extension-underline'
-import { TextStyle } from '@tiptap/extension-text-style'
+import Blockquote from '@tiptap/extension-blockquote'
+import CodeBlock from '@tiptap/extension-code-block'
 import Color from '@tiptap/extension-color'
 import Highlight from '@tiptap/extension-highlight'
-import Placeholder from '@tiptap/extension-placeholder'
-import CodeBlock from '@tiptap/extension-code-block'
-import Blockquote from '@tiptap/extension-blockquote'
 import HorizontalRule from '@tiptap/extension-horizontal-rule'
-import TaskList from '@tiptap/extension-task-list'
+import TiptapImage from '@tiptap/extension-image'
+import Link from '@tiptap/extension-link'
+import Placeholder from '@tiptap/extension-placeholder'
 import TaskItem from '@tiptap/extension-task-item'
+import TaskList from '@tiptap/extension-task-list'
+import TextAlign from '@tiptap/extension-text-align'
+import { TextStyle } from '@tiptap/extension-text-style'
+import Underline from '@tiptap/extension-underline'
+import { EditorContent, useEditor } from '@tiptap/react'
+import StarterKit from '@tiptap/starter-kit'
+import React, { useEffect, useRef, useState } from 'react'
 import { MediaModal } from './MediaModal'
-
-/**
- * Enhanced RichTextEditor with HTML-to-TipTap Conversion
- *
- * This component solves the content migration challenge by:
- * 1. Detecting content format (HTML, TipTap, Lexical, or unknown)
- * 2. Converting HTML content from the old platform to TipTap format
- * 3. Maintaining compatibility with PayloadCMS collections
- * 4. Providing visual feedback about content format
- *
- * When editing HTML content:
- * - HTML is parsed and converted to TipTap JSON structure
- * - All formatting (bold, italic, lists, headings) is preserved
- * - Images are handled gracefully (with placeholders if no ID)
- * - Content is saved back in PayloadCMS-compatible format
- *
- * IMAGE HANDLING STRATEGY:
- * - Images with PayloadCMS media IDs are preserved as uploads
- * - Images from HTML conversion (without IDs) are converted to informative placeholders
- * - Placeholders show both alt text and source URL for easy identification
- * - Users can manually replace placeholders with proper media uploads or use URL upload
- * - URL upload allows direct pasting of image URLs for quick image replacement
- *
- * This allows seamless editing of legacy HTML content while maintaining
- * the modern TipTap editing experience.
- */
+import { convertPayloadToTiptap } from './rte/converters/payloadToTiptap'
+import { convertTiptapToPayload } from './rte/converters/tiptapToPayload'
 
 // Create a custom image extension to store media ID and optional link
 const Image = TiptapImage.extend({
@@ -117,103 +93,7 @@ const detectContentFormat = (value: any): 'html' | 'tiptap' | 'lexical' | 'unkno
   return 'unknown'
 }
 
-// Convert PayloadCMS rich text format (including legacy Lexical) to Tiptap JSON
-const convertPayloadToTiptap = (payloadValue: any): any => {
-  if (!payloadValue) return { type: 'doc', content: [] }
-
-  // Handle HTML strings (from old platform data)
-  if (typeof payloadValue === 'string') {
-    // Check if it's HTML content
-    if (payloadValue.includes('<') && payloadValue.includes('>')) {
-      return convertHtmlToTiptap(payloadValue)
-    }
-
-    // Plain text fallback
-    return {
-      type: 'doc',
-      content: [
-        {
-          type: 'paragraph',
-          content: [{ type: 'text', text: payloadValue }],
-        },
-      ],
-    }
-  }
-
-  // Legacy Lexical object shape
-  if (payloadValue && typeof payloadValue === 'object' && payloadValue.root) {
-    return convertLexicalToTiptap(payloadValue)
-  }
-
-  if (Array.isArray(payloadValue)) {
-    const content = payloadValue.map((node: any) => {
-      if (node.type === 'upload' && node.value?.url) {
-        return {
-          type: 'image',
-          attrs: {
-            src: node.value.url,
-            alt: node.value.filename,
-            'data-id': node.value.id,
-            ...(node.value.href ? { href: node.value.href } : {}),
-            ...(node.value.target ? { target: node.value.target } : {}),
-          },
-        }
-      }
-
-      if (node.type === 'paragraph' && node.children) {
-        // Handle payload's empty paragraph representation
-        if (
-          node.children.length === 1 &&
-          node.children[0].text === '' &&
-          Object.keys(node.children[0]).length === 1
-        ) {
-          return { type: 'paragraph' }
-        }
-
-        return {
-          type: 'paragraph',
-          content: node.children.map((child: any) => {
-            const marks = []
-            if (child.bold) marks.push({ type: 'bold' })
-            if (child.italic) marks.push({ type: 'italic' })
-            if (child.underline) marks.push({ type: 'underline' })
-            if (child.strike) marks.push({ type: 'strike' })
-            if (child.code) marks.push({ type: 'code' })
-            if (child.link)
-              marks.push({
-                type: 'link',
-                attrs: {
-                  href: child.link.url,
-                  target: child.link.target || '_blank',
-                },
-              })
-
-            const tiptapChild: { type: string; text: string; marks?: any[] } = {
-              type: 'text',
-              text: child.text || '',
-            }
-
-            if (marks.length > 0) {
-              tiptapChild.marks = marks
-            }
-
-            return tiptapChild
-          }),
-        }
-      }
-      // Fallback for any unknown node types
-      return { type: 'paragraph' }
-    })
-
-    return { type: 'doc', content }
-  }
-
-  if (payloadValue.type === 'doc') {
-    return payloadValue
-  }
-
-  return { type: 'doc', content: [] }
-}
+// (converted) now imported from ./rte/converters/payloadToTiptap
 
 // Map Lexical textFormat bitmask to TipTap marks
 const applyMarksFromLexicalFormat = (textNode: any): any => {
@@ -230,8 +110,6 @@ const applyMarksFromLexicalFormat = (textNode: any): any => {
   const STRIKETHROUGH = 4
   const UNDERLINE = 8
   const CODE = 16
-  const SUBSCRIPT = 32
-  const SUPERSCRIPT = 64
   const HIGHLIGHT = 128
 
   if (format & BOLD) marks.push({ type: 'bold' })
@@ -651,205 +529,6 @@ const processListItems = (listElement: Element, listType: string): any[] => {
   return content
 }
 
-// Convert Tiptap JSON to PayloadCMS format
-const convertTiptapToPayload = (tiptapValue: any): any => {
-  if (!tiptapValue || !tiptapValue.content) return []
-
-  return tiptapValue.content
-    .map((node: any) => {
-      if (node.type === 'image') {
-        const id = node.attrs['data-id']
-        const src = node.attrs.src
-        const alt = node.attrs.alt || 'Image'
-        const href = node.attrs.href
-        const target = node.attrs.target || '_blank'
-
-        if (id) {
-          // Image already has a PayloadCMS media ID
-          return {
-            type: 'upload',
-            value: {
-              id,
-              url: src,
-              filename: alt,
-              href: href || undefined,
-              target: href ? target : undefined,
-            },
-            relationTo: 'media',
-            children: [{ text: '' }],
-          }
-        } else if (src) {
-          // Image from HTML conversion or URL upload - create informative placeholder
-          // This helps users understand what the image was and where it came from
-          // Users can manually replace these placeholders with proper media uploads or use URL upload
-          if (href) {
-            return {
-              type: 'paragraph',
-              children: [
-                {
-                  text: `[Image: ${alt}] - Source: ${src}] (link: ${href})`,
-                },
-              ],
-            }
-          }
-          return {
-            type: 'paragraph',
-            children: [
-              {
-                text: `[Image: ${alt}] - Source: ${src}`,
-              },
-            ],
-          }
-        }
-
-        // Fallback for images without src
-        return {
-          type: 'paragraph',
-          children: [{ text: `[Image: ${alt || 'No alt text'}]` }],
-        }
-      }
-
-      if (node.type === 'paragraph') {
-        // Handle empty paragraphs from Tiptap
-        if (!node.content) {
-          return {
-            type: 'paragraph',
-            children: [{ text: '' }],
-          }
-        }
-
-        return {
-          type: 'paragraph',
-          children:
-            node.content?.map((child: any) => {
-              const payloadChild: {
-                text: string
-                bold?: true
-                italic?: true
-                underline?: true
-                strike?: true
-                code?: true
-                link?: {
-                  url: string
-                  target: string
-                }
-              } = {
-                text: child.text || '',
-              }
-
-              if (child.marks?.some((mark: any) => mark.type === 'bold')) {
-                payloadChild.bold = true
-              }
-              if (child.marks?.some((mark: any) => mark.type === 'italic')) {
-                payloadChild.italic = true
-              }
-              if (child.marks?.some((mark: any) => mark.type === 'underline')) {
-                payloadChild.underline = true
-              }
-              if (child.marks?.some((mark: any) => mark.type === 'strike')) {
-                payloadChild.strike = true
-              }
-              if (child.marks?.some((mark: any) => mark.type === 'code')) {
-                payloadChild.code = true
-              }
-
-              // Handle link marks
-              const linkMark = child.marks?.find((mark: any) => mark.type === 'link')
-              if (linkMark) {
-                payloadChild.link = {
-                  url: linkMark.attrs.href,
-                  target: linkMark.attrs.target || '_blank',
-                }
-              }
-
-              return payloadChild
-            }) || [],
-        }
-      }
-
-      // Handle headings
-      if (node.type === 'heading') {
-        return {
-          type: 'paragraph',
-          children: [
-            {
-              text: node.content?.[0]?.text || '',
-              bold: true,
-            },
-          ],
-        }
-      }
-
-      // Handle lists
-      if (node.type === 'bulletList' || node.type === 'orderedList') {
-        // For PayloadCMS compatibility, we need to convert lists to a format it can understand
-        // Since PayloadCMS expects a flat structure, we'll convert each list item to a paragraph
-        // but mark them with a special attribute to indicate they were part of a list
-        const listItems =
-          node.content
-            ?.map((item: any) => {
-              if (item.type === 'listItem' && item.content?.[0]?.type === 'paragraph') {
-                const listItemText = item.content[0].content
-                  ?.map((child: any) => {
-                    if (child.type === 'text') {
-                      // Add bullet or number prefix based on list type
-                      const prefix =
-                        node.type === 'bulletList' ? '• ' : `${node.content.indexOf(item) + 1}. `
-                      return {
-                        text: prefix + (child.text || ''),
-                        ...(child.marks?.some((m: any) => m.type === 'bold') && { bold: true }),
-                        ...(child.marks?.some((m: any) => m.type === 'italic') && { italic: true }),
-                        ...(child.marks?.some((m: any) => m.type === 'underline') && {
-                          underline: true,
-                        }),
-                        ...(child.marks?.some((m: any) => m.type === 'strike') && { strike: true }),
-                        ...(child.marks?.some((m: any) => m.type === 'code') && { code: true }),
-                        ...(child.marks?.find((m: any) => m.type === 'link') && {
-                          link: {
-                            url: child.marks.find((m: any) => m.type === 'link').attrs.href,
-                            target:
-                              child.marks.find((m: any) => m.type === 'link').attrs.target ||
-                              '_blank',
-                          },
-                        }),
-                      }
-                    }
-                    return null
-                  })
-                  .filter(Boolean) || [{ text: '• ' }]
-
-                return {
-                  type: 'paragraph',
-                  children: listItemText,
-                }
-              }
-              return null
-            })
-            .filter(Boolean) || []
-
-        return listItems
-      }
-
-      // Handle blockquotes
-      if (node.type === 'blockquote') {
-        return {
-          type: 'paragraph',
-          children: [
-            {
-              text: node.content?.[0]?.content?.[0]?.text || '',
-              italic: true,
-            },
-          ],
-        }
-      }
-
-      // Handle other Tiptap nodes if necessary, otherwise they are ignored
-      return null
-    })
-    .filter(Boolean) // Remove null values
-    .flat() // Flatten arrays from lists
-}
-
 export const RichTextEditor: React.FC<RichTextEditorProps> = ({
   value,
   onChange,
@@ -867,9 +546,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
-        heading: {
-          levels: [1, 2, 3, 4, 5, 6],
-        },
+        heading: false,
       }),
       Link.configure({
         openOnClick: false,
@@ -888,7 +565,9 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
         },
       }),
       TextAlign.configure({
-        types: ['heading', 'paragraph'],
+        types: ['paragraph'],
+        alignments: ['left', 'center', 'right'],
+        defaultAlignment: 'left',
       }),
       Underline,
       TextStyle,
@@ -1267,64 +946,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
           >
             Image
           </button>
-          <button
-            onClick={() => editor?.chain().focus().toggleHeading({ level: 1 }).run()}
-            style={{
-              padding: '8px 12px',
-              borderRadius: '6px',
-              fontSize: '13px',
-              fontWeight: '500',
-              backgroundColor: editor?.isActive('heading', { level: 1 }) ? '#3b82f6' : '#ffffff',
-              color: editor?.isActive('heading', { level: 1 }) ? '#ffffff' : '#374151',
-              border: '1px solid #d1d5db',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-            }}
-            onMouseEnter={(e) => {
-              if (!editor?.isActive('heading', { level: 1 })) {
-                e.currentTarget.style.backgroundColor = '#f3f4f6'
-                e.currentTarget.style.borderColor = '#9ca3af'
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (!editor?.isActive('heading', { level: 1 })) {
-                e.currentTarget.style.backgroundColor = '#ffffff'
-                e.currentTarget.style.borderColor = '#d1d5db'
-              }
-            }}
-            type="button"
-          >
-            H1
-          </button>
-          <button
-            onClick={() => editor?.chain().focus().toggleHeading({ level: 2 }).run()}
-            style={{
-              padding: '8px 12px',
-              borderRadius: '6px',
-              fontSize: '13px',
-              fontWeight: '500',
-              backgroundColor: editor?.isActive('heading', { level: 2 }) ? '#3b82f6' : '#ffffff',
-              color: editor?.isActive('heading', { level: 2 }) ? '#ffffff' : '#374151',
-              border: '1px solid #d1d5db',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-            }}
-            onMouseEnter={(e) => {
-              if (!editor?.isActive('heading', { level: 2 })) {
-                e.currentTarget.style.backgroundColor = '#f3f4f6'
-                e.currentTarget.style.borderColor = '#9ca3af'
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (!editor?.isActive('heading', { level: 2 })) {
-                e.currentTarget.style.backgroundColor = '#ffffff'
-                e.currentTarget.style.borderColor = '#d1d5db'
-              }
-            }}
-            type="button"
-          >
-            H2
-          </button>
+
           <button
             onClick={() => editor?.chain().focus().toggleBulletList().run()}
             style={{
@@ -1412,35 +1034,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
           >
             Quote
           </button>
-          <button
-            onClick={() => editor?.chain().focus().toggleCodeBlock().run()}
-            style={{
-              padding: '8px 12px',
-              borderRadius: '6px',
-              fontSize: '13px',
-              fontWeight: '500',
-              backgroundColor: editor?.isActive('codeBlock') ? '#3b82f6' : '#ffffff',
-              color: editor?.isActive('codeBlock') ? '#ffffff' : '#374151',
-              border: '1px solid #d1d5db',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-            }}
-            onMouseEnter={(e) => {
-              if (!editor?.isActive('codeBlock')) {
-                e.currentTarget.style.backgroundColor = '#f3f4f6'
-                e.currentTarget.style.borderColor = '#9ca3af'
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (!editor?.isActive('codeBlock')) {
-                e.currentTarget.style.backgroundColor = '#ffffff'
-                e.currentTarget.style.borderColor = '#d1d5db'
-              }
-            }}
-            type="button"
-          >
-            Code
-          </button>
+
           <button
             onClick={() => editor?.chain().focus().setHorizontalRule().run()}
             style={{
@@ -1473,23 +1067,19 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
               borderRadius: '6px',
               fontSize: '13px',
               fontWeight: '500',
-              backgroundColor: editor?.isActive({ textAlign: 'left' }) ? '#3b82f6' : '#ffffff',
-              color: editor?.isActive({ textAlign: 'left' }) ? '#ffffff' : '#374151',
+              backgroundColor: '#ffffff',
+              color: '#374151',
               border: '1px solid #d1d5db',
               cursor: 'pointer',
               transition: 'all 0.2s ease',
             }}
             onMouseEnter={(e) => {
-              if (!editor?.isActive({ textAlign: 'left' })) {
-                e.currentTarget.style.backgroundColor = '#f3f4f6'
-                e.currentTarget.style.borderColor = '#9ca3af'
-              }
+              e.currentTarget.style.backgroundColor = '#f3f4f6'
+              e.currentTarget.style.borderColor = '#9ca3af'
             }}
             onMouseLeave={(e) => {
-              if (!editor?.isActive({ textAlign: 'left' })) {
-                e.currentTarget.style.backgroundColor = '#ffffff'
-                e.currentTarget.style.borderColor = '#d1d5db'
-              }
+              e.currentTarget.style.backgroundColor = '#ffffff'
+              e.currentTarget.style.borderColor = '#d1d5db'
             }}
             type="button"
           >
@@ -1502,23 +1092,19 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
               borderRadius: '6px',
               fontSize: '13px',
               fontWeight: '500',
-              backgroundColor: editor?.isActive({ textAlign: 'center' }) ? '#3b82f6' : '#ffffff',
-              color: editor?.isActive({ textAlign: 'center' }) ? '#ffffff' : '#374151',
+              backgroundColor: '#ffffff',
+              color: '#374151',
               border: '1px solid #d1d5db',
               cursor: 'pointer',
               transition: 'all 0.2s ease',
             }}
             onMouseEnter={(e) => {
-              if (!editor?.isActive({ textAlign: 'center' })) {
-                e.currentTarget.style.backgroundColor = '#f3f4f6'
-                e.currentTarget.style.borderColor = '#9ca3af'
-              }
+              e.currentTarget.style.backgroundColor = '#f3f4f6'
+              e.currentTarget.style.borderColor = '#9ca3af'
             }}
             onMouseLeave={(e) => {
-              if (!editor?.isActive({ textAlign: 'center' })) {
-                e.currentTarget.style.backgroundColor = '#ffffff'
-                e.currentTarget.style.borderColor = '#d1d5db'
-              }
+              e.currentTarget.style.backgroundColor = '#ffffff'
+              e.currentTarget.style.borderColor = '#d1d5db'
             }}
             type="button"
           >
@@ -1531,23 +1117,19 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
               borderRadius: '6px',
               fontSize: '13px',
               fontWeight: '500',
-              backgroundColor: editor?.isActive({ textAlign: 'right' }) ? '#3b82f6' : '#ffffff',
-              color: editor?.isActive({ textAlign: 'right' }) ? '#ffffff' : '#374151',
+              backgroundColor: '#ffffff',
+              color: '#374151',
               border: '1px solid #d1d5db',
               cursor: 'pointer',
               transition: 'all 0.2s ease',
             }}
             onMouseEnter={(e) => {
-              if (!editor?.isActive({ textAlign: 'right' })) {
-                e.currentTarget.style.backgroundColor = '#f3f4f6'
-                e.currentTarget.style.borderColor = '#9ca3af'
-              }
+              e.currentTarget.style.backgroundColor = '#f3f4f6'
+              e.currentTarget.style.borderColor = '#9ca3af'
             }}
             onMouseLeave={(e) => {
-              if (!editor?.isActive({ textAlign: 'right' })) {
-                e.currentTarget.style.backgroundColor = '#ffffff'
-                e.currentTarget.style.borderColor = '#d1d5db'
-              }
+              e.currentTarget.style.backgroundColor = '#ffffff'
+              e.currentTarget.style.borderColor = '#d1d5db'
             }}
             type="button"
           >
