@@ -17,17 +17,26 @@ export const formatSlug = (val: string): string => {
 export const formatSlugHook =
   (fallback: string): FieldHook =>
   ({ data, operation, value }) => {
-    if (typeof value === 'string') {
-      return formatSlug(value)
+    const stringValue = typeof value === 'string' ? value : undefined
+
+    // If user provided a non-empty slug, respect it (format it) and skip auto-generation
+    if (typeof stringValue === 'string' && stringValue.trim() !== '') {
+      return formatSlug(stringValue)
     }
 
-    if (operation === 'create' || !data?.slug) {
-      const fallbackData = data?.[fallback] || data?.[fallback]
+    // If creating, or slug is missing/empty, try to generate from fallback field (e.g., title)
+    const slugInData = typeof data?.slug === 'string' ? data.slug : undefined
+    const shouldGenerateFromFallback =
+      operation === 'create' || !slugInData || slugInData.trim() === ''
 
-      if (fallbackData && typeof fallbackData === 'string') {
+    if (shouldGenerateFromFallback) {
+      const fallbackData = data?.[fallback]
+
+      if (typeof fallbackData === 'string' && fallbackData.trim() !== '') {
         return formatSlug(fallbackData)
       }
     }
 
+    // Nothing to do; keep existing value as-is
     return value
   }

@@ -204,6 +204,7 @@ const convertPayloadToTiptap = (payloadValue: any): any => {
       // Fallback for any unknown node types
       return { type: 'paragraph' }
     })
+
     return { type: 'doc', content }
   }
 
@@ -781,29 +782,45 @@ const convertTiptapToPayload = (tiptapValue: any): any => {
 
       // Handle lists
       if (node.type === 'bulletList' || node.type === 'orderedList') {
+        // For PayloadCMS compatibility, we need to convert lists to a format it can understand
+        // Since PayloadCMS expects a flat structure, we'll convert each list item to a paragraph
+        // but mark them with a special attribute to indicate they were part of a list
         const listItems =
           node.content
             ?.map((item: any) => {
               if (item.type === 'listItem' && item.content?.[0]?.type === 'paragraph') {
+                const listItemText = item.content[0].content
+                  ?.map((child: any) => {
+                    if (child.type === 'text') {
+                      // Add bullet or number prefix based on list type
+                      const prefix =
+                        node.type === 'bulletList' ? '• ' : `${node.content.indexOf(item) + 1}. `
+                      return {
+                        text: prefix + (child.text || ''),
+                        ...(child.marks?.some((m: any) => m.type === 'bold') && { bold: true }),
+                        ...(child.marks?.some((m: any) => m.type === 'italic') && { italic: true }),
+                        ...(child.marks?.some((m: any) => m.type === 'underline') && {
+                          underline: true,
+                        }),
+                        ...(child.marks?.some((m: any) => m.type === 'strike') && { strike: true }),
+                        ...(child.marks?.some((m: any) => m.type === 'code') && { code: true }),
+                        ...(child.marks?.find((m: any) => m.type === 'link') && {
+                          link: {
+                            url: child.marks.find((m: any) => m.type === 'link').attrs.href,
+                            target:
+                              child.marks.find((m: any) => m.type === 'link').attrs.target ||
+                              '_blank',
+                          },
+                        }),
+                      }
+                    }
+                    return null
+                  })
+                  .filter(Boolean) || [{ text: '• ' }]
+
                 return {
                   type: 'paragraph',
-                  children: item.content[0].content?.map((child: any) => ({
-                    text: child.text || '',
-                    ...(child.marks?.some((m: any) => m.type === 'bold') && { bold: true }),
-                    ...(child.marks?.some((m: any) => m.type === 'italic') && { italic: true }),
-                    ...(child.marks?.some((m: any) => m.type === 'underline') && {
-                      underline: true,
-                    }),
-                    ...(child.marks?.some((m: any) => m.type === 'strike') && { strike: true }),
-                    ...(child.marks?.some((m: any) => m.type === 'code') && { code: true }),
-                    ...(child.marks?.find((m: any) => m.type === 'link') && {
-                      link: {
-                        url: child.marks.find((m: any) => m.type === 'link').attrs.href,
-                        target:
-                          child.marks.find((m: any) => m.type === 'link').attrs.target || '_blank',
-                      },
-                    }),
-                  })) || [{ text: '' }],
+                  children: listItemText,
                 }
               }
               return null
@@ -1730,50 +1747,59 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
               font-family: inherit !important;
               font-size: 14px !important;
               line-height: 1.6 !important;
-              color: #374151 !important;
+              color: #000000 !important;
               min-height: 150px !important;
               padding: 0 !important;
               margin: 0 !important;
               box-shadow: none !important;
             }
+            .ProseMirror * {
+              color: #000000 !important;
+            }
             .ProseMirror p {
               margin: 0 0 1em 0 !important;
+              color: #000000 !important;
             }
             .ProseMirror p:last-child {
               margin-bottom: 0 !important;
+              color: #000000 !important;
             }
             .ProseMirror h1 {
               font-size: 1.875rem !important;
               font-weight: 700 !important;
               margin: 0 0 0.5em 0 !important;
-              color: #111827 !important;
+              color: #000000 !important;
             }
             .ProseMirror h2 {
               font-size: 1.5rem !important;
               font-weight: 600 !important;
               margin: 0 0 0.5em 0 !important;
-              color: #111827 !important;
+              color: #000000 !important;
             }
             .ProseMirror ul,
             .ProseMirror ol {
               margin: 0 0 1em 0 !important;
               padding-left: 2em !important;
+              color: #000000 !important;
             }
             .ProseMirror ul {
               list-style-type: disc !important;
+              color: #000000 !important;
             }
             .ProseMirror ol {
               list-style-type: decimal !important;
+              color: #000000 !important;
             }
             .ProseMirror li {
               margin: 0.25em 0 !important;
+              color: #000000 !important;
             }
             .ProseMirror blockquote {
               border-left: 4px solid #d1d5db !important;
               padding-left: 1rem !important;
               margin: 0 0 1em 0 !important;
               font-style: italic !important;
-              color: #6b7280 !important;
+              color: #000000 !important;
             }
             .ProseMirror code {
               background-color: #f3f4f6 !important;
@@ -1781,6 +1807,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
               border-radius: 0.25rem !important;
               font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace !important;
               font-size: 0.875rem !important;
+              color: #000000 !important;
             }
             .ProseMirror pre {
               background-color: #f3f4f6 !important;
@@ -1788,6 +1815,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
               border-radius: 0.5rem !important;
               overflow-x: auto !important;
               margin: 0 0 1em 0 !important;
+              color: #000000 !important;
             }
             .ProseMirror pre code {
               background: none !important;
@@ -1815,6 +1843,22 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
               outline: 2px solid #3b82f6 !important;
               outline-offset: 2px !important;
               border-radius: 4px !important;
+            }
+            
+            /* Force all text to be black with maximum specificity */
+            .ProseMirror,
+            .ProseMirror *,
+            .ProseMirror p,
+            .ProseMirror div,
+            .ProseMirror span,
+            .ProseMirror li,
+            .ProseMirror h1,
+            .ProseMirror h2,
+            .ProseMirror h3,
+            .ProseMirror h4,
+            .ProseMirror h5,
+            .ProseMirror h6 {
+              color: #000000 !important;
             }
           `,
           }}

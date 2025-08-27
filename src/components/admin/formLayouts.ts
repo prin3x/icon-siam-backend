@@ -108,7 +108,7 @@ export const FORM_LAYOUTS: Record<string, CollectionFormLayout> = {
       {
         title: 'Basic Information',
         description: 'Core details about the dining establishment',
-        fields: ['title', 'subtitle', 'description'],
+        fields: ['skip_sync', 'title', 'subtitle', 'description'],
       },
       {
         title: 'Categories & Classification',
@@ -182,7 +182,7 @@ export const FORM_LAYOUTS: Record<string, CollectionFormLayout> = {
       {
         title: 'Basic Information',
         description: 'Core details about the shop',
-        fields: ['title', 'subtitle', 'description'],
+        fields: ['skip_sync', 'title', 'subtitle', 'description'],
       },
       {
         title: 'Categories & Classification',
