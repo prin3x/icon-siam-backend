@@ -53,10 +53,21 @@ export const convertPayloadToTiptap = (payloadValue: any): any => {
 
         const textAlign = node.attrs?.textAlign || 'left'
 
+        // Filter out empty text children to avoid invalid/empty nodes breaking rendering
+        const filteredChildren = (node.children || []).filter((child: any) => {
+          const text = typeof child.text === 'string' ? child.text : ''
+          const hasLink = Boolean(child.link)
+          return text.trim().length > 0 || hasLink
+        })
+
+        if (filteredChildren.length === 0) {
+          return { type: 'paragraph' }
+        }
+
         return {
           type: 'paragraph',
           attrs: { textAlign },
-          content: node.children.map((child: any) => {
+          content: filteredChildren.map((child: any) => {
             const marks: any[] = []
             if (child.bold) marks.push({ type: 'bold' })
             if (child.italic) marks.push({ type: 'italic' })
