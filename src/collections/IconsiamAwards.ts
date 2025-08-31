@@ -12,12 +12,6 @@ export const IconsiamAwards: CollectionConfig = {
   },
   fields: [
     {
-      name: 'banner_image',
-      type: 'upload',
-      label: 'Banner Image',
-      relationTo: 'media',
-    },
-    {
       name: 'title',
       type: 'text',
       label: 'Title',
@@ -53,6 +47,7 @@ export const IconsiamAwards: CollectionConfig = {
       name: 'featured_awards',
       type: 'array',
       label: 'Featured Awards (Carousel)',
+      hidden: true,
       fields: [
         {
           name: 'award_image',
@@ -108,25 +103,6 @@ export const IconsiamAwards: CollectionConfig = {
           name: 'content',
           type: 'richText',
           label: 'Featured Image for Year',
-        },
-      ],
-    },
-    {
-      name: 'call_to_action',
-      type: 'group',
-      label: 'Call to Action',
-      fields: [
-        {
-          name: 'text',
-          type: 'text',
-          label: 'Button Text',
-          localized: true,
-          defaultValue: 'Discover More',
-        },
-        {
-          name: 'link',
-          type: 'text',
-          label: 'Button Link',
         },
       ],
     },
