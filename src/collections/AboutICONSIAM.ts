@@ -12,12 +12,6 @@ export const AboutIconsiam: CollectionConfig = {
   },
   fields: [
     {
-      name: 'banner_image',
-      type: 'upload',
-      label: 'Banner Image',
-      relationTo: 'media',
-    },
-    {
       name: 'title',
       type: 'text',
       label: 'Title',
@@ -44,19 +38,18 @@ export const AboutIconsiam: CollectionConfig = {
       name: 'about_iconsiam',
       type: 'group',
       label: 'About ICONSIAM Section',
+      localized: true,
       fields: [
         {
           name: 'title',
           type: 'text',
           label: 'Section Title',
-          localized: true,
           defaultValue: 'ABOUT ICONSIAM',
         },
         {
           name: 'description',
           type: 'textarea',
           label: 'Description',
-          localized: true,
         },
         {
           name: 'image',
@@ -70,6 +63,7 @@ export const AboutIconsiam: CollectionConfig = {
       name: 'development_partners',
       type: 'group',
       label: 'Development Partners Section',
+      localized: true,
       fields: [
         {
           name: 'image',
@@ -81,14 +75,12 @@ export const AboutIconsiam: CollectionConfig = {
           name: 'title',
           type: 'text',
           label: 'Section Title',
-          localized: true,
           defaultValue: 'DEVELOPMENT PARTNERS',
         },
         {
           name: 'description',
           type: 'textarea',
           label: 'Description',
-          localized: true,
         },
         {
           name: 'partners',
@@ -109,19 +101,18 @@ export const AboutIconsiam: CollectionConfig = {
       name: 'board_of_directors',
       type: 'group',
       label: 'Board of Directors Section',
+      localized: true,
       fields: [
         {
           name: 'title',
           type: 'text',
           label: 'Section Title',
-          localized: true,
           defaultValue: 'BOARD OF DIRECTORS',
         },
         {
           name: 'description',
           type: 'textarea',
           label: 'Description',
-          localized: true,
         },
         {
           name: 'image',
@@ -136,12 +127,12 @@ export const AboutIconsiam: CollectionConfig = {
       name: 'vision_mission',
       type: 'group',
       label: 'Vision and Mission Section',
+      localized: true,
       fields: [
         {
           name: 'title',
           type: 'text',
           label: 'Section Title',
-          localized: true,
           defaultValue: 'VISION AND MISSION',
         },
         {
@@ -154,7 +145,6 @@ export const AboutIconsiam: CollectionConfig = {
           name: 'description',
           type: 'textarea',
           label: 'Description',
-          localized: true,
         },
         {
           name: 'background_color',
@@ -173,24 +163,24 @@ export const AboutIconsiam: CollectionConfig = {
       name: 'awards',
       type: 'group',
       label: 'ICONSIAM Awards Section',
+      localized: true,
       fields: [
         {
           name: 'title',
           type: 'text',
           label: 'Section Title',
-          localized: true,
           defaultValue: 'ICONSIAM AWARDS',
         },
         {
           name: 'description',
           type: 'textarea',
           label: 'Description',
-          localized: true,
         },
         {
           name: 'awards_list',
           type: 'array',
           label: 'Awards',
+          localized: true,
           fields: [
             {
               name: 'image',
@@ -202,13 +192,11 @@ export const AboutIconsiam: CollectionConfig = {
               name: 'title',
               type: 'text',
               label: 'Award Title',
-              localized: true,
             },
             {
               name: 'description',
               type: 'textarea',
               label: 'Award Description',
-              localized: true,
             },
           ],
         },

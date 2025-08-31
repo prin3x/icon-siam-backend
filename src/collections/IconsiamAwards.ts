@@ -95,6 +95,7 @@ export const IconsiamAwards: CollectionConfig = {
     {
       name: 'awards_by_year',
       type: 'array',
+      localized: true,
       label: 'Awards by Year',
       fields: [
         {
@@ -107,7 +108,6 @@ export const IconsiamAwards: CollectionConfig = {
           name: 'content',
           type: 'richText',
           label: 'Featured Image for Year',
-          localized: true,
         },
       ],
     },
