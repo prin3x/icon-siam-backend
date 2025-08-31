@@ -12,12 +12,6 @@ export const VisionMission: CollectionConfig = {
   },
   fields: [
     {
-      name: 'banner_image',
-      type: 'upload',
-      label: 'Banner Image',
-      relationTo: 'media',
-    },
-    {
       name: 'title',
       type: 'text',
       label: 'Title',

@@ -1442,7 +1442,6 @@ export interface Facility {
  */
 export interface AboutIconsiam {
   id: number;
-  banner_image?: (number | null) | Media;
   title: string;
   subtitle?: string | null;
   status: 'ACTIVE' | 'INACTIVE';
@@ -1500,7 +1499,6 @@ export interface AboutIconsiam {
  */
 export interface BoardOfDirector {
   id: number;
-  banner_image?: (number | null) | Media;
   title: string;
   subtitle?: string | null;
   description?: string | null;
@@ -1588,7 +1586,6 @@ export interface IconsiamAward {
  */
 export interface VisionMission {
   id: number;
-  banner_image?: (number | null) | Media;
   title: string;
   subtitle?: string | null;
   status: 'ACTIVE' | 'INACTIVE';
@@ -2815,7 +2812,6 @@ export interface FacilitiesSelect<T extends boolean = true> {
  * via the `definition` "about-iconsiam_select".
  */
 export interface AboutIconsiamSelect<T extends boolean = true> {
-  banner_image?: T;
   title?: T;
   subtitle?: T;
   status?: T;
@@ -2884,7 +2880,6 @@ export interface AboutIconsiamSelect<T extends boolean = true> {
  * via the `definition` "board-of-directors_select".
  */
 export interface BoardOfDirectorsSelect<T extends boolean = true> {
-  banner_image?: T;
   title?: T;
   subtitle?: T;
   description?: T;
@@ -2959,7 +2954,6 @@ export interface IconsiamAwardsSelect<T extends boolean = true> {
  * via the `definition` "vision-mission_select".
  */
 export interface VisionMissionSelect<T extends boolean = true> {
-  banner_image?: T;
   title?: T;
   subtitle?: T;
   status?: T;

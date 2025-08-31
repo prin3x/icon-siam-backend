@@ -12,12 +12,6 @@ export const BoardOfDirectors: CollectionConfig = {
   },
   fields: [
     {
-      name: 'banner_image',
-      type: 'upload',
-      label: 'Banner Image',
-      relationTo: 'media',
-    },
-    {
       name: 'title',
       type: 'text',
       label: 'Title',
