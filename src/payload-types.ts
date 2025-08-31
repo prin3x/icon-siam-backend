@@ -1530,7 +1530,6 @@ export interface BoardOfDirector {
  */
 export interface IconsiamAward {
   id: number;
-  banner_image?: (number | null) | Media;
   title: string;
   subtitle?: string | null;
   description?: string | null;
@@ -1567,10 +1566,6 @@ export interface IconsiamAward {
         id?: string | null;
       }[]
     | null;
-  call_to_action?: {
-    text?: string | null;
-    link?: string | null;
-  };
   seo?: {
     keywords?: string | null;
     description?: string | null;
@@ -2909,7 +2904,6 @@ export interface BoardOfDirectorsSelect<T extends boolean = true> {
  * via the `definition` "iconsiam-awards_select".
  */
 export interface IconsiamAwardsSelect<T extends boolean = true> {
-  banner_image?: T;
   title?: T;
   subtitle?: T;
   description?: T;
@@ -2931,12 +2925,6 @@ export interface IconsiamAwardsSelect<T extends boolean = true> {
         year?: T;
         content?: T;
         id?: T;
-      };
-  call_to_action?:
-    | T
-    | {
-        text?: T;
-        link?: T;
       };
   seo?:
     | T
