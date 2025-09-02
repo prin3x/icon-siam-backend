@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { getApiHeaders, isInternalRequest } from '@/utilities/apiKeyUtils'
 import { ImageUpload } from './ImageUpload'
 
-type MediaObject = { id: string; url: string; filename?: string }
+type MediaObject = { id: string; url: string; filename?: string; mimeType?: string }
 
 interface MediaModalProps {
   onClose: () => void
@@ -32,6 +32,14 @@ export function MediaModal({ onClose, onSelect }: MediaModalProps) {
     hasNextPage: false,
     hasPrevPage: false,
   })
+
+  const isVideoFromMimeOrUrl = (mimeType?: string, url?: string) => {
+    if (mimeType && mimeType.startsWith('video')) return true
+    if (!url) return false
+    const lowered = url.toLowerCase().split('?')[0]
+    const videoExts = ['.mp4', '.webm', '.ogg', '.mov', '.m4v', '.avi', '.mkv']
+    return videoExts.some((ext) => lowered.endsWith(ext))
+  }
 
   useEffect(() => {
     const fetchMedia = async () => {
@@ -237,16 +245,32 @@ export function MediaModal({ onClose, onSelect }: MediaModalProps) {
                     onClick={() => onSelect(item)}
                     style={{ cursor: 'pointer', border: '1px solid #e5e7eb', borderRadius: '4px' }}
                   >
-                    <img
-                      src={item.url}
-                      alt={item.filename || ''}
-                      style={{
-                        width: '100%',
-                        height: '120px',
-                        objectFit: 'cover',
-                        borderRadius: '4px 4px 0 0',
-                      }}
-                    />
+                    {isVideoFromMimeOrUrl(item.mimeType, item.url) ? (
+                      <video
+                        src={item.url}
+                        style={{
+                          width: '100%',
+                          height: '120px',
+                          objectFit: 'cover',
+                          borderRadius: '4px 4px 0 0',
+                          backgroundColor: '#000',
+                        }}
+                        muted
+                        playsInline
+                        controls
+                      />
+                    ) : (
+                      <img
+                        src={item.url}
+                        alt={item.filename || ''}
+                        style={{
+                          width: '100%',
+                          height: '120px',
+                          objectFit: 'cover',
+                          borderRadius: '4px 4px 0 0',
+                        }}
+                      />
+                    )}
                     <div
                       style={{
                         padding: '8px',
@@ -295,7 +319,7 @@ export function MediaModal({ onClose, onSelect }: MediaModalProps) {
             <div style={{ maxWidth: '400px', margin: '0 auto' }}>
               <ImageUpload value={null} onChange={handleUploadComplete} uploadOnly />
               <p style={{ marginTop: '12px', fontSize: '12px', color: '#6b7280' }}>
-                After uploading, the image will be automatically selected.
+                After uploading, the media will be automatically selected.
               </p>
             </div>
           )}

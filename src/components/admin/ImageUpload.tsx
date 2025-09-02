@@ -3,7 +3,7 @@ import React, { useState, useRef } from 'react'
 import { MediaModal } from './MediaModal'
 import { getApiHeaders } from '@/utilities/apiKeyUtils'
 
-type MediaObject = { id: string; url: string; filename?: string }
+type MediaObject = { id: string; url: string; filename?: string; mimeType?: string }
 
 interface ImageUploadProps {
   value: string | null | MediaObject
@@ -18,11 +18,21 @@ export function ImageUpload({ value, onChange, uploadOnly = false }: ImageUpload
   const [uploading, setUploading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [isDragOver, setIsDragOver] = useState(false)
+  const [isVideo, setIsVideo] = useState(false)
+
+  const isVideoFromMimeOrUrl = (mimeType?: string, url?: string) => {
+    if (mimeType && mimeType.startsWith('video')) return true
+    if (!url) return false
+    const lowered = url.toLowerCase().split('?')[0]
+    const videoExts = ['.mp4', '.webm', '.ogg', '.mov', '.m4v', '.avi', '.mkv']
+    return videoExts.some((ext) => lowered.endsWith(ext))
+  }
 
   React.useEffect(() => {
     if (uploadOnly || !value) {
       setPreviewUrl('')
       setFileName('')
+      setIsVideo(false)
       return
     }
 
@@ -35,21 +45,27 @@ export function ImageUpload({ value, onChange, uploadOnly = false }: ImageUpload
           if (data && data.url) {
             setPreviewUrl(data.url)
             setFileName(data.filename)
+            setIsVideo(isVideoFromMimeOrUrl(data.mimeType, data.url))
           } else {
             setPreviewUrl('')
             setFileName('')
+            setIsVideo(false)
           }
         })
         .catch(() => {
           setPreviewUrl('')
           setFileName('')
+          setIsVideo(false)
         })
     } else if (typeof value === 'object' && value.url) {
       setPreviewUrl(value.url)
       setFileName(value.filename || 'Image')
+      // Detect whether the selected media is a video
+      setIsVideo(isVideoFromMimeOrUrl((value as MediaObject).mimeType, value.url))
     } else {
       setPreviewUrl('')
       setFileName('')
+      setIsVideo(false)
     }
   }, [value, uploadOnly])
 
@@ -91,6 +107,9 @@ export function ImageUpload({ value, onChange, uploadOnly = false }: ImageUpload
 
   const handleRemoveImage = () => {
     onChange(null)
+    setPreviewUrl('')
+    setFileName('')
+    setIsVideo(false)
   }
 
   if (uploadOnly) {
@@ -118,7 +137,7 @@ export function ImageUpload({ value, onChange, uploadOnly = false }: ImageUpload
       >
         <input
           type="file"
-          accept="image/png,image/jpeg,image/webp"
+          accept="image/*,video/*"
           ref={fileInputRef}
           onChange={handleFileChange}
           style={{ display: 'none' }}
@@ -159,8 +178,8 @@ export function ImageUpload({ value, onChange, uploadOnly = false }: ImageUpload
           </div>
         )}
         <div style={{ marginTop: 8, color: '#6b7280', fontSize: 12 }}>
-          PNG, JPG, and WEBP. Maximum size: 1 MB.
-          <div>image size: 800×800 px</div>
+          Images (PNG, JPG, WEBP) and Videos (MP4, WEBM, OGG).
+          <div>Recommended image size: 800×800 px</div>
         </div>
       </div>
     )
@@ -180,11 +199,21 @@ export function ImageUpload({ value, onChange, uploadOnly = false }: ImageUpload
             backgroundColor: 'white',
           }}
         >
-          <img
-            src={previewUrl}
-            alt="Preview"
-            style={{ width: '56px', height: '56px', objectFit: 'cover', borderRadius: '4px' }}
-          />
+          {isVideo ? (
+            <video
+              src={previewUrl}
+              style={{ width: '56px', height: '56px', objectFit: 'cover', borderRadius: '4px' }}
+              muted
+              playsInline
+              controls
+            />
+          ) : (
+            <img
+              src={previewUrl}
+              alt="Preview"
+              style={{ width: '56px', height: '56px', objectFit: 'cover', borderRadius: '4px' }}
+            />
+          )}
           <div style={{ flex: 1, overflow: 'hidden' }}>
             <p
               style={{
@@ -255,7 +284,7 @@ export function ImageUpload({ value, onChange, uploadOnly = false }: ImageUpload
         >
           <input
             type="file"
-            accept="image/png,image/jpeg,image/webp"
+            accept="image/*,video/*"
             ref={fileInputRef}
             onChange={handleFileChange}
             style={{ display: 'none' }}
@@ -295,8 +324,7 @@ export function ImageUpload({ value, onChange, uploadOnly = false }: ImageUpload
             </div>
           )}
           <div style={{ marginTop: 8, color: '#6b7280', fontSize: 12 }}>
-            PNG, JPG, and WEBP. Maximum size: 1 MB.
-            <div>image size: 800×800 px</div>
+            Images (PNG, JPG, WEBP) and Videos (MP4, WEBM, OGG).
           </div>
         </div>
       )}
