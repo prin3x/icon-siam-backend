@@ -37,18 +37,17 @@ export const IconCraft: CollectionConfig = {
     {
       name: 'content',
       type: 'array',
+      localized: true,
       fields: [
         {
           name: 'title',
           type: 'text',
           label: 'Title',
-          localized: true,
         },
         {
           name: 'description',
           type: 'textarea',
           label: 'Description',
-          localized: true,
         },
         {
           name: 'image_url',
