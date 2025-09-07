@@ -39,7 +39,7 @@ const SEARCH_FIELD_MAP: Record<string, string[]> = {
   'iconsiam-awards': ['title'],
   'vision-mission': ['title'],
   residences: ['title'],
-  media: ['title'],
+  media: ['filename'],
   'page-banners': ['placement_key'],
   users: ['email'],
 }
@@ -177,6 +177,11 @@ export function CollectionItems({
             schemaJson.fields.map((f: any) => f?.name).filter(Boolean),
           )
           configuredFields.forEach((f) => {
+            // Allow filename for media even if not in schema fields
+            if (f === 'filename' && slug === 'media') {
+              searchableFields.push(f)
+              return
+            }
             if (schemaFieldNames.has(f)) searchableFields.push(f)
           })
         } else {
@@ -223,6 +228,11 @@ export function CollectionItems({
         searchableFields.forEach((field) => {
           const meta = schemaFieldMetaByName[field]
           const fieldType = meta?.type
+          // Special-case media.filename which does not exist in schemaJson
+          if (slug === 'media' && field === 'filename') {
+            params.append(`where[or][${orIndex++}][filename][like]`, term)
+            return
+          }
           if (fieldType && textLikeTypes.has(fieldType)) {
             params.append(`where[or][${orIndex++}][${field}][like]`, term)
             return
@@ -311,7 +321,8 @@ export function CollectionItems({
         }))
         // Use the schema fetched earlier (if available) for defaults/columns; otherwise fallback
         if (schemaJson) {
-          const defaults: string[] = schemaJson?.admin?.defaultColumns || []
+          const defaults: string[] =
+            slug === 'media' ? ['filename'] : schemaJson?.admin?.defaultColumns || []
           const fieldsFromSchema: Array<{
             name: string
             label: string
