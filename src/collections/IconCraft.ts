@@ -74,12 +74,12 @@ export const IconCraft: CollectionConfig = {
       name: 'craft_highlight_content',
       type: 'array',
       label: 'Craft Highlight Content',
+      localized: true,
       fields: [
         {
           name: 'title',
           type: 'text',
           label: 'Title',
-          localized: true,
         },
         {
           name: 'image_url',
