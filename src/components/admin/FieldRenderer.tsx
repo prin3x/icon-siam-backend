@@ -10,6 +10,7 @@ import { RowField } from './RowField'
 import { TabsField } from './TabsField'
 import { ImageUpload } from './ImageUpload'
 import LocationZonePicker from '@/components/LocationZonePicker'
+import ControlledColorPicker from '@/components/ColorPicker/ControlledColorPicker'
 
 interface FieldRendererProps {
   field: any
@@ -38,6 +39,16 @@ export function FieldRenderer({
           field={field}
           value={formData[field.name]}
           onChange={handleChange}
+        />
+      )
+    } else if (ComponentName === '@/components/ColorPicker') {
+      const currentValue: string = formData[field.name] || '#ffffff'
+      return (
+        <ControlledColorPicker
+          value={currentValue}
+          onChange={handleChange}
+          label={field.label || field.name}
+          required={field.required}
         />
       )
     }
