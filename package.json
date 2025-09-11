@@ -15,7 +15,7 @@
     "start": "NODE_OPTIONS=--no-deprecation next start",
     "test": "pnpm run test:int && pnpm run test:e2e",
     "test:e2e": "cross-env NODE_OPTIONS=\"--no-deprecation --no-experimental-strip-types\" pnpm exec playwright test",
-    "test:int": "cross-env NODE_OPTIONS=--no-deprecation vitest run --config ./vitest.config.mts",
+    "test:int": "cross-env NODE_OPTIONS=--no-deprecation vitest run --config ./vitest.config.mts --coverage",
     "migrate-direct-table": "cross-env NODE_OPTIONS=--no-deprecation payload run ./src/commands/migrate-direct-table.ts",
     "migrate-events-table": "cross-env NODE_OPTIONS=--no-deprecation payload run ./src/commands/migrate-events-table.ts",
     "migrate-promotions-table": "cross-env NODE_OPTIONS=--no-deprecation payload run ./src/commands/migrate-promotions-table.ts",
