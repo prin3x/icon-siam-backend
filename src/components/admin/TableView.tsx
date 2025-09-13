@@ -251,13 +251,20 @@ export function TableView({
                   ) : col.type === 'status' ? (
                     (() => {
                       const value = row[col.key]
-                      const isOn = value === 'ACTIVE' || value === 'published' || value === true
+                      const isOn =
+                        value === 'ACTIVE' ||
+                        value === 'published' ||
+                        value === true ||
+                        value === 'active'
                       const mapNext = (checked: boolean) => {
                         if (value === 'ACTIVE' || value === 'INACTIVE') {
                           return checked ? 'ACTIVE' : 'INACTIVE'
                         }
                         if (value === 'published' || value === 'draft') {
                           return checked ? 'published' : 'draft'
+                        }
+                        if (value === 'active' || value === 'inactive') {
+                          return checked ? 'active' : 'inactive'
                         }
                         return checked
                       }
