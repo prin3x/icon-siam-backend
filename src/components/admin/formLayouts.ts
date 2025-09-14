@@ -17,6 +17,21 @@ export type CollectionFormLayout = {
 // Declarative per-collection form layouts used by RecordEditForm.
 // This lets us group and order existing schema fields without changing the schema itself.
 export const FORM_LAYOUTS: Record<string, CollectionFormLayout> = {
+  floors: {
+    columns: 2,
+    left: [
+      {
+        title: 'Floor',
+        fields: ['name', 'order'],
+      },
+    ],
+    right: [
+      {
+        title: 'Status',
+        fields: ['status'],
+      },
+    ],
+  },
   homepage: {
     columns: 2,
     left: [

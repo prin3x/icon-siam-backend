@@ -4,7 +4,7 @@ export const GettingHere: CollectionConfig = {
   slug: 'getting-here',
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'location', 'contact', 'contact_info', 'status'],
+    defaultColumns: ['title', 'location', 'contact', 'contact_info'],
   },
   access: {
     read: () => true,

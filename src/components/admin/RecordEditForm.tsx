@@ -39,6 +39,7 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
   const [error, setError] = useState<string>('')
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const isCreateMode = !recordId
+  console.log(schema, 'schema')
 
   useEffect(() => {
     const controller = new AbortController()
@@ -61,6 +62,7 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
 
         const schemaData = await schemaResponse.json()
         if (signal.aborted) return
+        console.log(schemaData, 'schemaData')
         setSchema(schemaData.fields || [])
 
         if (isCreateMode) {

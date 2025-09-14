@@ -23,7 +23,7 @@ const SEARCH_FIELD_MAP: Record<string, string[]> = {
   'icon-luxe': ['title'],
   'getting-here': ['title'],
   directory: ['title'],
-  floors: ['title'],
+  floors: ['name'],
   homepage: ['title'],
   categories: ['name'],
   'gallery-collections': ['placement_key'],

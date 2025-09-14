@@ -14,6 +14,52 @@ export const convertPayloadToTiptap = (payloadValue: any): any => {
   // If already TipTap doc
   if (payloadValue?.type === 'doc') return payloadValue
 
+  // Lexical JSON (Payload v2 richText) → TipTap
+  if (payloadValue && typeof payloadValue === 'object' && payloadValue.root?.type === 'root') {
+    const FORMAT_BOLD = 1
+    const FORMAT_ITALIC = 2
+    const FORMAT_STRIKE = 4
+    const FORMAT_UNDERLINE = 8
+    const FORMAT_CODE = 16
+
+    const getMarksFromFormat = (format: number | undefined): any[] => {
+      const marks: any[] = []
+      if (!format || typeof format !== 'number') return marks
+      if (format & FORMAT_BOLD) marks.push({ type: 'bold' })
+      if (format & FORMAT_ITALIC) marks.push({ type: 'italic' })
+      if (format & FORMAT_UNDERLINE) marks.push({ type: 'underline' })
+      if (format & FORMAT_STRIKE) marks.push({ type: 'strike' })
+      if (format & FORMAT_CODE) marks.push({ type: 'code' })
+      return marks
+    }
+
+    const paragraphs = Array.isArray(payloadValue.root.children) ? payloadValue.root.children : []
+
+    const content = paragraphs
+      .filter((node: any) => node?.type === 'paragraph')
+      .map((para: any) => {
+        const children: any[] = Array.isArray(para.children) ? para.children : []
+        const tiptapChildren = children
+          .filter((c: any) => c?.type === 'text')
+          .map((c: any) => {
+            const text = typeof c.text === 'string' ? c.text : ''
+            const marks = getMarksFromFormat(c.format)
+            const node: any = { type: 'text', text }
+            if (marks.length > 0) node.marks = marks
+            return node
+          })
+          .filter((n: any) => typeof n.text === 'string')
+
+        if (tiptapChildren.length === 0) {
+          return { type: 'paragraph' }
+        }
+
+        return { type: 'paragraph', content: tiptapChildren }
+      })
+
+    return { type: 'doc', content }
+  }
+
   if (Array.isArray(payloadValue)) {
     const content = payloadValue.map((node: any) => {
       if (node.type === 'upload' && node.value?.url) {

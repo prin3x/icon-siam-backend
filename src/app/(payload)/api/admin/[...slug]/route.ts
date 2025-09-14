@@ -116,39 +116,9 @@ async function handleSchemaRequest(request: NextRequest, collectionSlug: string)
       if (field.type === 'row') formType = 'row'
       if (field.type === 'collapsible') formType = 'collapsible'
 
-      // Detect fields that should use ComboBox (text fields with common patterns)
+      // Only use ComboBox when explicitly opted-in on the field
       if (field.type === 'text') {
-        const fieldName = field.name.toLowerCase()
-        const fieldLabel = (field.label || field.name).toLowerCase()
-
-        // Common patterns that suggest predefined options
-        const comboBoxPatterns = [
-          'zone',
-          'area',
-          'region',
-          'location',
-          'category',
-          'type',
-          'status',
-          'level',
-          'floor',
-          'section',
-          'department',
-          'division',
-          'group',
-          'brand',
-          'model',
-          'version',
-          'size',
-          'color',
-          'material',
-        ]
-
-        if (
-          comboBoxPatterns.some(
-            (pattern) => fieldName.includes(pattern) || fieldLabel.includes(pattern),
-          )
-        ) {
+        if (field?.admin?.useComboBox === true) {
           formType = 'comboBox'
         }
       }
