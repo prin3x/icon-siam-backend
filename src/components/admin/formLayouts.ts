@@ -1,9 +1,9 @@
-export type LayoutField = string // field name from schema
+// LayoutField is just a string representing field names from schema
 
 export type LayoutSection = {
   title: string
   description?: string
-  fields: LayoutField[]
+  fields: string[] // field names from schema
   // If false, consumers should render fields inline without an extra card/section wrapper
   wrap?: boolean
 }
@@ -12,6 +12,84 @@ export type CollectionFormLayout = {
   columns?: number // default 2
   left: LayoutSection[]
   right?: LayoutSection[]
+}
+
+// Common layout template for business entities (dinings, shops, etc.)
+function createBusinessEntityLayout(
+  entityType: 'dining establishment' | 'shop',
+): CollectionFormLayout {
+  return {
+    columns: 2,
+    left: [
+      {
+        title: 'Basic Information',
+        description: `Core details about the ${entityType}`,
+        fields: ['skip_sync', 'title', 'subtitle', 'description'],
+      },
+      {
+        title: 'Categories & Classification',
+        description: `How this ${entityType} is categorized`,
+        fields: ['categories', 'pin_to_iconluxe', 'iconluxe_custom_link_url', 'is_featured'],
+      },
+      {
+        title: 'Location Details',
+        description: 'Physical location and positioning information',
+        fields: ['floor', 'location_zone', 'location_shop_number', 'location_coordinates'],
+      },
+      {
+        title: 'Operating Hours',
+        description: 'Business hours and schedule information',
+        fields: ['opening_hours'],
+        wrap: false,
+      },
+      {
+        title: 'Contact Information',
+        description: `Ways to reach the ${entityType}`,
+        fields: ['contact_info'],
+        wrap: false,
+      },
+      {
+        title: 'Visual Assets',
+        description: `Images and media for the ${entityType}`,
+        fields: ['images'],
+        wrap: false,
+      },
+      {
+        title: 'Content & SEO',
+        description: 'Additional content and search optimization',
+        fields: ['keywords', 'tags', 'short_alphabet'],
+      },
+      {
+        title: 'Related Content',
+        description: 'Connections to other content and promotions',
+        fields: ['related_content', 'related_promotions'],
+      },
+    ],
+    right: [
+      {
+        title: 'Status & Settings',
+        description: 'Current status and operational settings',
+        fields: ['status', 'sort_order'],
+      },
+      {
+        title: 'Date Range',
+        description: `Operational period for seasonal ${entityType}s`,
+        fields: ['date_range'],
+        wrap: false,
+      },
+      {
+        title: 'SEO & Meta',
+        description: 'Search engine optimization settings',
+        fields: ['slug', 'meta'],
+        wrap: false,
+      },
+      {
+        title: 'System Fields',
+        description: 'Automatically managed fields',
+        fields: ['unique_id', 'createdAt', 'updatedAt'],
+      },
+    ],
+  }
 }
 
 // Declarative per-collection form layouts used by RecordEditForm.
@@ -117,152 +195,10 @@ export const FORM_LAYOUTS: Record<string, CollectionFormLayout> = {
   },
 
   // Custom layout for Dinings collection
-  dinings: {
-    columns: 2,
-    left: [
-      {
-        title: 'Basic Information',
-        description: 'Core details about the dining establishment',
-        fields: ['skip_sync', 'title', 'subtitle', 'description'],
-      },
-      {
-        title: 'Categories & Classification',
-        description: 'How this dining establishment is categorized',
-        fields: ['categories', 'pin_to_iconluxe', 'iconluxe_custom_link_url', 'is_featured'],
-      },
-      {
-        title: 'Location Details',
-        description: 'Physical location and positioning information',
-        fields: ['floor', 'location_zone', 'location_shop_number', 'location_coordinates'],
-      },
-      {
-        title: 'Operating Hours',
-        description: 'Business hours and schedule information',
-        fields: ['opening_hours'],
-        wrap: false,
-      },
-      {
-        title: 'Contact Information',
-        description: 'Ways to reach the establishment',
-        fields: ['contact_info'],
-        wrap: false,
-      },
-      {
-        title: 'Visual Assets',
-        description: 'Images and media for the establishment',
-        fields: ['images'],
-        wrap: false,
-      },
-      {
-        title: 'Content & SEO',
-        description: 'Additional content and search optimization',
-        fields: ['keywords', 'tags', 'short_alphabet'],
-      },
-      {
-        title: 'Related Content',
-        description: 'Connections to other content and promotions',
-        fields: ['related_content', 'related_promotions'],
-      },
-    ],
-    right: [
-      {
-        title: 'Status & Settings',
-        description: 'Current status and operational settings',
-        fields: ['status', 'sort_order'],
-      },
-      {
-        title: 'Date Range',
-        description: 'Operational period for seasonal establishments',
-        fields: ['date_range'],
-        wrap: false,
-      },
-      {
-        title: 'SEO & Meta',
-        description: 'Search engine optimization settings',
-        fields: ['slug', 'meta'],
-        wrap: false,
-      },
-      {
-        title: 'System Fields',
-        description: 'Automatically managed fields',
-        fields: ['unique_id', 'createdAt', 'updatedAt'],
-      },
-    ],
-  },
+  dinings: createBusinessEntityLayout('dining establishment'),
 
-  // Custom layout for Shops collection (similar structure to dinings)
-  shops: {
-    columns: 2,
-    left: [
-      {
-        title: 'Basic Information',
-        description: 'Core details about the shop',
-        fields: ['skip_sync', 'title', 'subtitle', 'description'],
-      },
-      {
-        title: 'Categories & Classification',
-        description: 'How this shop is categorized',
-        fields: ['categories', 'pin_to_iconluxe', 'iconluxe_custom_link_url', 'is_featured'],
-      },
-      {
-        title: 'Location Details',
-        description: 'Physical location and positioning information',
-        fields: ['floor', 'location_zone', 'location_shop_number', 'location_coordinates'],
-      },
-      {
-        title: 'Operating Hours',
-        description: 'Business hours and schedule information',
-        fields: ['opening_hours'],
-        wrap: false,
-      },
-      {
-        title: 'Contact Information',
-        description: 'Ways to reach the shop',
-        fields: ['contact_info'],
-        wrap: false,
-      },
-      {
-        title: 'Visual Assets',
-        description: 'Images and media for the shop',
-        fields: ['images'],
-        wrap: false,
-      },
-      {
-        title: 'Content & SEO',
-        description: 'Additional content and search optimization',
-        fields: ['keywords', 'tags', 'short_alphabet'],
-      },
-      {
-        title: 'Related Content',
-        description: 'Connections to other content and promotions',
-        fields: ['related_content', 'related_promotions'],
-      },
-    ],
-    right: [
-      {
-        title: 'Status & Settings',
-        description: 'Current status and operational settings',
-        fields: ['status', 'sort_order'],
-      },
-      {
-        title: 'Date Range',
-        description: 'Operational period for seasonal shops',
-        fields: ['date_range'],
-        wrap: false,
-      },
-      {
-        title: 'SEO & Meta',
-        description: 'Search engine optimization settings',
-        fields: ['slug', 'meta'],
-        wrap: false,
-      },
-      {
-        title: 'System Fields',
-        description: 'Automatically managed fields',
-        fields: ['unique_id', 'createdAt', 'updatedAt'],
-      },
-    ],
-  },
+  // Custom layout for Shops collection
+  shops: createBusinessEntityLayout('shop'),
 }
 
 // Minimal field type definition for dynamic layout generation
