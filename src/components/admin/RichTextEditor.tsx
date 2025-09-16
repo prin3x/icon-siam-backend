@@ -54,6 +54,94 @@ interface RichTextEditorProps {
   readOnly?: boolean
 }
 
+// Shared toolbar button component
+interface ToolbarButtonProps {
+  readonly onClick: () => void
+  readonly isActive?: boolean
+  readonly children: React.ReactNode
+  readonly variant?: 'default' | 'danger'
+  readonly disabled?: boolean
+}
+
+function ToolbarButton({
+  onClick,
+  isActive = false,
+  children,
+  variant = 'default',
+  disabled = false,
+}: ToolbarButtonProps) {
+  const isDanger = variant === 'danger'
+  const baseStyle = {
+    padding: '8px 12px',
+    borderRadius: '6px',
+    fontSize: '13px',
+    fontWeight: '500',
+    border: '1px solid #d1d5db',
+    cursor: disabled ? 'not-allowed' : 'pointer',
+    transition: 'all 0.2s ease',
+    opacity: disabled ? 0.5 : 1,
+  }
+
+  const getBackgroundColor = () => {
+    if (disabled) return '#f9fafb'
+    if (isDanger) return '#ef4444'
+    if (isActive) return '#3b82f6'
+    return '#ffffff'
+  }
+
+  const getTextColor = () => {
+    if (disabled) return '#9ca3af'
+    if (isDanger || isActive) return '#ffffff'
+    return '#374151'
+  }
+
+  const getBorderColor = () => {
+    if (disabled) return '#e5e7eb'
+    if (isDanger) return '#dc2626'
+    return '#d1d5db'
+  }
+
+  const getHoverBackgroundColor = () => {
+    if (disabled) return '#f9fafb'
+    if (isDanger) return '#dc2626'
+    if (isActive) return '#3b82f6'
+    return '#f3f4f6'
+  }
+
+  const getHoverBorderColor = () => {
+    if (disabled) return '#e5e7eb'
+    if (isDanger) return '#b91c1c'
+    return '#9ca3af'
+  }
+
+  return (
+    <button
+      onClick={disabled ? undefined : onClick}
+      style={{
+        ...baseStyle,
+        backgroundColor: getBackgroundColor(),
+        color: getTextColor(),
+        borderColor: getBorderColor(),
+      }}
+      onMouseEnter={(e) => {
+        if (!disabled) {
+          e.currentTarget.style.backgroundColor = getHoverBackgroundColor()
+          e.currentTarget.style.borderColor = getHoverBorderColor()
+        }
+      }}
+      onMouseLeave={(e) => {
+        if (!disabled) {
+          e.currentTarget.style.backgroundColor = getBackgroundColor()
+          e.currentTarget.style.borderColor = getBorderColor()
+        }
+      }}
+      type="button"
+    >
+      {children}
+    </button>
+  )
+}
+
 // Detect content format
 const detectContentFormat = (value: any): 'html' | 'tiptap' | 'lexical' | 'unknown' => {
   if (!value) return 'unknown'
@@ -427,367 +515,70 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
             {formatLabel}
           </div>
 
-          <button
+          <ToolbarButton
             onClick={() => editor?.chain().focus().toggleBold().run()}
-            style={{
-              padding: '8px 12px',
-              borderRadius: '6px',
-              fontSize: '13px',
-              fontWeight: '500',
-              backgroundColor: editor?.isActive('bold') ? '#3b82f6' : '#ffffff',
-              color: editor?.isActive('bold') ? '#ffffff' : '#374151',
-              border: '1px solid #d1d5db',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-            }}
-            onMouseEnter={(e) => {
-              if (!editor?.isActive('bold')) {
-                e.currentTarget.style.backgroundColor = '#f3f4f6'
-                e.currentTarget.style.borderColor = '#9ca3af'
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (!editor?.isActive('bold')) {
-                e.currentTarget.style.backgroundColor = '#ffffff'
-                e.currentTarget.style.borderColor = '#d1d5db'
-              }
-            }}
-            type="button"
+            isActive={editor?.isActive('bold')}
           >
             Bold
-          </button>
-          <button
+          </ToolbarButton>
+          <ToolbarButton
             onClick={() => editor?.chain().focus().toggleItalic().run()}
-            style={{
-              padding: '8px 12px',
-              borderRadius: '6px',
-              fontSize: '13px',
-              fontWeight: '500',
-              backgroundColor: editor?.isActive('italic') ? '#3b82f6' : '#ffffff',
-              color: editor?.isActive('italic') ? '#ffffff' : '#374151',
-              border: '1px solid #d1d5db',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-            }}
-            onMouseEnter={(e) => {
-              if (!editor?.isActive('italic')) {
-                e.currentTarget.style.backgroundColor = '#f3f4f6'
-                e.currentTarget.style.borderColor = '#9ca3af'
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (!editor?.isActive('italic')) {
-                e.currentTarget.style.backgroundColor = '#ffffff'
-                e.currentTarget.style.borderColor = '#d1d5db'
-              }
-            }}
-            type="button"
+            isActive={editor?.isActive('italic')}
           >
             Italic
-          </button>
-          <button
+          </ToolbarButton>
+          <ToolbarButton
             onClick={() => editor?.chain().focus().toggleUnderline().run()}
-            style={{
-              padding: '8px 12px',
-              borderRadius: '6px',
-              fontSize: '13px',
-              fontWeight: '500',
-              backgroundColor: editor?.isActive('underline') ? '#3b82f6' : '#ffffff',
-              color: editor?.isActive('underline') ? '#ffffff' : '#374151',
-              border: '1px solid #d1d5db',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-            }}
-            onMouseEnter={(e) => {
-              if (!editor?.isActive('underline')) {
-                e.currentTarget.style.backgroundColor = '#f3f4f6'
-                e.currentTarget.style.borderColor = '#9ca3af'
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (!editor?.isActive('underline')) {
-                e.currentTarget.style.backgroundColor = '#ffffff'
-                e.currentTarget.style.borderColor = '#d1d5db'
-              }
-            }}
-            type="button"
+            isActive={editor?.isActive('underline')}
           >
             Underline
-          </button>
-          <button
-            onClick={openLinkModal}
-            style={{
-              padding: '8px 12px',
-              borderRadius: '6px',
-              fontSize: '13px',
-              fontWeight: '500',
-              backgroundColor: editor?.isActive('link') ? '#3b82f6' : '#ffffff',
-              color: editor?.isActive('link') ? '#ffffff' : '#374151',
-              border: '1px solid #d1d5db',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-            }}
-            onMouseEnter={(e) => {
-              if (!editor?.isActive('link')) {
-                e.currentTarget.style.backgroundColor = '#f3f4f6'
-                e.currentTarget.style.borderColor = '#9ca3af'
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (!editor?.isActive('link')) {
-                e.currentTarget.style.backgroundColor = '#ffffff'
-                e.currentTarget.style.borderColor = '#d1d5db'
-              }
-            }}
-            type="button"
-          >
+          </ToolbarButton>
+          <ToolbarButton onClick={openLinkModal} isActive={editor?.isActive('link')}>
             Link
-          </button>
+          </ToolbarButton>
           {editor?.isActive('link') && (
-            <button
-              onClick={handleRemoveLink}
-              style={{
-                padding: '8px 12px',
-                borderRadius: '6px',
-                fontSize: '13px',
-                fontWeight: '500',
-                backgroundColor: '#ef4444',
-                color: '#ffffff',
-                border: '1px solid #dc2626',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#dc2626'
-                e.currentTarget.style.borderColor = '#b91c1c'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = '#ef4444'
-                e.currentTarget.style.borderColor = '#dc2626'
-              }}
-              type="button"
-            >
+            <ToolbarButton onClick={handleRemoveLink} variant="danger">
               Remove Link
-            </button>
+            </ToolbarButton>
           )}
-          <button
+          <ToolbarButton
             onClick={() => setIsMediaModalOpen(true)}
-            style={{
-              padding: '8px 12px',
-              borderRadius: '6px',
-              fontSize: '13px',
-              fontWeight: '500',
-              backgroundColor: editor?.isActive('image') ? '#3b82f6' : '#ffffff',
-              color: editor?.isActive('image') ? '#ffffff' : '#374151',
-              border: '1px solid #d1d5db',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-            }}
-            onMouseEnter={(e) => {
-              if (!editor?.isActive('image')) {
-                e.currentTarget.style.backgroundColor = '#f3f4f6'
-                e.currentTarget.style.borderColor = '#9ca3af'
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (!editor?.isActive('image')) {
-                e.currentTarget.style.backgroundColor = '#ffffff'
-                e.currentTarget.style.borderColor = '#d1d5db'
-              }
-            }}
-            type="button"
+            isActive={editor?.isActive('image')}
           >
             Image
-          </button>
+          </ToolbarButton>
 
-          <button
+          <ToolbarButton
             onClick={() => editor?.chain().focus().toggleBulletList().run()}
-            style={{
-              padding: '8px 12px',
-              borderRadius: '6px',
-              fontSize: '13px',
-              fontWeight: '500',
-              backgroundColor: editor?.isActive('bulletList') ? '#3b82f6' : '#ffffff',
-              color: editor?.isActive('bulletList') ? '#ffffff' : '#374151',
-              border: '1px solid #d1d5db',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-            }}
-            onMouseEnter={(e) => {
-              if (!editor?.isActive('bulletList')) {
-                e.currentTarget.style.backgroundColor = '#f3f4f6'
-                e.currentTarget.style.borderColor = '#9ca3af'
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (!editor?.isActive('bulletList')) {
-                e.currentTarget.style.backgroundColor = '#ffffff'
-                e.currentTarget.style.borderColor = '#d1d5db'
-              }
-            }}
-            type="button"
+            isActive={editor?.isActive('bulletList')}
           >
             List
-          </button>
-          <button
+          </ToolbarButton>
+          <ToolbarButton
             onClick={() => editor?.chain().focus().toggleOrderedList().run()}
-            style={{
-              padding: '8px 12px',
-              borderRadius: '6px',
-              fontSize: '13px',
-              fontWeight: '500',
-              backgroundColor: editor?.isActive('orderedList') ? '#3b82f6' : '#ffffff',
-              color: editor?.isActive('orderedList') ? '#ffffff' : '#374151',
-              border: '1px solid #d1d5db',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-            }}
-            onMouseEnter={(e) => {
-              if (!editor?.isActive('orderedList')) {
-                e.currentTarget.style.backgroundColor = '#f3f4f6'
-                e.currentTarget.style.borderColor = '#9ca3af'
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (!editor?.isActive('orderedList')) {
-                e.currentTarget.style.backgroundColor = '#ffffff'
-                e.currentTarget.style.borderColor = '#d1d5db'
-              }
-            }}
-            type="button"
+            isActive={editor?.isActive('orderedList')}
           >
             Ordered
-          </button>
-          <button
+          </ToolbarButton>
+          <ToolbarButton
             onClick={() => editor?.chain().focus().toggleBlockquote().run()}
-            style={{
-              padding: '8px 12px',
-              borderRadius: '6px',
-              fontSize: '13px',
-              fontWeight: '500',
-              backgroundColor: editor?.isActive('blockquote') ? '#3b82f6' : '#ffffff',
-              color: editor?.isActive('blockquote') ? '#ffffff' : '#374151',
-              border: '1px solid #d1d5db',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-            }}
-            onMouseEnter={(e) => {
-              if (!editor?.isActive('blockquote')) {
-                e.currentTarget.style.backgroundColor = '#f3f4f6'
-                e.currentTarget.style.borderColor = '#9ca3af'
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (!editor?.isActive('blockquote')) {
-                e.currentTarget.style.backgroundColor = '#ffffff'
-                e.currentTarget.style.borderColor = '#d1d5db'
-              }
-            }}
-            type="button"
+            isActive={editor?.isActive('blockquote')}
           >
             Quote
-          </button>
+          </ToolbarButton>
 
-          <button
-            onClick={() => editor?.chain().focus().setHorizontalRule().run()}
-            style={{
-              padding: '8px 12px',
-              borderRadius: '6px',
-              fontSize: '13px',
-              fontWeight: '500',
-              backgroundColor: '#ffffff',
-              color: '#374151',
-              border: '1px solid #d1d5db',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#f3f4f6'
-              e.currentTarget.style.borderColor = '#9ca3af'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = '#ffffff'
-              e.currentTarget.style.borderColor = '#d1d5db'
-            }}
-            type="button"
-          >
+          <ToolbarButton onClick={() => editor?.chain().focus().setHorizontalRule().run()}>
             HR
-          </button>
-          <button
-            onClick={() => editor?.chain().focus().setTextAlign('left').run()}
-            style={{
-              padding: '8px 12px',
-              borderRadius: '6px',
-              fontSize: '13px',
-              fontWeight: '500',
-              backgroundColor: '#ffffff',
-              color: '#374151',
-              border: '1px solid #d1d5db',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#f3f4f6'
-              e.currentTarget.style.borderColor = '#9ca3af'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = '#ffffff'
-              e.currentTarget.style.borderColor = '#d1d5db'
-            }}
-            type="button"
-          >
+          </ToolbarButton>
+          <ToolbarButton onClick={() => editor?.chain().focus().setTextAlign('left').run()}>
             Left
-          </button>
-          <button
-            onClick={() => editor?.chain().focus().setTextAlign('center').run()}
-            style={{
-              padding: '8px 12px',
-              borderRadius: '6px',
-              fontSize: '13px',
-              fontWeight: '500',
-              backgroundColor: '#ffffff',
-              color: '#374151',
-              border: '1px solid #d1d5db',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#f3f4f6'
-              e.currentTarget.style.borderColor = '#9ca3af'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = '#ffffff'
-              e.currentTarget.style.borderColor = '#d1d5db'
-            }}
-            type="button"
-          >
+          </ToolbarButton>
+          <ToolbarButton onClick={() => editor?.chain().focus().setTextAlign('center').run()}>
             Center
-          </button>
-          <button
-            onClick={() => editor?.chain().focus().setTextAlign('right').run()}
-            style={{
-              padding: '8px 12px',
-              borderRadius: '6px',
-              fontSize: '13px',
-              fontWeight: '500',
-              backgroundColor: '#ffffff',
-              color: '#374151',
-              border: '1px solid #d1d5db',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#f3f4f6'
-              e.currentTarget.style.borderColor = '#9ca3af'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = '#ffffff'
-              e.currentTarget.style.borderColor = '#d1d5db'
-            }}
-            type="button"
-          >
+          </ToolbarButton>
+          <ToolbarButton onClick={() => editor?.chain().focus().setTextAlign('right').run()}>
             Right
-          </button>
+          </ToolbarButton>
         </div>
       )}
       {isMediaModalOpen && (
