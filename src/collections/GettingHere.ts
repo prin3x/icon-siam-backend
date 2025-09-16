@@ -118,12 +118,12 @@ export const GettingHere: CollectionConfig = {
       name: 'methods',
       type: 'array',
       label: 'Transport Methods',
+      localized: true,
       fields: [
         {
           name: 'type',
           type: 'select',
           label: 'Type',
-          localized: true,
           options: [
             { label: 'Car', value: 'car' },
             { label: 'BTS SkyTrain', value: 'bts' },
@@ -144,13 +144,11 @@ export const GettingHere: CollectionConfig = {
           name: 'title',
           type: 'text',
           label: 'Title',
-          localized: true,
         },
         {
           name: 'details',
           type: 'richText',
           label: 'Details',
-          localized: true,
         },
       ],
     },
