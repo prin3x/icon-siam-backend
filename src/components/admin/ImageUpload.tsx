@@ -6,9 +6,94 @@ import { getApiHeaders } from '@/utilities/apiKeyUtils'
 type MediaObject = { id: string; url: string; filename?: string; mimeType?: string }
 
 interface ImageUploadProps {
-  value: string | null | MediaObject
-  onChange: (value: MediaObject | null) => void
-  uploadOnly?: boolean
+  readonly value: string | null | MediaObject
+  readonly onChange: (value: MediaObject | null) => void
+  readonly uploadOnly?: boolean
+}
+
+// Shared drag-and-drop upload area component
+interface UploadAreaProps {
+  readonly isDragOver: boolean
+  readonly uploading: boolean
+  readonly fileInputRef: React.RefObject<HTMLInputElement | null>
+  readonly onDragOver: (e: React.DragEvent) => void
+  readonly onDragLeave: () => void
+  readonly onDrop: (e: React.DragEvent) => void
+  readonly onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  readonly onMediaModalOpen: () => void
+  readonly showRecommendation?: boolean
+}
+
+function UploadArea({
+  isDragOver,
+  uploading,
+  fileInputRef,
+  onDragOver,
+  onDragLeave,
+  onDrop,
+  onFileChange,
+  onMediaModalOpen,
+  showRecommendation = true,
+}: UploadAreaProps) {
+  return (
+    <div
+      style={{
+        border: '2px dashed #e5e7eb',
+        borderRadius: '12px',
+        padding: '28px 16px',
+        textAlign: 'center',
+        backgroundColor: isDragOver ? '#f3f4f6' : 'transparent',
+        transition: 'all 0.15s ease',
+      }}
+      onDragOver={onDragOver}
+      onDragLeave={onDragLeave}
+      onDrop={onDrop}
+    >
+      <input
+        type="file"
+        accept="image/*,video/*"
+        ref={fileInputRef}
+        onChange={onFileChange}
+        style={{ display: 'none' }}
+      />
+      <div style={{ color: '#9ca3af', marginBottom: 8 }}>
+        <svg
+          width="28"
+          height="28"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+        >
+          <rect x="3" y="5" width="18" height="14" rx="2" ry="2" />
+          <circle cx="8.5" cy="10.5" r="1.5" />
+          <path d="M21 15l-4.5-4.5L9 18" />
+        </svg>
+      </div>
+      {uploading ? (
+        <div style={{ color: '#6b7280' }}>Uploading...</div>
+      ) : (
+        <div style={{ color: '#111827' }}>
+          <span style={{ color: '#374151' }}>Drag and drop a file or </span>
+          <a
+            onClick={() => fileInputRef.current?.click()}
+            style={{ color: '#0ea5e9', cursor: 'pointer' }}
+          >
+            Upload
+          </a>
+          <span style={{ color: '#374151' }}> or </span>
+          <a onClick={onMediaModalOpen} style={{ color: '#0ea5e9', cursor: 'pointer' }}>
+            Choose from existing
+          </a>
+        </div>
+      )}
+
+      <div style={{ marginTop: 8, color: '#6b7280', fontSize: 12 }}>
+        Images (PNG, JPG, WEBP) and Videos (MP4, WEBM, OGG).
+        {showRecommendation && <div>Recommended image size: 800×800 px</div>}
+      </div>
+    </div>
+  )
 }
 
 export function ImageUpload({ value, onChange, uploadOnly = false }: ImageUploadProps) {
@@ -21,7 +106,7 @@ export function ImageUpload({ value, onChange, uploadOnly = false }: ImageUpload
   const [isVideo, setIsVideo] = useState(false)
 
   const isVideoFromMimeOrUrl = (mimeType?: string, url?: string) => {
-    if (mimeType && mimeType.startsWith('video')) return true
+    if (mimeType?.startsWith('video')) return true
     if (!url) return false
     const lowered = url.toLowerCase().split('?')[0]
     const videoExts = ['.mp4', '.webm', '.ogg', '.mov', '.m4v', '.avi', '.mkv']
@@ -61,7 +146,7 @@ export function ImageUpload({ value, onChange, uploadOnly = false }: ImageUpload
       setPreviewUrl(value.url)
       setFileName(value.filename || 'Image')
       // Detect whether the selected media is a video
-      setIsVideo(isVideoFromMimeOrUrl((value as MediaObject).mimeType, value.url))
+      setIsVideo(isVideoFromMimeOrUrl(value.mimeType, value.url))
     } else {
       setPreviewUrl('')
       setFileName('')
@@ -114,15 +199,10 @@ export function ImageUpload({ value, onChange, uploadOnly = false }: ImageUpload
 
   if (uploadOnly) {
     return (
-      <div
-        style={{
-          border: '2px dashed #e5e7eb',
-          borderRadius: '12px',
-          padding: '28px 16px',
-          textAlign: 'center',
-          backgroundColor: isDragOver ? '#f3f4f6' : 'transparent',
-          transition: 'all 0.15s ease',
-        }}
+      <UploadArea
+        isDragOver={isDragOver}
+        uploading={uploading}
+        fileInputRef={fileInputRef}
         onDragOver={(e) => {
           e.preventDefault()
           setIsDragOver(true)
@@ -134,54 +214,10 @@ export function ImageUpload({ value, onChange, uploadOnly = false }: ImageUpload
           const file = e.dataTransfer.files?.[0]
           if (file) uploadFile(file)
         }}
-      >
-        <input
-          type="file"
-          accept="image/*,video/*"
-          ref={fileInputRef}
-          onChange={handleFileChange}
-          style={{ display: 'none' }}
-        />
-        <div style={{ color: '#9ca3af', marginBottom: 8 }}>
-          {/* simple image icon */}
-          <svg
-            width="28"
-            height="28"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-          >
-            <rect x="3" y="5" width="18" height="14" rx="2" ry="2" />
-            <circle cx="8.5" cy="10.5" r="1.5" />
-            <path d="M21 15l-4.5-4.5L9 18" />
-          </svg>
-        </div>
-        {uploading ? (
-          <div style={{ color: '#6b7280' }}>Uploading...</div>
-        ) : (
-          <div style={{ color: '#111827' }}>
-            <span style={{ color: '#374151' }}>Drag and drop a file or </span>
-            <a
-              onClick={() => fileInputRef.current?.click()}
-              style={{ color: '#0ea5e9', cursor: 'pointer' }}
-            >
-              Upload
-            </a>
-            <span style={{ color: '#374151' }}> or </span>
-            <a
-              onClick={() => setIsMediaModalOpen(true)}
-              style={{ color: '#0ea5e9', cursor: 'pointer' }}
-            >
-              Choose from existing
-            </a>
-          </div>
-        )}
-        <div style={{ marginTop: 8, color: '#6b7280', fontSize: 12 }}>
-          Images (PNG, JPG, WEBP) and Videos (MP4, WEBM, OGG).
-          <div>Recommended image size: 800×800 px</div>
-        </div>
-      </div>
+        onFileChange={handleFileChange}
+        onMediaModalOpen={() => setIsMediaModalOpen(true)}
+        showRecommendation={true}
+      />
     )
   }
 
@@ -261,15 +297,10 @@ export function ImageUpload({ value, onChange, uploadOnly = false }: ImageUpload
           </button>
         </div>
       ) : (
-        <div
-          style={{
-            border: '2px dashed #e5e7eb',
-            borderRadius: '12px',
-            padding: '28px 16px',
-            textAlign: 'center',
-            backgroundColor: isDragOver ? '#f3f4f6' : 'transparent',
-            transition: 'all 0.15s ease',
-          }}
+        <UploadArea
+          isDragOver={isDragOver}
+          uploading={uploading}
+          fileInputRef={fileInputRef}
           onDragOver={(e) => {
             e.preventDefault()
             setIsDragOver(true)
@@ -281,52 +312,10 @@ export function ImageUpload({ value, onChange, uploadOnly = false }: ImageUpload
             const file = e.dataTransfer.files?.[0]
             if (file) uploadFile(file)
           }}
-        >
-          <input
-            type="file"
-            accept="image/*,video/*"
-            ref={fileInputRef}
-            onChange={handleFileChange}
-            style={{ display: 'none' }}
-          />
-          <div style={{ color: '#9ca3af', marginBottom: 8 }}>
-            <svg
-              width="28"
-              height="28"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-            >
-              <rect x="3" y="5" width="18" height="14" rx="2" ry="2" />
-              <circle cx="8.5" cy="10.5" r="1.5" />
-              <path d="M21 15l-4.5-4.5L9 18" />
-            </svg>
-          </div>
-          {uploading ? (
-            <div style={{ color: '#6b7280' }}>Uploading...</div>
-          ) : (
-            <div style={{ color: '#111827' }}>
-              <span style={{ color: '#374151' }}>Drag and drop a file or </span>
-              <a
-                onClick={() => fileInputRef.current?.click()}
-                style={{ color: '#0ea5e9', cursor: 'pointer' }}
-              >
-                Upload
-              </a>
-              <span style={{ color: '#374151' }}> or </span>
-              <a
-                onClick={() => setIsMediaModalOpen(true)}
-                style={{ color: '#0ea5e9', cursor: 'pointer' }}
-              >
-                Choose from existing
-              </a>
-            </div>
-          )}
-          <div style={{ marginTop: 8, color: '#6b7280', fontSize: 12 }}>
-            Images (PNG, JPG, WEBP) and Videos (MP4, WEBM, OGG).
-          </div>
-        </div>
+          onFileChange={handleFileChange}
+          onMediaModalOpen={() => setIsMediaModalOpen(true)}
+          showRecommendation={false}
+        />
       )}
 
       {isMediaModalOpen && (
