@@ -41,7 +41,7 @@ const Image = TiptapImage.extend({
   renderHTML({ HTMLAttributes }: { HTMLAttributes: Record<string, unknown> }) {
     const { href, target, ...rest } = HTMLAttributes as Record<string, any>
     if (href) {
-      return ['a', { href, target: target || '_blank' }, ['img', rest]]
+      return ['a', { href, target: target ?? '_blank' }, ['img', rest]]
     }
     return ['img', rest]
   },
@@ -373,7 +373,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
         .focus()
         .setImage({
           src: media.url,
-          alt: media.filename || '',
+          alt: media.filename ?? '',
           'data-id': resolvedId,
         } as any)
         .createParagraphNear()
@@ -436,15 +436,15 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
   const openLinkModal = () => {
     if (editor?.isActive('image')) {
       const imgAttrs = editor.getAttributes('image') as any
-      setLinkUrl(imgAttrs?.href || '')
-      setLinkTarget(imgAttrs?.target || '_blank')
+      setLinkUrl(imgAttrs?.href ?? '')
+      setLinkTarget(imgAttrs?.target ?? '_blank')
     } else {
       const { from, to } = editor?.state.selection || {}
       if (from !== to) {
         const linkMark = editor?.getAttributes('link')
         if (linkMark?.href) {
           setLinkUrl(linkMark.href)
-          setLinkTarget(linkMark.target || '_blank')
+          setLinkTarget(linkMark.target ?? '_blank')
         } else {
           setLinkUrl('')
           setLinkTarget('_blank')
