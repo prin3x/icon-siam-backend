@@ -11,8 +11,9 @@ export function ListView({ items, onEdit, onDelete, onPreview }: Readonly<ListVi
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
       {items.map((item) => (
-        <div
+        <button
           key={item.id}
+          type="button"
           style={{
             padding: '20px',
             border: '1px solid #e5e7eb',
@@ -21,6 +22,8 @@ export function ListView({ items, onEdit, onDelete, onPreview }: Readonly<ListVi
             boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
             transition: 'all 0.2s ease',
             cursor: 'pointer',
+            width: '100%',
+            textAlign: 'left',
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.transform = 'translateY(-1px)'
@@ -32,6 +35,8 @@ export function ListView({ items, onEdit, onDelete, onPreview }: Readonly<ListVi
             e.currentTarget.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)'
             e.currentTarget.style.borderColor = '#e5e7eb'
           }}
+          onClick={() => onPreview(item.id)}
+          aria-label={`View details for ${item.title || item.name || item.id}`}
         >
           <div
             style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}
@@ -150,7 +155,7 @@ export function ListView({ items, onEdit, onDelete, onPreview }: Readonly<ListVi
               </button>
             </div>
           </div>
-        </div>
+        </button>
       ))}
     </div>
   )
