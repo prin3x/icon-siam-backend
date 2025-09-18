@@ -1152,8 +1152,6 @@ export function CollectionItems({
       {/* Delete Confirmation Modal */}
       {isDeleteModalOpen && (
         <div
-          role="dialog"
-          aria-modal="true"
           style={{
             position: 'fixed',
             inset: 0,
@@ -1163,14 +1161,26 @@ export function CollectionItems({
             justifyContent: 'center',
             zIndex: 1000,
           }}
-          onClick={() => {
-            if (!deleteLoading) setIsDeleteModalOpen(false)
-          }}
         >
+          <button
+            type="button"
+            style={{
+              position: 'absolute',
+              inset: 0,
+              background: 'transparent',
+              border: 'none',
+              padding: 0,
+              margin: 0,
+              cursor: 'pointer',
+            }}
+            onClick={() => {
+              if (!deleteLoading) setIsDeleteModalOpen(false)
+            }}
+            aria-label="Close modal"
+          />
           <div
             className="admin-card"
-            style={{ width: 420, padding: 20 }}
-            onClick={(e) => e.stopPropagation()}
+            style={{ width: 420, padding: 20, position: 'relative', zIndex: 1 }}
           >
             <h3 className="text-lg font-semibold" style={{ marginBottom: 10 }}>
               Confirm deletion

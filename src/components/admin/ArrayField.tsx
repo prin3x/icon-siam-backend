@@ -32,11 +32,14 @@ interface ArrayFieldProps {
 export function ArrayField({ value, onChange, field }: Readonly<ArrayFieldProps>) {
   const [items, setItems] = useState<any[]>(value || [])
   const [dragIndex, setDragIndex] = useState<number | null>(null)
+  const [itemKeys, setItemKeys] = useState<string[]>([])
 
   useEffect(() => {
     // Sync items state with external value changes
     if (value && JSON.stringify(value) !== JSON.stringify(items)) {
       setItems(value)
+      // Generate unique keys for new items
+      setItemKeys(value.map((_, index) => `item-${Date.now()}-${index}`))
     }
   }, [value])
 
@@ -49,13 +52,17 @@ export function ArrayField({ value, onChange, field }: Readonly<ArrayFieldProps>
     })
 
     const newItems = [...items, newItem]
+    const newKey = `item-${Date.now()}-${items.length}`
     setItems(newItems)
+    setItemKeys([...itemKeys, newKey])
     onChange(newItems)
   }
 
   const removeItem = (index: number) => {
     const newItems = items.filter((_, i) => i !== index)
+    const newKeys = itemKeys.filter((_, i) => i !== index)
     setItems(newItems)
+    setItemKeys(newKeys)
     onChange(newItems)
   }
 
@@ -69,14 +76,18 @@ export function ArrayField({ value, onChange, field }: Readonly<ArrayFieldProps>
   const moveItem = (fromIndex: number, toIndex: number) => {
     if (toIndex < 0 || toIndex >= items.length || fromIndex === toIndex) return
     const next = [...items]
+    const nextKeys = [...itemKeys]
     const [moved] = next.splice(fromIndex, 1)
+    const [movedKey] = nextKeys.splice(fromIndex, 1)
     next.splice(toIndex, 0, moved)
+    nextKeys.splice(toIndex, 0, movedKey)
     setItems(next)
+    setItemKeys(nextKeys)
     onChange(next)
   }
 
   const handleDragStart = (index: number) => setDragIndex(index)
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+  const handleDragOver = (e: React.DragEvent<HTMLButtonElement>) => {
     e.preventDefault()
   }
   const handleDrop = (index: number) => {
@@ -277,12 +288,14 @@ export function ArrayField({ value, onChange, field }: Readonly<ArrayFieldProps>
     <div style={{ border: '1px solid #d1d5db', padding: '16px', borderRadius: '8px' }}>
       <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '16px' }}>{field.label}</h3>
       {items.map((item, index) => (
-        <div
-          key={index}
+        <button
+          key={itemKeys[index] || `item-${index}-${field.name}`}
+          type="button"
           draggable
           onDragStart={() => handleDragStart(index)}
           onDragOver={handleDragOver}
           onDrop={() => handleDrop(index)}
+          aria-label={`Drag to reorder item ${index + 1}`}
           style={{
             border: '1px solid #e5e7eb',
             padding: '16px',
@@ -291,6 +304,8 @@ export function ArrayField({ value, onChange, field }: Readonly<ArrayFieldProps>
             position: 'relative',
             backgroundColor: dragIndex === index ? '#f9fafb' : '#fff',
             cursor: 'grab',
+            width: '100%',
+            textAlign: 'left',
           }}
         >
           <div
@@ -355,7 +370,7 @@ export function ArrayField({ value, onChange, field }: Readonly<ArrayFieldProps>
             </div>
           </div>
           {field.fields?.map((subField) => renderSubField(subField, item, index))}
-        </div>
+        </button>
       ))}
       <button
         type="button"
