@@ -8,7 +8,7 @@ import { GROUPS } from './CollectionsList'
 import { LocaleSwitcher } from './LocaleSwitcher'
 
 type AdminShellProps = {
-  children: React.ReactNode
+  readonly children: React.ReactNode
 }
 
 export function AdminShell({ children }: AdminShellProps) {
@@ -96,13 +96,17 @@ export function AdminShell({ children }: AdminShellProps) {
 
       {/* Mobile overlay */}
       {isMobile && sidebarOpen && (
-        <div
+        <button
+          type="button"
           onClick={() => setSidebarOpen(false)}
           style={{
             position: 'fixed',
             inset: 0,
             background: 'rgba(0,0,0,0.4)',
             zIndex: 30,
+            border: 'none',
+            padding: 0,
+            cursor: 'pointer',
           }}
         />
       )}
