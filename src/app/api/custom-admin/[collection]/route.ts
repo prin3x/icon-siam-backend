@@ -92,7 +92,7 @@ export async function GET(
           continue
         }
         if (value && typeof value === 'object') {
-          const fieldName = key as string
+          const fieldName = key
           const operators: any = {}
           for (const [op, opVal] of Object.entries(value)) {
             if (selectFieldNames.has(fieldName)) {
