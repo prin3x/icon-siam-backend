@@ -1,14 +1,14 @@
 'use client'
 
-import React, { useEffect, useState, useCallback, useRef } from 'react'
-import { useRouter } from 'next/navigation'
-import { useLocale } from './LocaleContext'
-import { navigateWithLocale } from '@/utilities/navigation'
-import { ListView } from './ListView'
-import { GridView } from './GridView'
-import { TableView } from './TableView'
-import { RecordDetailModal } from './RecordDetailModal'
 import { getApiHeaders, isInternalRequest } from '@/utilities/apiKeyUtils'
+import { navigateWithLocale } from '@/utilities/navigation'
+import { useRouter } from 'next/navigation'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { GridView } from './GridView'
+import { ListView } from './ListView'
+import { useLocale } from './LocaleContext'
+import { RecordDetailModal } from './RecordDetailModal'
+import { TableView } from './TableView'
 
 const API_URL = '/api'
 
@@ -63,20 +63,20 @@ export function CollectionItems({
   slug,
   onBack,
   hideHeaderControls = false,
-}: CollectionItemsProps) {
+}: Readonly<CollectionItemsProps>) {
   const router = useRouter()
   const { locale } = useLocale()
   const [items, setItems] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string>('')
-  const [viewMode, setViewMode] = useState<'list' | 'grid' | 'table'>('table')
+  const [viewMode] = useState<'list' | 'grid' | 'table'>('table')
   const [visibleColumns, setVisibleColumns] = useState<string[]>([])
   const [availableColumns, setAvailableColumns] = useState<Array<{ key: string; label: string }>>([
     { key: 'title', label: 'Title' },
     { key: 'status', label: 'Status' },
     { key: 'createdAt', label: 'Created' },
   ])
-  const [filters, setFilters] = useState<Record<string, string | null>>({})
+  const [filters] = useState<Record<string, string | null>>({})
   const [showColumnsDropdown, setShowColumnsDropdown] = useState(false)
   const [showFilterPanel, setShowFilterPanel] = useState(false)
   const columnsRef = useRef<HTMLDivElement | null>(null)
@@ -158,7 +158,7 @@ export function CollectionItems({
       setError('')
 
       // Fetch schema FIRST to build safe search params for the given collection
-      let schemaJson: any | null = null
+      let schemaJson: { fields?: any[]; admin?: { defaultColumns?: string[] } } | null = null
       try {
         const schemaRes = await fetch(`/api/admin/${slug}?schema=true&locale=${locale}`, {
           signal,
@@ -166,7 +166,9 @@ export function CollectionItems({
         if (schemaRes.ok) {
           schemaJson = await schemaRes.json()
         }
-      } catch (_) {}
+      } catch (error) {
+        console.warn('Failed to fetch schema:', error)
+      }
 
       // Determine searchable text fields from explicit map first, fallback to schema-derived
       const searchableFields: string[] = []
@@ -252,7 +254,6 @@ export function CollectionItems({
             if (matchedValue) {
               params.append(`where[or][${orIndex++}][${field}][equals]`, matchedValue)
             }
-            return
           }
           // For other non-text types, skip adding a quick-search condition
         })
@@ -294,7 +295,7 @@ export function CollectionItems({
         }
 
         const contentType = response.headers.get('content-type')
-        if (!contentType || !contentType.includes('application/json')) {
+        if (!contentType?.includes('application/json')) {
           const text = await response.text()
           console.error('Non-JSON response:', text)
           throw new Error(`Expected JSON but got: ${contentType}`)
@@ -311,7 +312,7 @@ export function CollectionItems({
           hasPrevPage: data.hasPrevPage || false,
         }))
         // Derive available columns from payload response if present
-        const docSample = (data.docs && data.docs[0]) || {}
+        const docSample = data?.docs?.[0] || {}
         const inferredKeys = Object.keys(docSample)
           .filter((k) => !['id', 'updatedAt', '_status'].includes(k))
           .slice(0, 10)
@@ -430,6 +431,48 @@ export function CollectionItems({
   const handleClosePreviewModal = () => {
     setIsPreviewModalOpen(false)
     setSelectedRecordId('')
+  }
+
+  const handleColumnToggle = (colKey: string, checked: boolean) => {
+    setVisibleColumns((prev) =>
+      checked ? Array.from(new Set([...prev, colKey])) : prev.filter((k) => k !== colKey),
+    )
+  }
+
+  const handleFilterFieldChange = (idx: number, field: string) => {
+    setEditingFilters((arr) => arr.map((c, i) => (i === idx ? { ...c, field } : c)))
+  }
+
+  const handleFilterOperatorChange = (idx: number, operator: string) => {
+    setEditingFilters((arr) => arr.map((c, i) => (i === idx ? { ...c, operator } : c)))
+  }
+
+  const handleFilterValueChange = (idx: number, value: string) => {
+    setEditingFilters((arr) => arr.map((c, i) => (i === idx ? { ...c, value } : c)))
+  }
+
+  const handleRemoveFilter = (idx: number) => {
+    setEditingFilters((arr) => arr.filter((_, i) => i !== idx))
+  }
+
+  const handleAddFilterAfter = (idx: number) => {
+    setEditingFilters((arr) => [
+      ...arr.slice(0, idx + 1),
+      { field: '', operator: 'equals', value: '' },
+      ...arr.slice(idx + 1),
+    ])
+  }
+
+  const getColumnLabel = (key: string) => {
+    if (key === 'createdAt') return 'Created'
+    if (key === 'updatedAt') return 'Updated'
+    return key[0].toUpperCase() + key.slice(1)
+  }
+
+  const getColumnType = (key: string, isDate: boolean) => {
+    if (key === 'status') return 'status'
+    if (isDate) return 'date'
+    return 'text'
   }
 
   const handleCreateSuccess = () => {
@@ -677,13 +720,7 @@ export function CollectionItems({
                       <input
                         type="checkbox"
                         checked={visibleColumns.includes(col.key)}
-                        onChange={(e) => {
-                          setVisibleColumns((prev) =>
-                            e.target.checked
-                              ? Array.from(new Set([...prev, col.key]))
-                              : prev.filter((k) => k !== col.key),
-                          )
-                        }}
+                        onChange={(e) => handleColumnToggle(col.key, e.target.checked)}
                       />
                       {col.label}
                     </label>
@@ -760,11 +797,7 @@ export function CollectionItems({
               >
                 <select
                   value={cond.field}
-                  onChange={(e) =>
-                    setEditingFilters((arr) =>
-                      arr.map((c, i) => (i === idx ? { ...c, field: e.target.value } : c)),
-                    )
-                  }
+                  onChange={(e) => handleFilterFieldChange(idx, e.target.value)}
                   style={{ padding: '10px', border: '1px solid #e5e7eb', borderRadius: 10 }}
                 >
                   <option value="">Select field</option>
@@ -776,11 +809,7 @@ export function CollectionItems({
                 </select>
                 <select
                   value={cond.operator}
-                  onChange={(e) =>
-                    setEditingFilters((arr) =>
-                      arr.map((c, i) => (i === idx ? { ...c, operator: e.target.value } : c)),
-                    )
-                  }
+                  onChange={(e) => handleFilterOperatorChange(idx, e.target.value)}
                   style={{ padding: '10px', border: '1px solid #e5e7eb', borderRadius: 10 }}
                 >
                   <option value="equals">equals</option>
@@ -793,31 +822,21 @@ export function CollectionItems({
                 </select>
                 <input
                   value={cond.value}
-                  onChange={(e) =>
-                    setEditingFilters((arr) =>
-                      arr.map((c, i) => (i === idx ? { ...c, value: e.target.value } : c)),
-                    )
-                  }
+                  onChange={(e) => handleFilterValueChange(idx, e.target.value)}
                   placeholder="Enter a value"
                   style={{ padding: '10px', border: '1px solid #e5e7eb', borderRadius: 10 }}
                 />
                 <div style={{ display: 'flex', gap: 8 }}>
                   <button
                     type="button"
-                    onClick={() => setEditingFilters((arr) => arr.filter((_, i) => i !== idx))}
+                    onClick={() => handleRemoveFilter(idx)}
                     className="admin-button"
                   >
                     ×
                   </button>
                   <button
                     type="button"
-                    onClick={() =>
-                      setEditingFilters((arr) => [
-                        ...arr.slice(0, idx + 1),
-                        { field: '', operator: 'equals', value: '' },
-                        ...arr.slice(idx + 1),
-                      ])
-                    }
+                    onClick={() => handleAddFilterAfter(idx)}
                     className="admin-button"
                   >
                     +
@@ -968,20 +987,15 @@ export function CollectionItems({
               loading={loading}
               columns={visibleColumns.map((k) => {
                 const fromSchema = schemaFields.find((f) => f.name === k)
-                const isDate =
+                const isDate: boolean =
                   k === 'createdAt' ||
                   k === 'updatedAt' ||
-                  /At$/.test(k) ||
-                  (fromSchema && fromSchema.type === 'date')
+                  k.endsWith('At') ||
+                  fromSchema?.type === 'date'
                 return {
                   key: k,
-                  label:
-                    k === 'createdAt'
-                      ? 'Created'
-                      : k === 'updatedAt'
-                        ? 'Updated'
-                        : k[0].toUpperCase() + k.slice(1),
-                  type: k === 'status' ? 'status' : isDate ? 'date' : 'text',
+                  label: getColumnLabel(k),
+                  type: getColumnType(k, isDate),
                 }
               })}
               sortKey={sortKey}

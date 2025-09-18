@@ -36,18 +36,23 @@ function UploadArea({
   showRecommendation = true,
 }: UploadAreaProps) {
   return (
-    <div
+    <button
+      type="button"
       style={{
+        width: '100%',
         border: '2px dashed #e5e7eb',
         borderRadius: '12px',
         padding: '28px 16px',
         textAlign: 'center',
         backgroundColor: isDragOver ? '#f3f4f6' : 'transparent',
         transition: 'all 0.15s ease',
+        cursor: 'pointer',
+        background: 'transparent',
       }}
       onDragOver={onDragOver}
       onDragLeave={onDragLeave}
       onDrop={onDrop}
+      onClick={() => fileInputRef.current?.click()}
     >
       <input
         type="file"
@@ -75,16 +80,37 @@ function UploadArea({
       ) : (
         <div style={{ color: '#111827' }}>
           <span style={{ color: '#374151' }}>Drag and drop a file or </span>
-          <a
+          <button
+            type="button"
             onClick={() => fileInputRef.current?.click()}
-            style={{ color: '#0ea5e9', cursor: 'pointer' }}
+            style={{
+              color: '#0ea5e9',
+              cursor: 'pointer',
+              background: 'none',
+              border: 'none',
+              padding: 0,
+              font: 'inherit',
+              textDecoration: 'underline',
+            }}
           >
             Upload
-          </a>
+          </button>
           <span style={{ color: '#374151' }}> or </span>
-          <a onClick={onMediaModalOpen} style={{ color: '#0ea5e9', cursor: 'pointer' }}>
+          <button
+            type="button"
+            onClick={onMediaModalOpen}
+            style={{
+              color: '#0ea5e9',
+              cursor: 'pointer',
+              background: 'none',
+              border: 'none',
+              padding: 0,
+              font: 'inherit',
+              textDecoration: 'underline',
+            }}
+          >
             Choose from existing
-          </a>
+          </button>
         </div>
       )}
 
@@ -92,7 +118,7 @@ function UploadArea({
         Images (PNG, JPG, WEBP) and Videos (MP4, WEBM, OGG).
         {showRecommendation && <div>Recommended image size: 800×800 px</div>}
       </div>
-    </div>
+    </button>
   )
 }
 
@@ -127,7 +153,7 @@ export function ImageUpload({ value, onChange, uploadOnly = false }: ImageUpload
       })
         .then((res) => res.json())
         .then((data) => {
-          if (data && data.url) {
+          if (data?.url) {
             setPreviewUrl(data.url)
             setFileName(data.filename)
             setIsVideo(isVideoFromMimeOrUrl(data.mimeType, data.url))

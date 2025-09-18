@@ -7,7 +7,7 @@ interface GridViewProps {
   onPreview: (id: string) => void
 }
 
-export function GridView({ items, onEdit, onDelete, onPreview }: GridViewProps) {
+export function GridView({ items, onEdit, onDelete, onPreview }: Readonly<GridViewProps>) {
   return (
     <div
       style={{
@@ -26,19 +26,8 @@ export function GridView({ items, onEdit, onDelete, onPreview }: GridViewProps) 
             backgroundColor: '#ffffff',
             boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
             transition: 'all 0.3s ease',
-            cursor: 'pointer',
             position: 'relative',
             overflow: 'hidden',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'translateY(-4px)'
-            e.currentTarget.style.boxShadow = '0 12px 40px rgba(0, 0, 0, 0.15)'
-            e.currentTarget.style.borderColor = '#3b82f6'
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'translateY(0)'
-            e.currentTarget.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)'
-            e.currentTarget.style.borderColor = '#e5e7eb'
           }}
         >
           <div
