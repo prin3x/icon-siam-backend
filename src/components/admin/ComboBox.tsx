@@ -14,7 +14,7 @@ export function ComboBox({
   options,
   placeholder,
   readOnly = false,
-}: ComboBoxProps) {
+}: Readonly<ComboBoxProps>) {
   const [isOpen, setIsOpen] = useState(false)
   const [inputValue, setInputValue] = useState(value)
   const [filteredOptions, setFilteredOptions] = useState(options)
@@ -151,16 +151,21 @@ export function ComboBox({
           }}
         >
           {filteredOptions.map((option, index) => (
-            <div
+            <button
               key={option.value}
+              type="button"
               onClick={() => handleOptionSelect(option)}
               style={{
+                width: '100%',
                 padding: '10px 12px',
+                border: 'none',
+                background: 'transparent',
                 cursor: 'pointer',
                 fontSize: '14px',
                 color: '#374151',
                 borderBottom: index < filteredOptions.length - 1 ? '1px solid #f3f4f6' : 'none',
                 transition: 'background-color 0.2s ease',
+                textAlign: 'left',
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.backgroundColor = '#f3f4f6'
@@ -170,7 +175,7 @@ export function ComboBox({
               }}
             >
               {option.label}
-            </div>
+            </button>
           ))}
         </div>
       )}
