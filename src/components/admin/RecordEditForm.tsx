@@ -26,7 +26,7 @@ interface FieldSchema {
   hidden?: boolean
 }
 
-export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps) {
+export function RecordEditForm({ collectionSlug, recordId }: Readonly<RecordEditFormProps>) {
   const router = useRouter()
   const { locale } = useLocale()
   const [record, setRecord] = useState<any>(null)
@@ -151,14 +151,150 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
     })
   }
 
+  // Helper function to coerce ID values
+  const coerceId = (v: any): any => {
+    if (typeof v === 'number') return v
+    if (typeof v === 'string' && /^\d+$/.test(v)) return Number(v)
+    return v
+  }
+
+  // Handle group field normalization
+  const normalizeGroupField = (field: FieldSchema, value: any): any => {
+    return normalizeForSubmission(field.fields || [], value || {})
+  }
+
+  // Handle relationship field normalization for many relationships
+  const normalizeManyRelationship = (field: FieldSchema, value: any): any => {
+    const relationTo = field.relationTo
+    const isPoly = Array.isArray(relationTo)
+    const items = Array.isArray(value) ? value : value ? [value] : []
+
+    if (isPoly) {
+      return items
+        .map((it: any) => {
+          if (it && typeof it === 'object' && 'value' in it) {
+            return { relationTo: it.relationTo, value: coerceId(it.value) }
+          }
+          if (it && typeof it === 'object' && 'id' in it) {
+            return {
+              relationTo: (it as any).collection || (relationTo as string[])[0],
+              value: coerceId(it.id),
+            }
+          }
+          return null
+        })
+        .filter(Boolean)
+    }
+
+    // Single collection expects array of IDs
+    return items
+      .map((it: any) => {
+        if (typeof it === 'string' || typeof it === 'number') {
+          return coerceId(it)
+        }
+        if (it && typeof it === 'object' && 'value' in it) {
+          return coerceId((it as any).value)
+        }
+        if (it && typeof it === 'object' && 'id' in it) {
+          return coerceId((it as any).id)
+        }
+        return undefined
+      })
+      .filter(Boolean)
+  }
+
+  // Handle poly relationship value normalization
+  const normalizePolyRelationshipValue = (value: any, relationTo: string | string[]): any => {
+    if (value && typeof value === 'object' && 'value' in value) {
+      return {
+        relationTo: value.relationTo,
+        value: coerceId(value.value),
+      }
+    }
+    if (value && typeof value === 'object' && 'id' in value) {
+      return {
+        relationTo: value.collection || (Array.isArray(relationTo) ? relationTo[0] : relationTo),
+        value: coerceId(value.id),
+      }
+    }
+    if (typeof value === 'string' || typeof value === 'number') {
+      return {
+        relationTo: Array.isArray(relationTo) ? relationTo[0] : relationTo,
+        value: coerceId(value),
+      }
+    }
+    return undefined
+  }
+
+  // Handle single collection relationship value normalization
+  const normalizeSingleCollectionValue = (value: any): any => {
+    if (typeof value === 'string' || typeof value === 'number') {
+      return coerceId(value)
+    }
+    if (value && typeof value === 'object' && 'value' in value) {
+      return coerceId(value.value)
+    }
+    if (value && typeof value === 'object' && 'id' in value) {
+      return coerceId(value.id)
+    }
+    return undefined
+  }
+
+  // Handle relationship field normalization for single relationships
+  const normalizeSingleRelationship = (field: FieldSchema, value: any): any => {
+    const relationTo = field.relationTo
+    const isPoly = Array.isArray(relationTo)
+
+    if (isPoly) {
+      return normalizePolyRelationshipValue(value, relationTo)
+    }
+
+    return normalizeSingleCollectionValue(value)
+  }
+
+  // Handle relationship field normalization
+  const normalizeRelationshipField = (field: FieldSchema, value: any): any => {
+    if (value === '' || value === null) return undefined
+
+    if (field.hasMany) {
+      return normalizeManyRelationship(field, value)
+    }
+
+    return normalizeSingleRelationship(field, value)
+  }
+
+  // Handle upload field normalization
+  const normalizeUploadField = (value: any): any => {
+    if (value && typeof value === 'object' && 'id' in value) {
+      return (value as any).id
+    }
+    if (value !== '') {
+      return value
+    }
+    return undefined
+  }
+
+  // Handle array field normalization
+  const normalizeArrayField = (field: FieldSchema, value: any): any => {
+    const rows = Array.isArray(value) ? value : []
+    return rows.map((row) => normalizeForSubmission((field.fields || []) as any, row))
+  }
+
+  // Handle number field normalization
+  const normalizeNumberField = (value: any): any => {
+    if (value === '') return null
+    return typeof value === 'number' ? value : Number(value)
+  }
+
+  // Handle date field normalization
+  const normalizeDateField = (value: any): any => {
+    return value === '' ? null : value
+  }
+
   // Normalize form data into the shape expected by Payload API
   const normalizeForSubmission = (fields: FieldSchema[], data: any): any => {
-    const coerceId = (v: any): any => {
-      if (typeof v === 'number') return v
-      if (typeof v === 'string' && /^\d+$/.test(v)) return Number(v)
-      return v
-    }
     const result: any = {}
+
     for (const field of fields) {
       if (shouldHideField(field)) continue
       const value = data?.[field.name]
@@ -166,106 +302,33 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
 
       switch (field.type) {
         case 'group': {
-          const nested = normalizeForSubmission(field.fields || [], value || {})
-          result[field.name] = nested
+          result[field.name] = normalizeGroupField(field, value)
           break
         }
         case 'relationship': {
-          if (value === '' || value === null) break
-          const relationTo = field.relationTo
-          const isPoly = Array.isArray(relationTo)
-          if (field.hasMany) {
-            const items = Array.isArray(value) ? value : value ? [value] : []
-            if (isPoly) {
-              result[field.name] = items
-                .map((it: any) =>
-                  it && typeof it === 'object' && 'value' in it
-                    ? { relationTo: it.relationTo, value: coerceId(it.value) }
-                    : it && typeof it === 'object' && 'id' in it
-                      ? {
-                          relationTo: (it as any).collection || (relationTo as string[])[0],
-                          value: coerceId(it.id),
-                        }
-                      : null,
-                )
-                .filter(Boolean)
-            } else {
-              // single collection expects array of IDs
-              const ids = items
-                .map((it: any) =>
-                  typeof it === 'string' || typeof it === 'number'
-                    ? coerceId(it)
-                    : it && typeof it === 'object' && 'value' in it
-                      ? coerceId((it as any).value)
-                      : it && typeof it === 'object' && 'id' in it
-                        ? coerceId((it as any).id)
-                        : undefined,
-                )
-                .filter(Boolean)
-              result[field.name] = ids
-            }
-          } else {
-            if (isPoly) {
-              if (value && typeof value === 'object' && 'value' in value) {
-                result[field.name] = {
-                  relationTo: (value as any).relationTo,
-                  value: coerceId((value as any).value),
-                }
-              } else if (value && typeof value === 'object' && 'id' in value) {
-                result[field.name] = {
-                  relationTo:
-                    (value as any).collection ||
-                    (Array.isArray(relationTo) ? relationTo[0] : relationTo),
-                  value: coerceId((value as any).id),
-                }
-              } else if (typeof value === 'string' || typeof value === 'number') {
-                result[field.name] = {
-                  relationTo: Array.isArray(relationTo) ? relationTo[0] : (relationTo as any),
-                  value: coerceId(value),
-                }
-              }
-            } else {
-              // single collection expects a single ID
-              if (typeof value === 'string' || typeof value === 'number') {
-                result[field.name] = coerceId(value)
-              } else if (value && typeof value === 'object' && 'value' in value) {
-                result[field.name] = coerceId((value as any).value)
-              } else if (value && typeof value === 'object' && 'id' in value) {
-                result[field.name] = coerceId((value as any).id)
-              }
-            }
+          const relationshipValue = normalizeRelationshipField(field, value)
+          if (relationshipValue !== undefined) {
+            result[field.name] = relationshipValue
           }
           break
         }
         case 'upload': {
-          if (value && typeof value === 'object' && 'id' in value) {
-            result[field.name] = (value as any).id
-          } else if (value !== '') {
-            result[field.name] = value
+          const uploadValue = normalizeUploadField(value)
+          if (uploadValue !== undefined) {
+            result[field.name] = uploadValue
           }
           break
         }
         case 'array': {
-          // Preserve order; recursively normalize each row according to sub-schema
-          const rows = Array.isArray(value) ? value : []
-          const normalizedRows = rows.map((row) =>
-            normalizeForSubmission((field.fields || []) as any, row),
-          )
-          result[field.name] = normalizedRows
+          result[field.name] = normalizeArrayField(field, value)
           break
         }
         case 'number': {
-          // Convert empty input to null so Payload clears the value; otherwise coerce to number
-          if (value === '') {
-            result[field.name] = null
-          } else {
-            result[field.name] = typeof value === 'number' ? value : Number(value)
-          }
+          result[field.name] = normalizeNumberField(value)
           break
         }
         case 'date': {
-          // Empty date should clear the field
-          result[field.name] = value === '' ? null : value
+          result[field.name] = normalizeDateField(value)
           break
         }
         case 'text':
@@ -276,12 +339,12 @@ export function RecordEditForm({ collectionSlug, recordId }: RecordEditFormProps
         case 'slug':
         case 'checkbox':
         default: {
-          // Always include value, even if empty string, so clearing a field persists
           result[field.name] = value
           break
         }
       }
     }
+
     return result
   }
 
