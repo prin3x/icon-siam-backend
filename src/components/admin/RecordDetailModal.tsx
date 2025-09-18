@@ -53,7 +53,7 @@ export function RecordDetailModal({
   collectionSlug,
   locale,
   onSuccess,
-}: RecordDetailModalProps) {
+}: Readonly<RecordDetailModalProps>) {
   const [record, setRecord] = useState<RecordData | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string>('')
@@ -184,45 +184,88 @@ export function RecordDetailModal({
     setError('')
   }
 
+  // Format boolean values
+  const formatBoolean = (value: boolean): string => {
+    if (value) {
+      return 'Yes'
+    }
+    return 'No'
+  }
+
+  // Format rich text arrays
+  const formatRichTextArray = (value: any[]): string => {
+    return value
+      .map((node: any) => {
+        if (node.type === 'paragraph' && node.children) {
+          return node.children.map((child: any) => child.text || '').join('')
+        }
+        return node.text || ''
+      })
+      .join('\n')
+  }
+
+  // Format image arrays
+  const formatImageArray = (value: any[]): string => {
+    return `${value.length} image(s)`
+  }
+
+  // Format general arrays
+  const formatGeneralArray = (value: any[]): string => {
+    return value.length > 0 ? `${value.length} items` : 'Empty'
+  }
+
+  // Format array values
+  const formatArrayValue = (value: any[]): string => {
+    if (value.length === 0) return 'Empty'
+
+    // Handle rich text arrays
+    if (value[0]?.type === 'paragraph') {
+      return formatRichTextArray(value)
+    }
+
+    // Handle image arrays
+    if (value[0]?.url || value[0]?.filename) {
+      return formatImageArray(value)
+    }
+
+    return formatGeneralArray(value)
+  }
+
+  // Format object values
+  const formatObjectValue = (value: any): string => {
+    // Handle single image object
+    if (value.url || value.filename) {
+      return `Image: ${value.filename || 'Unknown'}`
+    }
+
+    return JSON.stringify(value, null, 2)
+  }
+
+  // Format date values
+  const formatDateValue = (value: any): string => {
+    try {
+      return new Date(value).toLocaleString()
+    } catch {
+      return String(value)
+    }
+  }
+
   const formatValue = (value: any, key: string): string => {
     if (value === null || value === undefined) return 'N/A'
 
     if (typeof value === 'boolean') {
-      return value ? 'Yes' : 'No'
+      return formatBoolean(value)
     }
 
     if (typeof value === 'object') {
       if (Array.isArray(value)) {
-        // Handle rich text arrays
-        if (value.length > 0 && value[0]?.type === 'paragraph') {
-          return value
-            .map((node: any) => {
-              if (node.type === 'paragraph' && node.children) {
-                return node.children.map((child: any) => child.text || '').join('')
-              }
-              return node.text || ''
-            })
-            .join('\n')
-        }
-        // Handle image arrays
-        if (value.length > 0 && (value[0]?.url || value[0]?.filename)) {
-          return `${value.length} image(s)`
-        }
-        return value.length > 0 ? `${value.length} items` : 'Empty'
+        return formatArrayValue(value)
       }
-      // Handle single image object
-      if (value.url || value.filename) {
-        return `Image: ${value.filename || 'Unknown'}`
-      }
-      return JSON.stringify(value, null, 2)
+      return formatObjectValue(value)
     }
 
     if (key.includes('date') || key.includes('Date')) {
-      try {
-        return new Date(value).toLocaleString()
-      } catch {
-        return String(value)
-      }
+      return formatDateValue(value)
     }
 
     return String(value)
@@ -374,6 +417,41 @@ export function RecordDetailModal({
       )
     }
 
+    const renderArrayItemContent = (field: any, row: any) => {
+      return (field.fields || []).map((sf: any) => (
+        <div key={sf.name} style={{ marginBottom: 8 }}>
+          <div style={{ fontSize: 12, color: '#6b7280', marginBottom: 4 }}>
+            {sf.label || sf.name}
+          </div>
+          <div>{displayValue(sf, row?.[sf.name])}</div>
+        </div>
+      ))
+    }
+
+    // Render array items
+    const renderArrayItems = (field: any, items: any[]) => {
+      return items.map((row, idx) => (
+        <div
+          key={`${idx}-${field.name}`}
+          style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 12 }}
+        >
+          {renderArrayItemContent(field, row)}
+        </div>
+      ))
+    }
+
+    // Render group field content
+    const renderGroupFieldContent = (field: any, obj: any) => {
+      return (field.fields || []).map((sf: any) => (
+        <div key={sf.name}>
+          <div style={{ fontSize: 12, color: '#6b7280', marginBottom: 4 }}>
+            {sf.label || sf.name}
+          </div>
+          <div>{displayValue(sf, obj?.[sf.name])}</div>
+        </div>
+      ))
+    }
+
     // View mode – render same layout structure as RecordEditForm, but read-only
     const excluded = new Set(['id'])
     const displayValue = (field: any, value: any): React.ReactNode => {
@@ -397,7 +475,7 @@ export function RecordDetailModal({
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                 {value.map((v, i) => (
                   <span
-                    key={i}
+                    key={`${i}-${field.name}`}
                     style={{
                       padding: '4px 8px',
                       background: '#f1f5f9',
@@ -432,37 +510,14 @@ export function RecordDetailModal({
           return (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {items.length === 0 && <span style={{ color: '#9ca3af' }}>—</span>}
-              {items.map((row, idx) => (
-                <div
-                  key={idx}
-                  style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 12 }}
-                >
-                  {(field.fields || []).map((sf: any) => (
-                    <div key={sf.name} style={{ marginBottom: 8 }}>
-                      <div style={{ fontSize: 12, color: '#6b7280', marginBottom: 4 }}>
-                        {sf.label || sf.name}
-                      </div>
-                      <div>{displayValue(sf, row?.[sf.name])}</div>
-                    </div>
-                  ))}
-                </div>
-              ))}
+              {renderArrayItems(field, items)}
             </div>
           )
         }
         case 'group': {
           const obj = value || {}
           return (
-            <div style={{ display: 'grid', gap: 8 }}>
-              {(field.fields || []).map((sf: any) => (
-                <div key={sf.name}>
-                  <div style={{ fontSize: 12, color: '#6b7280', marginBottom: 4 }}>
-                    {sf.label || sf.name}
-                  </div>
-                  <div>{displayValue(sf, obj?.[sf.name])}</div>
-                </div>
-              ))}
-            </div>
+            <div style={{ display: 'grid', gap: 8 }}>{renderGroupFieldContent(field, obj)}</div>
           )
         }
         default:
