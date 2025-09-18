@@ -7,7 +7,7 @@ interface ListViewProps {
   onPreview: (id: string) => void
 }
 
-export function ListView({ items, onEdit, onDelete, onPreview }: ListViewProps) {
+export function ListView({ items, onEdit, onDelete, onPreview }: Readonly<ListViewProps>) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
       {items.map((item) => (
