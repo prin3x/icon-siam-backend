@@ -167,7 +167,14 @@ export function RecordEditForm({ collectionSlug, recordId }: Readonly<RecordEdit
   const normalizeManyRelationship = (field: FieldSchema, value: any): any => {
     const relationTo = field.relationTo
     const isPoly = Array.isArray(relationTo)
-    const items = Array.isArray(value) ? value : value ? [value] : []
+    let items: any[]
+    if (Array.isArray(value)) {
+      items = value
+    } else if (value) {
+      items = [value]
+    } else {
+      items = []
+    }
 
     if (isPoly) {
       return items
@@ -177,7 +184,7 @@ export function RecordEditForm({ collectionSlug, recordId }: Readonly<RecordEdit
           }
           if (it && typeof it === 'object' && 'id' in it) {
             return {
-              relationTo: (it as any).collection || (relationTo as string[])[0],
+              relationTo: it.collection || relationTo[0],
               value: coerceId(it.id),
             }
           }
@@ -193,10 +200,10 @@ export function RecordEditForm({ collectionSlug, recordId }: Readonly<RecordEdit
           return coerceId(it)
         }
         if (it && typeof it === 'object' && 'value' in it) {
-          return coerceId((it as any).value)
+          return coerceId(it.value)
         }
         if (it && typeof it === 'object' && 'id' in it) {
-          return coerceId((it as any).id)
+          return coerceId(it.id)
         }
         return undefined
       })
@@ -266,7 +273,7 @@ export function RecordEditForm({ collectionSlug, recordId }: Readonly<RecordEdit
   // Handle upload field normalization
   const normalizeUploadField = (value: any): any => {
     if (value && typeof value === 'object' && 'id' in value) {
-      return (value as any).id
+      return value.id
     }
     if (value !== '') {
       return value
@@ -348,6 +355,79 @@ export function RecordEditForm({ collectionSlug, recordId }: Readonly<RecordEdit
     return result
   }
 
+  // Validate required fields
+  const validateRequiredFields = (): Record<string, string> => {
+    const missing: Record<string, string> = {}
+    schema.forEach((field: FieldSchema) => {
+      if (field.required) {
+        const v = formData[field.name]
+        const isEmpty =
+          v === undefined || v === null || v === '' || (Array.isArray(v) && v.length === 0)
+        if (isEmpty) missing[field.name] = `${field.label || field.name} is required`
+      }
+    })
+    return missing
+  }
+
+  // Parse server error response
+  const parseServerError = async (
+    response: Response,
+  ): Promise<{ message: string; fieldErrors: Record<string, string> }> => {
+    let message = `Failed to ${isCreateMode ? 'create' : 'update'} record.`
+    const fieldErrors: Record<string, string> = {}
+
+    try {
+      const errJson = await response.json()
+      if (typeof errJson?.message === 'string') message = errJson.message
+      if (typeof errJson?.error === 'string') message = errJson.error
+      if (Array.isArray(errJson?.errors)) {
+        errJson.errors.forEach((e: any) => {
+          const path = e?.path || e?.field || e?.data?.path
+          const msg = e?.message || e?.err || String(e)
+          if (path && typeof path === 'string') {
+            fieldErrors[path] = msg
+          }
+        })
+      }
+    } catch {
+      try {
+        const txt = await response.text()
+        if (txt) message = txt
+      } catch {
+        // Ignore text parsing errors
+      }
+    }
+
+    return { message, fieldErrors }
+  }
+
+  // Submit form data to server
+  const submitToServer = async (processedFormData: any): Promise<void> => {
+    const url = isCreateMode
+      ? `/api/custom-admin/${collectionSlug}?locale=${locale}`
+      : `/api/custom-admin/${collectionSlug}/${recordId}?locale=${locale}`
+
+    const method = isCreateMode ? 'POST' : 'PATCH'
+
+    const response = await fetch(url, {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(processedFormData),
+    })
+
+    if (!response.ok) {
+      const { message, fieldErrors } = await parseServerError(response)
+      if (Object.keys(fieldErrors).length > 0) setFieldErrors(fieldErrors)
+      setError(message)
+      return
+    }
+
+    // Redirect back to collection page
+    navigateWithLocale(router, `/custom-admin/collections/${collectionSlug}`, locale)
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -356,16 +436,8 @@ export function RecordEditForm({ collectionSlug, recordId }: Readonly<RecordEdit
       setError('')
       setFieldErrors({})
 
-      // Basic client-side required validation based on schema
-      const missing: Record<string, string> = {}
-      schema.forEach((field: FieldSchema) => {
-        if (field.required) {
-          const v = (formData as any)[field.name]
-          const isEmpty =
-            v === undefined || v === null || v === '' || (Array.isArray(v) && v.length === 0)
-          if (isEmpty) missing[field.name] = `${field.label || field.name} is required`
-        }
-      })
+      // Validate required fields
+      const missing = validateRequiredFields()
       if (Object.keys(missing).length > 0) {
         setFieldErrors(missing)
         setError('Please fix the highlighted fields and try again.')
@@ -373,52 +445,7 @@ export function RecordEditForm({ collectionSlug, recordId }: Readonly<RecordEdit
       }
 
       const processedFormData = normalizeForSubmission(schema as any, formData)
-
-      const url = isCreateMode
-        ? `/api/custom-admin/${collectionSlug}?locale=${locale}`
-        : `/api/custom-admin/${collectionSlug}/${recordId}?locale=${locale}`
-
-      const method = isCreateMode ? 'POST' : 'PATCH'
-
-      // Update the record using the correct custom-admin endpoint
-      const response = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(processedFormData),
-      })
-
-      if (!response.ok) {
-        // Parse potential validation errors from server
-        let message = `Failed to ${isCreateMode ? 'create' : 'update'} record.`
-        const nextFieldErrors: Record<string, string> = {}
-        try {
-          const errJson = await response.json()
-          if (typeof errJson?.message === 'string') message = errJson.message
-          if (typeof errJson?.error === 'string') message = errJson.error
-          if (Array.isArray(errJson?.errors)) {
-            errJson.errors.forEach((e: any) => {
-              const path = e?.path || e?.field || e?.data?.path
-              const msg = e?.message || e?.err || String(e)
-              if (path && typeof path === 'string') {
-                nextFieldErrors[path] = msg
-              }
-            })
-          }
-        } catch (_) {
-          try {
-            const txt = await response.text()
-            if (txt) message = txt
-          } catch (_) {}
-        }
-        if (Object.keys(nextFieldErrors).length > 0) setFieldErrors(nextFieldErrors)
-        setError(message)
-        return
-      }
-
-      // Redirect back to collection page
-      navigateWithLocale(router, `/custom-admin/collections/${collectionSlug}`, locale)
+      await submitToServer(processedFormData)
     } catch (error: any) {
       console.error(`Error ${isCreateMode ? 'creating' : 'updating'} record:`, error)
       setError(error.message || 'An unexpected error occurred.')
@@ -525,6 +552,11 @@ export function RecordEditForm({ collectionSlug, recordId }: Readonly<RecordEdit
   // Keep all fetched schema fields accessible
   const fields = schema.filter((f) => !shouldHideField(f))
 
+  const getMessage = (): string => {
+    if (saving) return 'Saving...'
+    return isCreateMode ? 'Create Record' : 'Save Changes'
+  }
+
   return (
     <div>
       <div style={{ marginBottom: '24px' }}>
@@ -539,20 +571,25 @@ export function RecordEditForm({ collectionSlug, recordId }: Readonly<RecordEdit
           >
             {isCreateMode ? `Create New ${collectionSlug}` : `Edit ${collectionSlug}`}
           </h1>
-          <p
+          <button
+            type="button"
             style={{
               fontSize: '14px',
               color: '#0089E4',
               margin: '0',
               cursor: 'pointer',
               borderBottom: '1px solid #0089E4',
+              background: 'none',
+              border: 'none',
+              padding: 0,
+              textAlign: 'left',
             }}
             onClick={() => {
               window.open(`/api/custom-admin/${collectionSlug}/example`, '_blank')
             }}
           >
             See Example
-          </p>
+          </button>
         </div>
         {!isCreateMode && (
           <p style={{ fontSize: '14px', color: '#6b7280', margin: '0' }}>
@@ -679,7 +716,7 @@ export function RecordEditForm({ collectionSlug, recordId }: Readonly<RecordEdit
               }
             }}
           >
-            {saving ? 'Saving...' : isCreateMode ? 'Create Record' : 'Save Changes'}
+            {getMessage()}
           </button>
         </div>
       </form>
