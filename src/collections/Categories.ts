@@ -39,6 +39,7 @@ export const Categories: CollectionConfig = {
       name: 'type',
       type: 'select',
       required: true,
+      defaultValue: 'shops',
       options: [
         { label: 'Shop', value: 'shops' },
         { label: 'Dining', value: 'dinings' },
