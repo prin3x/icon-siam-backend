@@ -645,8 +645,7 @@ export function RecordDetailModal({
   if (!isOpen) return null
 
   return (
-    <dialog
-      open
+    <div
       style={{
         position: 'fixed',
         top: 0,
@@ -659,28 +658,13 @@ export function RecordDetailModal({
         alignItems: 'center',
         zIndex: 1000,
         padding: '20px',
-        border: 'none',
-        margin: 0,
+      }}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          onClose()
+        }
       }}
     >
-      <button
-        type="button"
-        onClick={onClose}
-        onKeyDown={(e) => e.key === 'Escape' && onClose()}
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'transparent',
-          border: 'none',
-          padding: 0,
-          margin: 0,
-          cursor: 'pointer',
-        }}
-        aria-label="Close modal"
-      />
       <div
         style={{
           backgroundColor: '#ffffff',
@@ -901,6 +885,6 @@ export function RecordDetailModal({
           )}
         </div>
       </div>
-    </dialog>
+    </div>
   )
 }
