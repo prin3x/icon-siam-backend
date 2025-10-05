@@ -1,14 +1,14 @@
 'use client'
 
-import React, { useEffect, useState, useCallback, useRef } from 'react'
-import { useRouter } from 'next/navigation'
-import { useLocale } from './LocaleContext'
-import { navigateWithLocale } from '@/utilities/navigation'
-import { ListView } from './ListView'
-import { GridView } from './GridView'
-import { TableView } from './TableView'
-import { RecordDetailModal } from './RecordDetailModal'
 import { getApiHeaders, isInternalRequest } from '@/utilities/apiKeyUtils'
+import { navigateWithLocale } from '@/utilities/navigation'
+import { useRouter } from 'next/navigation'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { GridView } from './GridView'
+import { ListView } from './ListView'
+import { useLocale } from './LocaleContext'
+import { RecordDetailModal } from './RecordDetailModal'
+import { TableView } from './TableView'
 
 const API_URL = '/api'
 
@@ -63,20 +63,20 @@ export function CollectionItems({
   slug,
   onBack,
   hideHeaderControls = false,
-}: CollectionItemsProps) {
+}: Readonly<CollectionItemsProps>) {
   const router = useRouter()
   const { locale } = useLocale()
   const [items, setItems] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string>('')
-  const [viewMode, setViewMode] = useState<'list' | 'grid' | 'table'>('table')
+  const [viewMode] = useState<'list' | 'grid' | 'table'>('table')
   const [visibleColumns, setVisibleColumns] = useState<string[]>([])
   const [availableColumns, setAvailableColumns] = useState<Array<{ key: string; label: string }>>([
     { key: 'title', label: 'Title' },
     { key: 'status', label: 'Status' },
     { key: 'createdAt', label: 'Created' },
   ])
-  const [filters, setFilters] = useState<Record<string, string | null>>({})
+  const [filters] = useState<Record<string, string | null>>({})
   const [showColumnsDropdown, setShowColumnsDropdown] = useState(false)
   const [showFilterPanel, setShowFilterPanel] = useState(false)
   const columnsRef = useRef<HTMLDivElement | null>(null)
@@ -147,6 +147,191 @@ export function CollectionItems({
     return () => document.removeEventListener('mousedown', handleDocClick)
   }, [showColumnsDropdown])
 
+  // Helper function to fetch schema
+  const fetchSchema = async (signal: AbortSignal) => {
+    try {
+      const schemaRes = await fetch(`/api/admin/${slug}?schema=true&locale=${locale}`, {
+        signal,
+      })
+      if (schemaRes.ok) {
+        return await schemaRes.json()
+      }
+    } catch (error) {
+      console.warn('Failed to fetch schema:', error)
+    }
+    return null
+  }
+
+  // Helper function to determine searchable fields
+  const getSearchableFields = (schemaJson: any) => {
+    const searchableFields: string[] = []
+    const configuredFields = SEARCH_FIELD_MAP[slug] || []
+
+    if (configuredFields.length > 0) {
+      if (schemaJson?.fields && Array.isArray(schemaJson.fields)) {
+        const schemaFieldNames = new Set(schemaJson.fields.map((f: any) => f?.name).filter(Boolean))
+        configuredFields.forEach((f) => {
+          if (f === 'filename' && slug === 'media') {
+            searchableFields.push(f)
+            return
+          }
+          if (schemaFieldNames.has(f)) searchableFields.push(f)
+        })
+      } else {
+        searchableFields.push(...configuredFields)
+      }
+    }
+
+    if (searchableFields.length === 0 && schemaJson?.fields && Array.isArray(schemaJson.fields)) {
+      const allowedFields = new Set(['title', 'subtitle', 'description'])
+      schemaJson.fields.forEach((f: any) => {
+        if (f?.name && allowedFields.has(f.name)) {
+          searchableFields.push(f.name)
+        }
+      })
+    }
+
+    return searchableFields.length > 0 ? searchableFields : ['title']
+  }
+
+  // Helper function to build search parameters
+  const buildSearchParams = (searchableFields: string[], schemaJson: any) => {
+    const params = new URLSearchParams({
+      locale,
+      sort: sortOrder === 'asc' ? sortKey : `-${sortKey}`,
+      page: pagination.page.toString(),
+      limit: pagination.limit.toString(),
+    })
+
+    let orIndex = 0
+
+    if (debouncedSearchTerm) {
+      const schemaFieldMetaByName: Record<
+        string,
+        { type: string; options?: Array<{ label: string; value: string }> }
+      > = {}
+      if (schemaJson?.fields && Array.isArray(schemaJson.fields)) {
+        schemaJson.fields.forEach((f: any) => {
+          if (f?.name && f?.type) {
+            schemaFieldMetaByName[f.name] = { type: f.type, options: f.options }
+          }
+        })
+      }
+
+      const textLikeTypes = new Set(['text', 'textarea', 'richText', 'email', 'url'])
+      const term = debouncedSearchTerm
+      const termLower = term.toLowerCase()
+
+      searchableFields.forEach((field) => {
+        const meta = schemaFieldMetaByName[field]
+        const fieldType = meta?.type
+
+        if (slug === 'media' && field === 'filename') {
+          params.append(`where[or][${orIndex++}][filename][like]`, term)
+          return
+        }
+
+        if (fieldType && textLikeTypes.has(fieldType)) {
+          params.append(`where[or][${orIndex++}][${field}][like]`, term)
+          return
+        }
+
+        if (fieldType === 'select') {
+          const opts = meta?.options || []
+          let matchedValue: string | null = null
+          for (const opt of opts) {
+            const valueStr = String(opt.value)
+            const labelStr = String(opt.label ?? '')
+            if (valueStr.toLowerCase() === termLower || labelStr.toLowerCase() === termLower) {
+              matchedValue = valueStr
+              break
+            }
+          }
+          if (matchedValue) {
+            params.append(`where[or][${orIndex++}][${field}][equals]`, matchedValue)
+          }
+        }
+      })
+    }
+
+    // Add applied filters
+    const opMap: Record<string, string> = {
+      equals: 'equals',
+      contains: 'like',
+      greater_than: 'greater_than',
+      less_than: 'less_than',
+      not_equals: 'not_equals',
+      in: 'in',
+      not_in: 'not_in',
+    }
+
+    appliedFilters.forEach((cond) => {
+      if (!cond.field || !cond.operator) return
+      const operator = opMap[cond.operator] || 'equals'
+      const value =
+        operator === 'in' || operator === 'not_in'
+          ? cond.value
+              .split(',')
+              .map((s) => s.trim())
+              .filter(Boolean)
+          : cond.value
+      params.append(`where[or][${orIndex++}][${cond.field}][${operator}]`, String(value))
+    })
+
+    return params
+  }
+
+  // Helper function to process response data
+  const processResponseData = (data: any, schemaJson: any) => {
+    setItems(data.docs || [])
+    setPagination((prev) => ({
+      ...prev,
+      totalPages: data.totalPages || 1,
+      totalDocs: data.totalDocs || 0,
+      hasNextPage: data.hasNextPage || false,
+      hasPrevPage: data.hasPrevPage || false,
+    }))
+
+    const docSample = data?.docs?.[0] || {}
+    const inferredKeys = Object.keys(docSample)
+      .filter((k) => !['id', 'updatedAt', '_status'].includes(k))
+      .slice(0, 10)
+    const inferred = inferredKeys.map((k) => ({
+      key: k,
+      label: k === 'createdAt' ? 'Created' : k.charAt(0).toUpperCase() + k.slice(1),
+    }))
+
+    if (schemaJson) {
+      const defaults: string[] =
+        slug === 'media' ? ['filename'] : schemaJson?.admin?.defaultColumns || []
+      const fieldsFromSchema: Array<{
+        name: string
+        label: string
+        type: string
+        options?: Array<{ label: string; value: string }>
+      }> = (schemaJson?.fields || []).map((f: any) => ({
+        name: f.name,
+        label: f.label || f.name,
+        type: f.type,
+        options: f.options,
+      }))
+      setSchemaFields(fieldsFromSchema)
+      const fromDefaults = defaults.map((k: string) => ({
+        key: k,
+        label: k.charAt(0).toUpperCase() + k.slice(1),
+      }))
+      const merged = Array.from(
+        new Map([...fromDefaults, ...inferred].map((o) => [o.key, o])).values(),
+      )
+      if (merged.length > 0) setAvailableColumns(merged)
+      if (defaults.length > 0) {
+        setVisibleColumns((prev) => (prev.length ? prev : defaults))
+      }
+    } else if (inferred.length > 0) {
+      setAvailableColumns(inferred)
+    }
+  }
+
   const fetchItems = useCallback(
     async (signal: AbortSignal) => {
       if (!slug || slug === '') {
@@ -157,129 +342,9 @@ export function CollectionItems({
       setLoading(true)
       setError('')
 
-      // Fetch schema FIRST to build safe search params for the given collection
-      let schemaJson: any | null = null
-      try {
-        const schemaRes = await fetch(`/api/admin/${slug}?schema=true&locale=${locale}`, {
-          signal,
-        })
-        if (schemaRes.ok) {
-          schemaJson = await schemaRes.json()
-        }
-      } catch (_) {}
-
-      // Determine searchable text fields from explicit map first, fallback to schema-derived
-      const searchableFields: string[] = []
-      const configuredFields = SEARCH_FIELD_MAP[slug] || []
-      if (configuredFields.length > 0) {
-        if (schemaJson?.fields && Array.isArray(schemaJson.fields)) {
-          const schemaFieldNames = new Set(
-            schemaJson.fields.map((f: any) => f?.name).filter(Boolean),
-          )
-          configuredFields.forEach((f) => {
-            // Allow filename for media even if not in schema fields
-            if (f === 'filename' && slug === 'media') {
-              searchableFields.push(f)
-              return
-            }
-            if (schemaFieldNames.has(f)) searchableFields.push(f)
-          })
-        } else {
-          searchableFields.push(...configuredFields)
-        }
-      }
-      if (searchableFields.length === 0 && schemaJson?.fields && Array.isArray(schemaJson.fields)) {
-        const allowedFields = new Set(['title', 'subtitle', 'description'])
-        schemaJson.fields.forEach((f: any) => {
-          if (f?.name && allowedFields.has(f.name)) {
-            searchableFields.push(f.name)
-          }
-        })
-      }
-      // Final fallback if nothing detected
-      if (searchableFields.length === 0) {
-        searchableFields.push('title')
-      }
-
-      const params = new URLSearchParams({
-        locale,
-        sort: sortOrder === 'asc' ? sortKey : `-${sortKey}`,
-        page: pagination.page.toString(),
-        limit: pagination.limit.toString(),
-      })
-
-      // Text search across chosen fields using where[or]
-      let orIndex = 0
-      if (debouncedSearchTerm) {
-        const schemaFieldMetaByName: Record<
-          string,
-          { type: string; options?: Array<{ label: string; value: string }> }
-        > = {}
-        if (schemaJson?.fields && Array.isArray(schemaJson.fields)) {
-          schemaJson.fields.forEach((f: any) => {
-            if (f?.name && f?.type) {
-              schemaFieldMetaByName[f.name] = { type: f.type, options: f.options }
-            }
-          })
-        }
-        const textLikeTypes = new Set(['text', 'textarea', 'richText', 'email', 'url'])
-        const term = debouncedSearchTerm
-        const termLower = term.toLowerCase()
-        searchableFields.forEach((field) => {
-          const meta = schemaFieldMetaByName[field]
-          const fieldType = meta?.type
-          // Special-case media.filename which does not exist in schemaJson
-          if (slug === 'media' && field === 'filename') {
-            params.append(`where[or][${orIndex++}][filename][like]`, term)
-            return
-          }
-          if (fieldType && textLikeTypes.has(fieldType)) {
-            params.append(`where[or][${orIndex++}][${field}][like]`, term)
-            return
-          }
-          if (fieldType === 'select') {
-            const opts = meta?.options || []
-            // allow exact match against option value or label (case-insensitive)
-            let matchedValue: string | null = null
-            for (const opt of opts) {
-              const valueStr = String(opt.value)
-              const labelStr = String(opt.label ?? '')
-              if (valueStr.toLowerCase() === termLower || labelStr.toLowerCase() === termLower) {
-                matchedValue = valueStr
-                break
-              }
-            }
-            if (matchedValue) {
-              params.append(`where[or][${orIndex++}][${field}][equals]`, matchedValue)
-            }
-            return
-          }
-          // For other non-text types, skip adding a quick-search condition
-        })
-      }
-
-      // Advanced builder: each row is appended as an OR condition
-      const opMap: Record<string, string> = {
-        equals: 'equals',
-        contains: 'like',
-        greater_than: 'greater_than',
-        less_than: 'less_than',
-        not_equals: 'not_equals',
-        in: 'in',
-        not_in: 'not_in',
-      }
-      appliedFilters.forEach((cond) => {
-        if (!cond.field || !cond.operator) return
-        const operator = opMap[cond.operator] || 'equals'
-        const value =
-          operator === 'in' || operator === 'not_in'
-            ? cond.value
-                .split(',')
-                .map((s) => s.trim())
-                .filter(Boolean)
-            : cond.value
-        params.append(`where[or][${orIndex++}][${cond.field}][${operator}]`, String(value))
-      })
+      const schemaJson = await fetchSchema(signal)
+      const searchableFields = getSearchableFields(schemaJson)
+      const params = buildSearchParams(searchableFields, schemaJson)
 
       try {
         const response = await fetch(`${API_URL}/custom-admin/${slug}?${params}`, {
@@ -294,61 +359,14 @@ export function CollectionItems({
         }
 
         const contentType = response.headers.get('content-type')
-        if (!contentType || !contentType.includes('application/json')) {
+        if (!contentType?.includes('application/json')) {
           const text = await response.text()
           console.error('Non-JSON response:', text)
           throw new Error(`Expected JSON but got: ${contentType}`)
         }
 
         const data = await response.json()
-
-        setItems(data.docs || [])
-        setPagination((prev) => ({
-          ...prev,
-          totalPages: data.totalPages || 1,
-          totalDocs: data.totalDocs || 0,
-          hasNextPage: data.hasNextPage || false,
-          hasPrevPage: data.hasPrevPage || false,
-        }))
-        // Derive available columns from payload response if present
-        const docSample = (data.docs && data.docs[0]) || {}
-        const inferredKeys = Object.keys(docSample)
-          .filter((k) => !['id', 'updatedAt', '_status'].includes(k))
-          .slice(0, 10)
-        const inferred = inferredKeys.map((k) => ({
-          key: k,
-          label: k === 'createdAt' ? 'Created' : k.charAt(0).toUpperCase() + k.slice(1),
-        }))
-        // Use the schema fetched earlier (if available) for defaults/columns; otherwise fallback
-        if (schemaJson) {
-          const defaults: string[] =
-            slug === 'media' ? ['filename'] : schemaJson?.admin?.defaultColumns || []
-          const fieldsFromSchema: Array<{
-            name: string
-            label: string
-            type: string
-            options?: Array<{ label: string; value: string }>
-          }> = (schemaJson?.fields || []).map((f: any) => ({
-            name: f.name,
-            label: f.label || f.name,
-            type: f.type,
-            options: f.options,
-          }))
-          setSchemaFields(fieldsFromSchema)
-          const fromDefaults = defaults.map((k: string) => ({
-            key: k,
-            label: k.charAt(0).toUpperCase() + k.slice(1),
-          }))
-          const merged = Array.from(
-            new Map([...fromDefaults, ...inferred].map((o) => [o.key, o])).values(),
-          )
-          if (merged.length > 0) setAvailableColumns(merged)
-          if (defaults.length > 0) {
-            setVisibleColumns((prev) => (prev.length ? prev : defaults))
-          }
-        } else if (inferred.length > 0) {
-          setAvailableColumns(inferred)
-        }
+        processResponseData(data, schemaJson)
       } catch (error: any) {
         if (error.name !== 'AbortError') {
           console.error('Error fetching items:', error)
@@ -432,10 +450,63 @@ export function CollectionItems({
     setSelectedRecordId('')
   }
 
+  const handleColumnToggle = (colKey: string, checked: boolean) => {
+    setVisibleColumns((prev) =>
+      checked ? Array.from(new Set([...prev, colKey])) : prev.filter((k) => k !== colKey),
+    )
+  }
+
+  const handleFilterFieldChange = (idx: number, field: string) => {
+    setEditingFilters((arr) => arr.map((c, i) => (i === idx ? { ...c, field } : c)))
+  }
+
+  const handleFilterOperatorChange = (idx: number, operator: string) => {
+    setEditingFilters((arr) => arr.map((c, i) => (i === idx ? { ...c, operator } : c)))
+  }
+
+  const handleFilterValueChange = (idx: number, value: string) => {
+    setEditingFilters((arr) => arr.map((c, i) => (i === idx ? { ...c, value } : c)))
+  }
+
+  const handleRemoveFilter = (idx: number) => {
+    setEditingFilters((arr) => arr.filter((_, i) => i !== idx))
+  }
+
+  const handleAddFilterAfter = (idx: number) => {
+    setEditingFilters((arr) => [
+      ...arr.slice(0, idx + 1),
+      { field: '', operator: 'equals', value: '' },
+      ...arr.slice(idx + 1),
+    ])
+  }
+
+  const getColumnLabel = (key: string) => {
+    if (key === 'createdAt') return 'Created'
+    if (key === 'updatedAt') return 'Updated'
+    return key[0].toUpperCase() + key.slice(1)
+  }
+
+  const getColumnType = (key: string, isDate: boolean) => {
+    if (key === 'status') return 'status'
+    if (isDate) return 'date'
+    return 'text'
+  }
+
   const handleCreateSuccess = () => {
     // Refresh the items list after successful creation
     const controller = new AbortController()
     fetchItems(controller.signal)
+  }
+
+  const handleRemoveColumn = (key: string) => {
+    setVisibleColumns((prev) => prev.filter((k) => k !== key))
+  }
+
+  const handleColumnKeyDown = (key: string) => (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      handleRemoveColumn(key)
+    }
   }
 
   const handleConfirmDelete = async () => {
@@ -677,13 +748,7 @@ export function CollectionItems({
                       <input
                         type="checkbox"
                         checked={visibleColumns.includes(col.key)}
-                        onChange={(e) => {
-                          setVisibleColumns((prev) =>
-                            e.target.checked
-                              ? Array.from(new Set([...prev, col.key]))
-                              : prev.filter((k) => k !== col.key),
-                          )
-                        }}
+                        onChange={(e) => handleColumnToggle(col.key, e.target.checked)}
                       />
                       {col.label}
                     </label>
@@ -749,7 +814,7 @@ export function CollectionItems({
             <div style={{ fontWeight: 600, marginBottom: 10 }}>Add new filter</div>
             {editingFilters.map((cond, idx) => (
               <div
-                key={idx}
+                key={`filter-${idx}-${cond.field || 'empty'}`}
                 style={{
                   display: 'grid',
                   gridTemplateColumns: '1.2fr 1fr 1.4fr auto',
@@ -760,11 +825,7 @@ export function CollectionItems({
               >
                 <select
                   value={cond.field}
-                  onChange={(e) =>
-                    setEditingFilters((arr) =>
-                      arr.map((c, i) => (i === idx ? { ...c, field: e.target.value } : c)),
-                    )
-                  }
+                  onChange={(e) => handleFilterFieldChange(idx, e.target.value)}
                   style={{ padding: '10px', border: '1px solid #e5e7eb', borderRadius: 10 }}
                 >
                   <option value="">Select field</option>
@@ -776,11 +837,7 @@ export function CollectionItems({
                 </select>
                 <select
                   value={cond.operator}
-                  onChange={(e) =>
-                    setEditingFilters((arr) =>
-                      arr.map((c, i) => (i === idx ? { ...c, operator: e.target.value } : c)),
-                    )
-                  }
+                  onChange={(e) => handleFilterOperatorChange(idx, e.target.value)}
                   style={{ padding: '10px', border: '1px solid #e5e7eb', borderRadius: 10 }}
                 >
                   <option value="equals">equals</option>
@@ -793,31 +850,21 @@ export function CollectionItems({
                 </select>
                 <input
                   value={cond.value}
-                  onChange={(e) =>
-                    setEditingFilters((arr) =>
-                      arr.map((c, i) => (i === idx ? { ...c, value: e.target.value } : c)),
-                    )
-                  }
+                  onChange={(e) => handleFilterValueChange(idx, e.target.value)}
                   placeholder="Enter a value"
                   style={{ padding: '10px', border: '1px solid #e5e7eb', borderRadius: 10 }}
                 />
                 <div style={{ display: 'flex', gap: 8 }}>
                   <button
                     type="button"
-                    onClick={() => setEditingFilters((arr) => arr.filter((_, i) => i !== idx))}
+                    onClick={() => handleRemoveFilter(idx)}
                     className="admin-button"
                   >
                     ×
                   </button>
                   <button
                     type="button"
-                    onClick={() =>
-                      setEditingFilters((arr) => [
-                        ...arr.slice(0, idx + 1),
-                        { field: '', operator: 'equals', value: '' },
-                        ...arr.slice(idx + 1),
-                      ])
-                    }
+                    onClick={() => handleAddFilterAfter(idx)}
                     className="admin-button"
                   >
                     +
@@ -869,13 +916,8 @@ export function CollectionItems({
             <button
               key={key}
               type="button"
-              onClick={() => setVisibleColumns((prev) => prev.filter((k) => k !== key))}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault()
-                  setVisibleColumns((prev) => prev.filter((k) => k !== key))
-                }
-              }}
+              onClick={() => handleRemoveColumn(key)}
+              onKeyDown={handleColumnKeyDown(key)}
               title={`Remove column ${key}`}
               style={{
                 display: 'inline-flex',
@@ -968,20 +1010,15 @@ export function CollectionItems({
               loading={loading}
               columns={visibleColumns.map((k) => {
                 const fromSchema = schemaFields.find((f) => f.name === k)
-                const isDate =
+                const isDate: boolean =
                   k === 'createdAt' ||
                   k === 'updatedAt' ||
-                  /At$/.test(k) ||
-                  (fromSchema && fromSchema.type === 'date')
+                  k.endsWith('At') ||
+                  fromSchema?.type === 'date'
                 return {
                   key: k,
-                  label:
-                    k === 'createdAt'
-                      ? 'Created'
-                      : k === 'updatedAt'
-                        ? 'Updated'
-                        : k[0].toUpperCase() + k.slice(1),
-                  type: k === 'status' ? 'status' : isDate ? 'date' : 'text',
+                  label: getColumnLabel(k),
+                  type: getColumnType(k, isDate),
                 }
               })}
               sortKey={sortKey}
@@ -1138,8 +1175,6 @@ export function CollectionItems({
       {/* Delete Confirmation Modal */}
       {isDeleteModalOpen && (
         <div
-          role="dialog"
-          aria-modal="true"
           style={{
             position: 'fixed',
             inset: 0,
@@ -1149,14 +1184,26 @@ export function CollectionItems({
             justifyContent: 'center',
             zIndex: 1000,
           }}
-          onClick={() => {
-            if (!deleteLoading) setIsDeleteModalOpen(false)
-          }}
         >
+          <button
+            type="button"
+            style={{
+              position: 'absolute',
+              inset: 0,
+              background: 'transparent',
+              border: 'none',
+              padding: 0,
+              margin: 0,
+              cursor: 'pointer',
+            }}
+            onClick={() => {
+              if (!deleteLoading) setIsDeleteModalOpen(false)
+            }}
+            aria-label="Close modal"
+          />
           <div
             className="admin-card"
-            style={{ width: 420, padding: 20 }}
-            onClick={(e) => e.stopPropagation()}
+            style={{ width: 420, padding: 20, position: 'relative', zIndex: 1 }}
           >
             <h3 className="text-lg font-semibold" style={{ marginBottom: 10 }}>
               Confirm deletion

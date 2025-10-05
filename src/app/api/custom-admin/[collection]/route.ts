@@ -92,13 +92,13 @@ export async function GET(
           continue
         }
         if (value && typeof value === 'object') {
-          const fieldName = key as string
+          const fieldName = key
           const operators: any = {}
           for (const [op, opVal] of Object.entries(value)) {
             if (selectFieldNames.has(fieldName)) {
-              const allowedValues = selectAllowedValues[fieldName] || new Set<string>()
-              const allowedLabels = selectAllowedLabels[fieldName] || new Set<string>()
-              const labelToValue = selectLabelToValue[fieldName] || {}
+              const allowedValues = selectAllowedValues[fieldName] ?? new Set<string>()
+              const allowedLabels = selectAllowedLabels[fieldName] ?? new Set<string>()
+              const labelToValue = selectLabelToValue[fieldName] ?? {}
               if (op === 'like') {
                 const term = String(opVal).toLowerCase()
                 const matches = new Set<string>()
@@ -161,7 +161,7 @@ export async function GET(
       const keys = Object.keys(w)
       if (keys.length === 0) return true
       // If all nested values are empty, treat as empty
-      return keys.every((k) => isEmptyWhere((w as any)[k]))
+      return keys.every((k) => isEmptyWhere(w[k]))
     }
 
     const effectiveWhere = isEmptyWhere(sanitizedWhere) ? undefined : (sanitizedWhere as Where)
@@ -170,9 +170,9 @@ export async function GET(
     const results = await payload.find({
       collection: collection as any,
       where: effectiveWhere,
-      limit: Number(query.limit) ?? 10,
-      page: Number(query.page) ?? 1,
-      sort: (query.sort as string) ?? '-createdAt',
+      limit: Number(query.limit) || 10,
+      page: Number(query.page) || 1,
+      sort: (query.sort as string) || '-createdAt',
       user,
       locale: query.locale as 'en' | 'th' | 'zh' | 'all' | undefined,
     })

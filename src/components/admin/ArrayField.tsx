@@ -29,14 +29,17 @@ interface ArrayFieldProps {
   }
 }
 
-export function ArrayField({ value, onChange, field }: ArrayFieldProps) {
+export function ArrayField({ value, onChange, field }: Readonly<ArrayFieldProps>) {
   const [items, setItems] = useState<any[]>(value || [])
   const [dragIndex, setDragIndex] = useState<number | null>(null)
+  const [itemKeys, setItemKeys] = useState<string[]>([])
 
   useEffect(() => {
     // Sync items state with external value changes
     if (value && JSON.stringify(value) !== JSON.stringify(items)) {
       setItems(value)
+      // Generate unique keys for new items
+      setItemKeys(value.map((_, index) => `item-${Date.now()}-${index}`))
     }
   }, [value])
 
@@ -49,13 +52,17 @@ export function ArrayField({ value, onChange, field }: ArrayFieldProps) {
     })
 
     const newItems = [...items, newItem]
+    const newKey = `item-${Date.now()}-${items.length}`
     setItems(newItems)
+    setItemKeys([...itemKeys, newKey])
     onChange(newItems)
   }
 
   const removeItem = (index: number) => {
     const newItems = items.filter((_, i) => i !== index)
+    const newKeys = itemKeys.filter((_, i) => i !== index)
     setItems(newItems)
+    setItemKeys(newKeys)
     onChange(newItems)
   }
 
@@ -69,20 +76,177 @@ export function ArrayField({ value, onChange, field }: ArrayFieldProps) {
   const moveItem = (fromIndex: number, toIndex: number) => {
     if (toIndex < 0 || toIndex >= items.length || fromIndex === toIndex) return
     const next = [...items]
+    const nextKeys = [...itemKeys]
     const [moved] = next.splice(fromIndex, 1)
+    const [movedKey] = nextKeys.splice(fromIndex, 1)
     next.splice(toIndex, 0, moved)
+    nextKeys.splice(toIndex, 0, movedKey)
     setItems(next)
+    setItemKeys(nextKeys)
     onChange(next)
   }
 
   const handleDragStart = (index: number) => setDragIndex(index)
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+  const handleDragOver = (e: React.DragEvent<HTMLButtonElement>) => {
     e.preventDefault()
   }
   const handleDrop = (index: number) => {
     if (dragIndex === null) return
     moveItem(dragIndex, index)
     setDragIndex(null)
+  }
+
+  const getFieldPlaceholder = (subField: any) => {
+    return `Enter ${subField?.label?.toLowerCase() || subField.name?.toLowerCase()}...`
+  }
+
+  const getSelectPlaceholder = (subField: any) => {
+    return `Select ${subField?.label?.toLowerCase() || subField.name?.toLowerCase()}...`
+  }
+
+  const getComboBoxPlaceholder = (subField: any) => {
+    return `Type or select ${subField?.label?.toLowerCase() || subField.name?.toLowerCase()}...`
+  }
+
+  const renderFieldInput = (subField: any, value: any, handleChange: (value: any) => void) => {
+    const commonInputStyle = {
+      width: '100%',
+      padding: '12px',
+      border: '1px solid #d1d5db',
+      borderRadius: '8px',
+      fontSize: '14px',
+      outline: 'none',
+      transition: 'all 0.2s ease',
+      backgroundColor: '#ffffff',
+    }
+
+    const focusHandler = (
+      e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
+    ) => {
+      e.target.style.borderColor = '#3b82f6'
+      e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)'
+    }
+
+    const blurHandler = (
+      e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
+    ) => {
+      e.target.style.borderColor = '#d1d5db'
+      e.target.style.boxShadow = 'none'
+    }
+
+    if (subField.type === 'richText') {
+      return (
+        <RichTextEditor
+          value={value}
+          onChange={handleChange}
+          placeholder={getFieldPlaceholder(subField)}
+        />
+      )
+    }
+
+    if (subField.type === 'upload' || subField.type === 'image') {
+      return <ImageUpload value={value} onChange={handleChange} />
+    }
+
+    if (subField.type === 'relationship') {
+      return (
+        <RelationshipField
+          value={value}
+          onChange={handleChange}
+          field={subField}
+          placeholder={getSelectPlaceholder(subField)}
+        />
+      )
+    }
+
+    if (subField.type === 'comboBox') {
+      return (
+        <ComboBox
+          value={value}
+          onChange={handleChange}
+          options={subField.options || []}
+          placeholder={getComboBoxPlaceholder(subField)}
+        />
+      )
+    }
+
+    if (subField.type === 'select') {
+      return (
+        <select
+          value={value}
+          onChange={(e) => handleChange(e.target.value)}
+          style={commonInputStyle}
+          onFocus={focusHandler}
+          onBlur={blurHandler}
+        >
+          <option value="">{getSelectPlaceholder(subField)}</option>
+          {subField.options?.map((option: any) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      )
+    }
+
+    if (subField.type === 'checkbox') {
+      return (
+        <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <input
+            type="checkbox"
+            checked={value || false}
+            onChange={(e) => handleChange(e.target.checked)}
+            style={{
+              width: '16px',
+              height: '16px',
+              accentColor: '#3b82f6',
+            }}
+          />
+          <span style={{ fontSize: '14px', color: '#374151' }}>{subField.label}</span>
+        </label>
+      )
+    }
+
+    if (subField.type === 'group') {
+      return <GroupField field={subField} value={value} onChange={handleChange} />
+    }
+
+    if (subField.type === 'tabs') {
+      return <TabsField field={subField} value={value} onChange={handleChange} />
+    }
+
+    if (subField.type === 'row') {
+      return <RowField field={subField} value={value} onChange={handleChange} />
+    }
+
+    if (subField.type === 'collapsible') {
+      return <CollapsibleField field={subField} value={value} onChange={handleChange} />
+    }
+
+    if (subField.type === 'text' || subField.type === 'textarea') {
+      return (
+        <textarea
+          value={value}
+          onChange={(e) => handleChange(e.target.value)}
+          style={commonInputStyle}
+          placeholder={getFieldPlaceholder(subField)}
+          onFocus={focusHandler}
+          onBlur={blurHandler}
+        />
+      )
+    }
+
+    return (
+      <input
+        type={subField.type === 'number' ? 'number' : 'text'}
+        value={value}
+        onChange={(e) => handleChange(e.target.value)}
+        style={commonInputStyle}
+        placeholder={getFieldPlaceholder(subField)}
+        onFocus={focusHandler}
+        onBlur={blurHandler}
+      />
+    )
   }
 
   const renderSubField = (subField: any, itemValue: any, itemIndex: number) => {
@@ -107,134 +271,7 @@ export function ArrayField({ value, onChange, field }: ArrayFieldProps) {
           {subField.label}
           {subField.required && <span style={{ color: '#ef4444' }}> *</span>}
         </label>
-
-        {subField.type === 'richText' ? (
-          <RichTextEditor
-            value={value}
-            onChange={handleChange}
-            placeholder={`Enter ${subField?.label?.toLowerCase() || subField.name?.toLowerCase()}...`}
-          />
-        ) : subField.type === 'upload' || subField.type === 'image' ? (
-          <ImageUpload value={value} onChange={handleChange} />
-        ) : subField.type === 'relationship' ? (
-          <RelationshipField
-            value={value}
-            onChange={handleChange}
-            field={subField}
-            placeholder={`Select ${subField?.label?.toLowerCase() || subField.name?.toLowerCase()}...`}
-          />
-        ) : subField.type === 'comboBox' ? (
-          <ComboBox
-            value={value}
-            onChange={handleChange}
-            options={subField.options || []}
-            placeholder={`Type or select ${
-              subField?.label?.toLowerCase() || subField.name?.toLowerCase()
-            }...`}
-          />
-        ) : subField.type === 'select' ? (
-          <select
-            value={value}
-            onChange={(e) => handleChange(e.target.value)}
-            style={{
-              width: '100%',
-              padding: '12px',
-              border: '1px solid #d1d5db',
-              borderRadius: '8px',
-              fontSize: '14px',
-              outline: 'none',
-              transition: 'all 0.2s ease',
-              backgroundColor: '#ffffff',
-            }}
-            onFocus={(e) => {
-              e.target.style.borderColor = '#3b82f6'
-              e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)'
-            }}
-            onBlur={(e) => {
-              e.target.style.borderColor = '#d1d5db'
-              e.target.style.boxShadow = 'none'
-            }}
-          >
-            <option value="">
-              Select {subField?.label?.toLowerCase() || subField.name?.toLowerCase()}...
-            </option>
-            {subField.options?.map((option: any) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        ) : subField.type === 'checkbox' ? (
-          <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <input
-              type="checkbox"
-              checked={value || false}
-              onChange={(e) => handleChange(e.target.checked)}
-              style={{
-                width: '16px',
-                height: '16px',
-                accentColor: '#3b82f6',
-              }}
-            />
-            <span style={{ fontSize: '14px', color: '#374151' }}>{subField.label}</span>
-          </label>
-        ) : subField.type === 'group' ? (
-          <GroupField field={subField} value={value} onChange={handleChange} />
-        ) : subField.type === 'tabs' ? (
-          <TabsField field={subField} value={value} onChange={handleChange} />
-        ) : subField.type === 'row' ? (
-          <RowField field={subField} value={value} onChange={handleChange} />
-        ) : subField.type === 'collapsible' ? (
-          <CollapsibleField field={subField} value={value} onChange={handleChange} />
-        ) : subField.type === 'text' || subField.type === 'textarea' ? (
-          <textarea
-            value={value}
-            onChange={(e) => handleChange(e.target.value)}
-            style={{
-              width: '100%',
-              padding: '12px',
-              border: '1px solid #d1d5db',
-              borderRadius: '8px',
-              fontSize: '14px',
-              outline: 'none',
-              transition: 'all 0.2s ease',
-              backgroundColor: '#ffffff',
-            }}
-            placeholder={`Enter ${subField?.label?.toLowerCase() || subField.name?.toLowerCase()}...`}
-            onFocus={(e) => {
-              e.target.style.borderColor = '#3b82f6'
-              e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)'
-            }}
-            onBlur={(e) => {
-              e.target.style.borderColor = '#d1d5db'
-              e.target.style.boxShadow = 'none'
-            }}
-          />
-        ) : (
-          <input
-            type={subField.type === 'number' ? 'number' : 'text'}
-            value={value}
-            onChange={(e) => handleChange(e.target.value)}
-            style={{
-              width: '100%',
-              padding: '12px',
-              border: '1px solid #d1d5db',
-              borderRadius: '8px',
-              fontSize: '14px',
-              outline: 'none',
-              transition: 'all 0.2s ease',
-            }}
-            placeholder={`Enter ${subField?.label?.toLowerCase() || subField.name?.toLowerCase()}...`}
-            onFocus={(e) => {
-              e.target.style.borderColor = '#3b82f6'
-              e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)'
-            }}
-            onBlur={(e) => {
-              e.target.style.borderColor = '#d1d5db'
-              e.target.style.boxShadow = 'none'
-            }}
-          />
-        )}
+        {renderFieldInput(subField, value, handleChange)}
       </div>
     )
   }
@@ -251,12 +288,14 @@ export function ArrayField({ value, onChange, field }: ArrayFieldProps) {
     <div style={{ border: '1px solid #d1d5db', padding: '16px', borderRadius: '8px' }}>
       <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '16px' }}>{field.label}</h3>
       {items.map((item, index) => (
-        <div
-          key={index}
+        <button
+          key={itemKeys[index] || `item-${index}-${field.name}`}
+          type="button"
           draggable
           onDragStart={() => handleDragStart(index)}
           onDragOver={handleDragOver}
           onDrop={() => handleDrop(index)}
+          aria-label={`Drag to reorder item ${index + 1}`}
           style={{
             border: '1px solid #e5e7eb',
             padding: '16px',
@@ -265,6 +304,8 @@ export function ArrayField({ value, onChange, field }: ArrayFieldProps) {
             position: 'relative',
             backgroundColor: dragIndex === index ? '#f9fafb' : '#fff',
             cursor: 'grab',
+            width: '100%',
+            textAlign: 'left',
           }}
         >
           <div
@@ -329,7 +370,7 @@ export function ArrayField({ value, onChange, field }: ArrayFieldProps) {
             </div>
           </div>
           {field.fields?.map((subField) => renderSubField(subField, item, index))}
-        </div>
+        </button>
       ))}
       <button
         type="button"

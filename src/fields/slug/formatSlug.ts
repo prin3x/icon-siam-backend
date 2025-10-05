@@ -10,7 +10,7 @@ export const formatSlug = (val: string): string => {
     .replace(/[^\w\s-]+/g, '-') // Replace special chars with hyphens
     .replace(/\s+/g, '-') // Replace spaces with hyphens
     .replace(/-+/g, '-') // Replace multiple hyphens with single
-    .replace(/^-|-$/g, '') // Remove leading/trailing hyphens
+    .replace(/(^-)|(-$)/g, '') // Remove leading/trailing hyphens
     .toLowerCase()
 }
 

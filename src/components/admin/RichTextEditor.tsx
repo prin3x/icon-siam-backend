@@ -181,56 +181,72 @@ const detectContentFormat = (value: any): 'html' | 'tiptap' | 'lexical' | 'unkno
   return 'unknown'
 }
 
+// Text formatting rules mapping
+const TEXT_FORMATTING_RULES = {
+  strong: () => [{ type: 'bold' }],
+  b: () => [{ type: 'bold' }],
+  em: () => [{ type: 'italic' }],
+  i: () => [{ type: 'italic' }],
+  u: () => [{ type: 'underline' }],
+  s: () => [{ type: 'strike' }],
+  strike: () => [{ type: 'strike' }],
+  code: () => [{ type: 'code' }],
+} as const
+
+// Get text formatting marks for a given tag
+const getTextFormattingMarks = (tagName: string, element: Element): any[] => {
+  const rule = TEXT_FORMATTING_RULES[tagName as keyof typeof TEXT_FORMATTING_RULES]
+  if (rule) {
+    return rule()
+  }
+
+  if (tagName === 'a') {
+    const href = element.getAttribute('href')
+    return href ? [{ type: 'link', attrs: { href } }] : []
+  }
+
+  return []
+}
+
+// Apply marks to text content
+const applyMarksToContent = (content: any[], marks: any[]): void => {
+  if (marks.length === 0) return
+
+  content.forEach((item) => {
+    if (item.type === 'text') {
+      item.marks = marks
+    }
+  })
+}
+
+// Process a single text node
+const processTextNode = (node: Node): any[] => {
+  const text = node.textContent?.trim()
+  return text ? [{ type: 'text', text }] : []
+}
+
+// Process a single element node
+const processElementNode = (node: Element): any[] => {
+  const tagName = node.tagName.toLowerCase()
+  const childContent = processInlineElements(node)
+
+  if (childContent.length === 0) return []
+
+  const marks = getTextFormattingMarks(tagName, node)
+  applyMarksToContent(childContent, marks)
+
+  return childContent
+}
+
 // Process inline elements (spans, strong, em, etc.)
 const processInlineElements = (element: Element): any[] => {
   const content: any[] = []
 
   Array.from(element.childNodes).forEach((node) => {
     if (node.nodeType === Node.TEXT_NODE) {
-      const text = node.textContent?.trim()
-      if (text) {
-        content.push({ type: 'text', text })
-      }
+      content.push(...processTextNode(node))
     } else if (node.nodeType === Node.ELEMENT_NODE) {
-      const childElement = node as Element
-      const tagName = childElement.tagName.toLowerCase()
-      const childContent = processInlineElements(childElement)
-
-      if (childContent.length > 0) {
-        const marks: any[] = []
-
-        // Apply text formatting
-        if (tagName === 'strong' || tagName === 'b') {
-          marks.push({ type: 'bold' })
-        }
-        if (tagName === 'em' || tagName === 'i') {
-          marks.push({ type: 'italic' })
-        }
-        if (tagName === 'u') {
-          marks.push({ type: 'underline' })
-        }
-        if (tagName === 's' || tagName === 'strike') {
-          marks.push({ type: 'strike' })
-        }
-        if (tagName === 'code') {
-          marks.push({ type: 'code' })
-        }
-        if (tagName === 'a') {
-          const href = childElement.getAttribute('href')
-          if (href) {
-            marks.push({ type: 'link', attrs: { href } })
-          }
-        }
-
-        // Apply marks to all text nodes
-        childContent.forEach((item) => {
-          if (item.type === 'text' && marks.length > 0) {
-            item.marks = marks
-          }
-        })
-
-        content.push(...childContent)
-      }
+      content.push(...processElementNode(node as Element))
     }
   })
 
@@ -246,7 +262,7 @@ const processListItems = (listElement: Element, listType: string): any[] => {
       const itemContent = processInlineElements(item)
       if (itemContent.length > 0) {
         content.push({
-          type: listType === 'bulletList' ? 'listItem' : 'listItem',
+          type: 'listItem',
           content: [
             {
               type: 'paragraph',
@@ -256,7 +272,7 @@ const processListItems = (listElement: Element, listType: string): any[] => {
         })
       } else {
         content.push({
-          type: listType === 'bulletList' ? 'listItem' : 'listItem',
+          type: 'listItem',
           content: [
             {
               type: 'paragraph',
@@ -585,7 +601,8 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
         <MediaModal onClose={() => setIsMediaModalOpen(false)} onSelect={handleImageSelection} />
       )}
       {isLinkModalOpen && (
-        <div
+        <button
+          type="button"
           style={{
             position: 'fixed',
             top: 0,
@@ -597,10 +614,17 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
             alignItems: 'center',
             justifyContent: 'center',
             zIndex: 1000,
+            border: 'none',
+            padding: 0,
+            margin: 0,
+            cursor: 'pointer',
           }}
           onClick={() => setIsLinkModalOpen(false)}
+          onKeyDown={(e) => e.key === 'Escape' && setIsLinkModalOpen(false)}
+          aria-label="Close modal"
         >
-          <div
+          <dialog
+            open
             style={{
               backgroundColor: '#ffffff',
               padding: '24px',
@@ -609,8 +633,9 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
                 '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
               minWidth: '400px',
               maxWidth: '500px',
+              border: 'none',
+              margin: 0,
             }}
-            onClick={(e) => e.stopPropagation()}
           >
             <h3
               style={{
@@ -624,6 +649,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
             </h3>
             <div style={{ marginBottom: '16px' }}>
               <label
+                htmlFor="link-url-input"
                 style={{
                   display: 'block',
                   marginBottom: '8px',
@@ -635,6 +661,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
                 URL
               </label>
               <input
+                id="link-url-input"
                 type="url"
                 value={linkUrl}
                 onChange={(e) => setLinkUrl(e.target.value)}
@@ -709,8 +736,8 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
                 {editor?.state.selection.empty ? 'Insert' : 'Update'}
               </button>
             </div>
-          </div>
-        </div>
+          </dialog>
+        </button>
       )}
       <div
         style={{

@@ -17,7 +17,7 @@ interface Pagination {
   hasPrevPage: boolean
 }
 
-export function MediaModal({ onClose, onSelect }: MediaModalProps) {
+export function MediaModal({ onClose, onSelect }: Readonly<MediaModalProps>) {
   const [mediaItems, setMediaItems] = useState<MediaObject[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string>('')
@@ -34,7 +34,7 @@ export function MediaModal({ onClose, onSelect }: MediaModalProps) {
   })
 
   const isVideoFromMimeOrUrl = (mimeType?: string, url?: string) => {
-    if (mimeType && mimeType.startsWith('video')) return true
+    if (mimeType?.startsWith('video')) return true
     if (!url) return false
     const lowered = url.toLowerCase().split('?')[0]
     const videoExts = ['.mp4', '.webm', '.ogg', '.mov', '.m4v', '.avi', '.mkv']
@@ -240,10 +240,21 @@ export function MediaModal({ onClose, onSelect }: MediaModalProps) {
                 }}
               >
                 {mediaItems.map((item) => (
-                  <div
+                  <button
                     key={item.id}
+                    type="button"
                     onClick={() => onSelect(item)}
-                    style={{ cursor: 'pointer', border: '1px solid #e5e7eb', borderRadius: '4px' }}
+                    onKeyDown={(e) => e.key === 'Enter' && onSelect(item)}
+                    aria-label={`Select ${item.filename || 'media item'}`}
+                    style={{
+                      cursor: 'pointer',
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '4px',
+                      background: 'transparent',
+                      padding: 0,
+                      width: '100%',
+                      textAlign: 'left',
+                    }}
                   >
                     {isVideoFromMimeOrUrl(item.mimeType, item.url) ? (
                       <video
@@ -282,7 +293,7 @@ export function MediaModal({ onClose, onSelect }: MediaModalProps) {
                     >
                       {item.filename || 'No Name'}
                     </div>
-                  </div>
+                  </button>
                 ))}
               </div>
               {pagination.totalPages > 1 && (
@@ -336,10 +347,14 @@ export function MediaModal({ onClose, onSelect }: MediaModalProps) {
               </div>
 
               <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>
+                <label
+                  htmlFor="url-input"
+                  style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}
+                >
                   Image URL
                 </label>
                 <input
+                  id="url-input"
                   type="url"
                   value={urlInput}
                   onChange={(e) => setUrlInput(e.target.value)}
@@ -351,7 +366,7 @@ export function MediaModal({ onClose, onSelect }: MediaModalProps) {
                     borderRadius: '6px',
                     fontSize: '14px',
                   }}
-                  onKeyPress={(e) => e.key === 'Enter' && handleUrlUpload()}
+                  onKeyDown={(e) => e.key === 'Enter' && handleUrlUpload()}
                 />
                 {urlError && (
                   <div style={{ color: '#dc2626', fontSize: '12px', marginTop: '4px' }}>
