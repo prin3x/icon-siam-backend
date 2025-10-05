@@ -75,16 +75,41 @@ function UploadArea({
       ) : (
         <div style={{ color: '#111827' }}>
           <span style={{ color: '#374151' }}>Drag and drop a file or </span>
-          <a
-            onClick={() => fileInputRef.current?.click()}
-            style={{ color: '#0ea5e9', cursor: 'pointer' }}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              fileInputRef.current?.click()
+            }}
+            style={{
+              color: '#0ea5e9',
+              cursor: 'pointer',
+              background: 'none',
+              border: 'none',
+              padding: 0,
+            }}
           >
             Upload
-          </a>
+          </button>
           <span style={{ color: '#374151' }}> or </span>
-          <a onClick={onMediaModalOpen} style={{ color: '#0ea5e9', cursor: 'pointer' }}>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              onMediaModalOpen()
+            }}
+            style={{
+              color: '#0ea5e9',
+              cursor: 'pointer',
+              background: 'none',
+              border: 'none',
+              padding: 0,
+            }}
+          >
             Choose from existing
-          </a>
+          </button>
         </div>
       )}
 
